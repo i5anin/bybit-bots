@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import { fetchKlines } from './lib/bybit.js';
+import { logEquity, logTrade } from './lib/logger.js';
 import { Bot } from './bot.js';
 
 import { createStrategy as smaCrossover } from './strategies/smaCrossover.js';
@@ -42,7 +43,31 @@ function printStatus() {
 async function tick() {
   try {
     const candles = await fetchKlines(SYMBOL, INTERVAL, 100);
-    bots.forEach(bot => bot.step(candles));
+
+    for (const bot of bots) {
+      const result = bot.step(candles);
+      const name = bot.strategy.name;
+
+      await logEquity({
+        symbol: SYMBOL,
+        bot: name,
+        price: result.price,
+        equity: result.equity,
+        position: result.position > 0 ? 1 : 0,
+        trades: bot.ledger.trades.length,
+      });
+
+      if (result.trade) {
+        await logTrade({
+          symbol: SYMBOL,
+          bot: name,
+          side: result.trade.side,
+          price: result.trade.price,
+          pnlPct: result.trade.pnlPct,
+        });
+      }
+    }
+
     printStatus();
   } catch (err) {
     console.error('Ошибка опроса рынка:', err.message);
