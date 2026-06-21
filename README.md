@@ -41,3 +41,15 @@ npm start
 - `INTERVAL` — таймфрейм свечей в минутах
 - `START_BALANCE` — стартовый виртуальный баланс на бота
 - `POLL_MS` — частота опроса рынка
+
+## Запуск в Docker
+
+```bash
+cp .env.example .env
+docker compose up -d --build
+```
+
+Логи (`logs/equity.csv`, `logs/trades.csv`) пишутся в смонтированную
+папку `./logs` на хосте — доступны для анализа без захода в контейнер.
+
+Остановить: `docker compose down`.
