@@ -5,7 +5,8 @@
   "description": "10 торговых ботов-стратегий на Bybit Testnet с виртуальным балансом 100",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "build:tar": "bash scripts/build-tar.sh"
   },
   "dependencies": {
     "dotenv": "^16.4.5"
