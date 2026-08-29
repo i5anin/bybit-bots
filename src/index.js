@@ -16,6 +16,7 @@ import { createStrategy as meanReversion } from './strategies/meanReversion.js';
 import { createStrategy as emaRibbon } from './strategies/emaRibbon.js';
 import { createStrategy as martingaleLite } from './strategies/martingaleLite.js';
 import { createStrategy as grid } from './strategies/grid.js';
+import { createStrategy as adaptiveRegime } from './strategies/adaptiveRegime.js';
 
 const SYMBOL = process.env.SYMBOL || 'BTCUSDT';
 const INTERVAL = process.env.INTERVAL || '5';
@@ -34,7 +35,9 @@ const factories = [
   emaRibbon,
   martingaleLite,
   grid,
-]; // все 11 стратегий работают одновременно на одних и тех же котировках
+  adaptiveRegime,
+]; // 12 стратегий на одних котировках: одиннадцать с жёстким приёмом
+// и одна адаптивная, выбирающая приём по характеру рынка
 
 const runStartedAt = Date.now();
 const runId = new Date(runStartedAt).toISOString();
