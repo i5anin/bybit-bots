@@ -6,6 +6,8 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
+    "migrate:logs": "node scripts/migrate-logs.mjs",
+    "seed:state": "node scripts/seed-state.mjs",
     "build:tar": "bash scripts/build-tar.sh"
   },
   "dependencies": {

@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="ru">
+<meta charset="utf-8">
+<title>Боты Bybit — результаты</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+:root{--bg:#12151c;--card:#171b24;--line:#252b38;--text:#dfe4ee;--dim:#7f8798;
+      --up:#4ec9a0;--down:#ff6b6b;--hot:#ff8a4c;--warn:#e0b341;--w:1280px}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+     font:14px/1.45 "Segoe UI",system-ui,sans-serif}
+/* Полоса шапки — во всю ширину, её содержимое — в той же колонке, что таблицы. */
+header{border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;
+     padding:14px 22px;max-width:var(--w);margin-inline:auto}
+h1{font-size:16px;margin:0;font-weight:600}
+.dim{color:var(--dim)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;
+     background:var(--dim);margin-right:6px}
+.dot.on{background:var(--up)}
+main{padding:16px 22px 48px;max-width:var(--w);margin-inline:auto}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+       gap:12px;margin-bottom:20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.card .k{font-size:12px;color:var(--dim);margin-bottom:4px}
+.card .v{font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
+h2{font-size:13px;font-weight:600;color:var(--dim);text-transform:uppercase;
+   letter-spacing:.06em;margin:24px 0 8px}
+.wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:720px}
+th{text-align:left;font-weight:500;color:var(--dim);font-size:12px;
+   padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;
+              font-family:Consolas,monospace;font-size:13px}
+.nm{font-weight:600}
+.up{color:var(--up)}
+.down{color:var(--down)}
+.rank{color:var(--dim);width:28px}
+.pos{font-size:11px;padding:1px 7px;border-radius:3px;background:#232936;color:var(--dim)}
+.pos.in{color:var(--warn)}
+tr:hover{background:#1b202a}
+footer{padding:0 22px 40px;color:var(--dim);font-size:12px;
+       max-width:var(--w);margin-inline:auto}
+.empty{padding:24px;color:var(--dim)}
+</style>
+
+<header>
+  <div class="bar">
+    <h1>Боты Bybit</h1>
+    <span class="dim" id="sym">—</span>
+    <span class="dim">цена <b id="price" style="color:var(--text)">—</b></span>
+    <span class="dim"><span class="dot" id="dot"></span><span id="run">—</span></span>
+    <span class="dim" style="margin-left:auto" id="upd">—</span>
+  </div>
+</header>
+
+<main>
+  <div class="cards" id="cards"></div>
+
+  <h2>Стратегии</h2>
+  <div class="wrap"><table>
+    <thead><tr>
+      <th class="rank"></th><th>Стратегия</th>
+      <th class="num">Счёт</th><th class="num">Доходность</th>
+      <th class="num">Сделок</th><th>Позиция</th><th>Динамика</th>
+    </tr></thead>
+    <tbody id="bots"><tr><td colspan="7" class="empty">Загрузка…</td></tr></tbody>
+  </table></div>
+
+  <h2>Последние сделки</h2>
+  <div class="wrap"><table>
+    <thead><tr>
+      <th>Время</th><th>Стратегия</th><th>Направление</th>
+      <th class="num">Цена</th><th class="num">Результат</th>
+    </tr></thead>
+    <tbody id="trades"><tr><td colspan="5" class="empty">Загрузка…</td></tr></tbody>
+  </table></div>
+</main>
+
+<footer>Обновление каждые 30 секунд. Бумажная торговля: реальных ордеров нет.</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+const fmt = (v, d = 2) => Number(v).toFixed(d);
+const cls = v => v > 0 ? 'up' : v < 0 ? 'down' : '';
+const sign = v => (v > 0 ? '+' : '') + fmt(v);
+
+function spark(values, w = 130, h = 26) {
+  if (!values || values.length < 2) return '';
+  const min = Math.min(...values), max = Math.max(...values);
+  const span = max - min || 1;
+  const pts = values.map((v, i) => {
+    const x = (i / (values.length - 1)) * w;
+    const y = h - ((v - min) / span) * (h - 3) - 1.5;
+    return x.toFixed(1) + ',' + y.toFixed(1);
+  }).join(' ');
+  const color = values.at(-1) >= values[0] ? 'var(--up)' : 'var(--down)';
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
+    <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.5"/></svg>`;
+}
+
+function hours(sec) {
+  const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60);
+  return h ? `${h} ч ${m} м` : `${m} м`;
+}
+
+function renderCards(s) {
+  const t = s.totals;
+  const items = [
+    ['Общий счёт', fmt(t.equity), `из ${fmt(t.invested)}`],
+    ['Стратегий в плюсе', `${t.inProfit} / ${s.bots.length}`, ''],
+    ['Сделок', t.tradesTotal, `закрыто ${t.tradesClosed}`],
+    ['Доля удачных', t.winRatePct === null ? '—' : fmt(t.winRatePct, 1) + ' %', ''],
+    ['Наработка', hours(s.uptimeSecTotal), `запусков ${s.runs}`],
+  ];
+  $('cards').innerHTML = items.map(([k, v, sub]) =>
+    `<div class="card"><div class="k">${k}</div><div class="v">${v}</div>
+     <div class="k">${sub}</div></div>`).join('');
+}
+
+function renderBots(bots) {
+  if (!bots.length) {
+    $('bots').innerHTML = '<tr><td colspan="7" class="empty">Данных пока нет</td></tr>';
+    return;
+  }
+  $('bots').innerHTML = bots.map((b, i) => `<tr>
+    <td class="rank">${i + 1}</td>
+    <td class="nm">${b.name}</td>
+    <td class="num">${fmt(b.equity)}</td>
+    <td class="num ${cls(b.pnlPct)}">${sign(b.pnlPct)} %</td>
+    <td class="num">${b.trades}</td>
+    <td><span class="pos ${b.position ? 'in' : ''}">${
+      b.position ? 'в рынке' : 'вне рынка'}</span></td>
+    <td>${spark(b.spark)}</td></tr>`).join('');
+}
+
+function renderTrades(rows) {
+  const closed = rows.filter(r => r.time);
+  if (!closed.length) {
+    $('trades').innerHTML = '<tr><td colspan="5" class="empty">Сделок пока нет</td></tr>';
+    return;
+  }
+  $('trades').innerHTML = closed.map(r => {
+    const pnl = r.pnlPct === '' ? null : Number(r.pnlPct);
+    const when = new Date(r.time).toLocaleString('ru-RU', { hour12: false });
+    return `<tr>
+      <td class="dim">${when}</td>
+      <td>${r.bot}</td>
+      <td>${r.side === 'buy' ? 'покупка' : 'продажа'}</td>
+      <td class="num">${r.price}</td>
+      <td class="num ${pnl === null ? '' : cls(pnl)}">${
+        pnl === null ? '<span class="dim">вход</span>' : sign(pnl) + ' %'}</td></tr>`;
+  }).join('');
+}
+
+async function refresh() {
+  try {
+    const s = await (await fetch('/api/stats', { cache: 'no-store' })).json();
+    $('sym').textContent = `${s.symbol} · ${s.interval}м`;
+    $('price').textContent = s.price ? fmt(s.price, 1) : '—';
+    $('dot').className = 'dot' + (s.running ? ' on' : '');
+    $('run').textContent = s.running ? `работает, тиков ${s.ticks}` : 'остановлен';
+    $('upd').textContent = s.updatedAt
+      ? 'обновлено ' + new Date(s.updatedAt).toLocaleTimeString('ru-RU', { hour12: false })
+      : '';
+    renderCards(s);
+    renderBots(s.bots);
+    renderTrades(s.lastTrades);
+  } catch (err) {
+    $('upd').textContent = 'нет связи с сервером';
+  }
+}
+
+refresh();
+setInterval(refresh, 30000);
+</script>
+</html>

@@ -4,4 +4,20 @@ services:
     env_file: .env
     volumes:
       - ./logs:/app/logs
+      - ./data:/app/data # состояние ботов: продолжение счёта после рестарта
+    stop_grace_period: 30s # хватает на штатное сохранение состояния по SIGTERM
     restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    env_file: .env
+    ports:
+      - "${WEB_BIND:-0.0.0.0}:${WEB_PORT:-3004}:3004"
+    volumes:
+      - ./logs:/app/logs:ro # панель только читает результаты
+      - ./data:/app/data # сюда пишется отметка об отправленных оповещениях
+    restart: unless-stopped
+    depends_on:
+      - bybit-bots

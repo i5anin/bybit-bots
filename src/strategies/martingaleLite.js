@@ -1,6 +1,7 @@
 // Упрощённый Мартингейл: покупка на падении, продажа на возврате к точке входа + профит.
 const DROP_PCT = 1; // % падения для усреднения/входа
 const TAKE_PROFIT_PCT = 1;
+const STALE_SEC = 30 * 60; // после такого простоя опорная цена считается устаревшей
 
 export function createStrategy() {
   let referencePrice = null;
@@ -32,6 +33,27 @@ export function createStrategy() {
         return 'sell';
       }
       return 'hold';
+    },
+
+    // Опорная цена переживает рестарт — иначе шаг мартингейла считался бы заново.
+    toJSON() {
+      return { referencePrice, inPosition };
+    },
+
+    // ctx описывает реальное состояние на момент возобновления: позиция берётся
+    // из леджера, а опорная цена после долгого простоя — текущая рыночная,
+    // иначе сигнал считался бы от устаревшего уровня.
+    restore(snapshot, ctx) {
+      inPosition = Boolean(ctx?.inPosition);
+
+      if (inPosition && Number.isFinite(ctx?.entryPrice) && ctx.entryPrice > 0) {
+        referencePrice = ctx.entryPrice;
+        return;
+      }
+      const stale = (ctx?.downtimeSec ?? 0) > STALE_SEC;
+      referencePrice = !stale && Number.isFinite(snapshot?.referencePrice)
+        ? snapshot.referencePrice
+        : ctx?.price ?? null;
     },
   };
 }
