@@ -116,6 +116,7 @@ export function buildStats(state, equity, trades, runs, rate = rubRate) {
       position: Number(led.position) || 0,
       entryPrice: Number(led.entryPrice) || null,
       trades: Number(led.tradeCount) || 0,
+      leader: b?.leader ?? null,
       spark: spark[name] ?? [],
     };
   });

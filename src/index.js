@@ -5,6 +5,7 @@ import { logEquity, logTrade, logRun } from './lib/logger.js';
 import { loadState, saveState, STATE_VERSION } from './lib/state.js';
 import { formatDuration } from './lib/time.js';
 import { Bot } from './bot.js';
+import { MetaBot } from './metaBot.js';
 
 import { createStrategy as smaCrossover } from './strategies/smaCrossover.js';
 import { createStrategy as emaCrossover } from './strategies/emaCrossover.js';
@@ -65,6 +66,10 @@ const bots = factories.map(factory => {
   const strategy = factory();
   return new Bot(strategy, START_BALANCE, restored?.bots?.[strategy.name], { downtimeSec });
 });
+
+// Мета-бот идёт последним: решает уже по обновлённым позициям остальных.
+const metaName = `Авто-выбор лучшей (${bots.length})`;
+bots.push(new MetaBot([...bots], START_BALANCE, restored?.bots?.[metaName]));
 
 const baseUptimeSec = restored?.uptimeSecTotal ?? 0;
 const runNumber = (restored?.runs ?? 0) + 1;

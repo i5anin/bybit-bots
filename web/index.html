@@ -132,7 +132,7 @@ function renderBots(bots) {
   }
   $('bots').innerHTML = bots.map((b, i) => `<tr>
     <td class="rank">${i + 1}</td>
-    <td class="nm">${b.name}</td>
+    <td class="nm">${b.name}${b.leader ? `<div class="dim" style="font-weight:400;font-size:12px">повторяет: ${b.leader}</div>` : ''}</td>
     <td class="num">${money(b.equityRub)}</td>
     <td class="num">${money(b.equity)}</td>
     <td class="num">${b.position ? money(b.position, 1) : '<span class="dim">—</span>'}</td>
