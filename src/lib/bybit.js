@@ -1,8 +1,11 @@
-const BASE_URL = 'https://api-testnet.bybit.com';
+// Публичный REST Bybit, ключи не нужны. По умолчанию — реальный спотовый рынок.
+const BASE_URL = process.env.BYBIT_BASE_URL || 'https://api.bybit.com';
+const CATEGORY = process.env.BYBIT_CATEGORY || 'spot';
 
-// Публичный эндпоинт, ключи не нужны — котировки реальные с тестовой сети Bybit.
+export const MARKET = `${BASE_URL.includes('testnet') ? 'testnet' : 'mainnet'}:${CATEGORY}`;
+
 export async function fetchKlines(symbol, interval, limit = 100) {
-  const url = `${BASE_URL}/v5/market/kline?category=linear&symbol=${symbol}&interval=${interval}&limit=${limit}`;
+  const url = `${BASE_URL}/v5/market/kline?category=${CATEGORY}&symbol=${symbol}&interval=${interval}&limit=${limit}`;
   const res = await fetch(url);
   if (!res.ok) {
     throw new Error(`Bybit kline request failed: ${res.status}`);
@@ -22,4 +25,17 @@ export async function fetchKlines(symbol, interval, limit = 100) {
       volume: Number(volume),
     }))
     .reverse();
+}
+
+// Биржевые ограничения на ордер: минимальная сумма и шаг количества.
+export async function fetchLotRules(symbol) {
+  const url = `${BASE_URL}/v5/market/instruments-info?category=${CATEGORY}&symbol=${symbol}`;
+  const json = await (await fetch(url)).json();
+  const lot = json?.result?.list?.[0]?.lotSizeFilter;
+  if (!lot) throw new Error(`Нет правил лота для ${symbol}`);
+  return {
+    minOrderAmt: Number(lot.minOrderAmt ?? 0),
+    minOrderQty: Number(lot.minOrderQty ?? 0),
+    qtyStep: Number(lot.basePrecision ?? 0),
+  };
 }

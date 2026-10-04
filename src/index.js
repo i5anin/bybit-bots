@@ -1,5 +1,6 @@
 import 'dotenv/config';
-import { fetchKlines } from './lib/bybit.js';
+import { fetchKlines, fetchLotRules, MARKET } from './lib/bybit.js';
+import { setLotRules } from './lib/ledger.js';
 import { logEquity, logTrade, logRun } from './lib/logger.js';
 import { loadState, saveState, STATE_VERSION } from './lib/state.js';
 import { formatDuration } from './lib/time.js';
@@ -15,13 +16,14 @@ import { createStrategy as breakout } from './strategies/breakout.js';
 import { createStrategy as meanReversion } from './strategies/meanReversion.js';
 import { createStrategy as emaRibbon } from './strategies/emaRibbon.js';
 import { createStrategy as martingaleLite } from './strategies/martingaleLite.js';
-import { createStrategy as grid } from './strategies/grid.js';
 import { createStrategy as adaptiveRegime } from './strategies/adaptiveRegime.js';
 
 const SYMBOL = process.env.SYMBOL || 'BTCUSDT';
 const INTERVAL = process.env.INTERVAL || '5';
 const START_BALANCE = Number(process.env.START_BALANCE || 100);
 const POLL_MS = Number(process.env.POLL_MS || 60000);
+const FEE_PCT = Number(process.env.FEE_PCT ?? 0.1);
+const SLIPPAGE_PCT = Number(process.env.SLIPPAGE_PCT ?? 0.02);
 
 const factories = [
   smaCrossover,
@@ -34,10 +36,12 @@ const factories = [
   meanReversion,
   emaRibbon,
   martingaleLite,
-  grid,
   adaptiveRegime,
-]; // 12 стратегий на одних котировках: одиннадцать с жёстким приёмом
-// и одна адаптивная, выбирающая приём по характеру рынка
+]; // 11 ботов: десять с жёстким приёмом и один адаптивный (grid избыточен рядом с martingale — оставлен в strategies/ на выбор)
+
+const lotRules = await fetchLotRules(SYMBOL);
+setLotRules(lotRules);
+const ORDER_USDT = Number(process.env.ORDER_USDT || 0);
 
 const runStartedAt = Date.now();
 const runId = new Date(runStartedAt).toISOString();
@@ -96,7 +100,11 @@ function isCompatible(state) {
     && state.version === STATE_VERSION
     && state.symbol === SYMBOL
     && state.interval === INTERVAL
-    && state.startBalance === START_BALANCE;
+    && state.startBalance === START_BALANCE
+    && state.market === MARKET
+    && state.feePct === FEE_PCT
+    && state.slippagePct === SLIPPAGE_PCT
+    && state.orderUsdt === ORDER_USDT;
 }
 
 function buildState({ closing }) {
@@ -105,6 +113,10 @@ function buildState({ closing }) {
     symbol: SYMBOL,
     interval: INTERVAL,
     startBalance: START_BALANCE,
+    market: MARKET,
+    feePct: FEE_PCT,
+    slippagePct: SLIPPAGE_PCT,
+    orderUsdt: ORDER_USDT,
     updatedAt: new Date().toISOString(),
     runs: runNumber,
     uptimeSecTotal: baseUptimeSec + runUptimeSec,
@@ -120,7 +132,7 @@ function printStatus() {
   const pnlPct = (totalEquity / invested - 1) * 100;
 
   console.clear();
-  console.log(`Bybit Testnet · ${SYMBOL} · ${INTERVAL}m · старт ${START_BALANCE} у.е. на бота`);
+  console.log(`Bybit ${MARKET} · комиссия ${FEE_PCT}% · лот ≥ ${lotRules.minOrderAmt} USDT · ${SYMBOL} · ${INTERVAL}m · старт ${START_BALANCE} у.е. на бота`);
   console.log(
     `Запуск #${runNumber} · в работе ${formatDuration(runUptimeSec)}`
     + ` · всего ${formatDuration(baseUptimeSec + runUptimeSec)} · тиков ${ticks}\n`,
@@ -160,11 +172,13 @@ async function logResumeGap(price) {
 async function tick() {
   if (stopping) return;
   try {
-    const candles = await fetchKlines(SYMBOL, INTERVAL, 100);
-    await logResumeGap(candles[candles.length - 1].close);
+    const all = await fetchKlines(SYMBOL, INTERVAL, 101);
+    const price = all[all.length - 1].close;
+    const candles = all.slice(0, -1); // последняя свеча ещё не закрыта
+    await logResumeGap(price);
 
     for (const bot of bots) {
-      const result = bot.step(candles);
+      const result = bot.step(candles, price);
       const name = bot.strategy.name;
 
       await logEquity({
