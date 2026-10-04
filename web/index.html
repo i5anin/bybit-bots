@@ -109,12 +109,30 @@ function hours(sec) {
   return h ? `${h} ч ${m} м` : `${m} м`;
 }
 
+// Каждый бот торгует своими деньгами со старта в startBalance, поэтому
+// показываем счёт одного бота, а не сумму по всем.
+function accountCards(s) {
+  const startRub = s.startBalance * s.rubPerUsd;
+  const card = (title, b) => b
+    ? [title, money(b.equityRub) + ' ₽',
+       `${sign(b.pnlPct)} % · $${money(b.equity)} · ${money(b.position, 1)} ${base} · из ${money(startRub, 0)} ₽`]
+    : [title, '—', ''];
+  const meta = s.bots.find(b => b.leader);
+  const best = s.bots.filter(b => !b.leader)[0];
+  const n = s.bots.length || 1;
+  const avg = s.bots.reduce((a, b) => a + b.equityRub, 0) / n;
+  const avgPct = s.bots.reduce((a, b) => a + b.pnlPct, 0) / n;
+  return [
+    card('Авто-выбор', meta),
+    card('Лучшая стратегия', best),
+    ['В среднем на бота', money(avg) + ' ₽', `${sign(avgPct)} % · из ${money(startRub, 0)} ₽ · курс ${fmt(s.rubPerUsd)} (${s.rateSource})`],
+  ];
+}
+
 function renderCards(s) {
   const t = s.totals;
   const items = [
-    ['Общий счёт, ₽', money(t.equityRub), `из ${money(t.investedRub)} · курс ${fmt(s.rubPerUsd)} (${s.rateSource})`],
-    ['Общий счёт, $', money(t.equity), `из ${money(t.invested)} USDT`],
-    [`В токенах, ${base}`, money(t.position, 1), `≈ $${money(t.position * (s.price || 0))}`],
+    ...accountCards(s),
     ['Стратегий в плюсе', `${t.inProfit} / ${s.bots.length}`, ''],
     ['Сделок', t.tradesTotal, `закрыто ${t.tradesClosed}`],
     ['Доля удачных', t.winRatePct === null ? '—' : fmt(t.winRatePct, 1) + ' %', ''],
