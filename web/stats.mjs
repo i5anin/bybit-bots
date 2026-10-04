@@ -80,7 +80,25 @@ function sparkByBot(equity, points = 60) {
   return out;
 }
 
-export function buildStats(state, equity, trades, runs) {
+// Курс рубля к доллару по ЦБ: USDT считаем равным доллару. Обновляется раз в час,
+// при недоступности ЦБ остаётся прошлое значение или RUB_PER_USDT из окружения.
+const RATE_URL = 'https://www.cbr-xml-daily.ru/daily_json.js';
+let rubRate = { value: Number(process.env.RUB_PER_USDT || 85), at: 0, source: 'env' };
+
+async function rubPerUsd() {
+  if (Date.now() - rubRate.at < 3600_000) return rubRate;
+  try {
+    const res = await fetch(RATE_URL, { signal: AbortSignal.timeout(5000) });
+    const v = Number((await res.json())?.Valute?.USD?.Value);
+    if (Number.isFinite(v) && v > 0) rubRate = { value: v, at: Date.now(), source: 'ЦБ РФ' };
+    else rubRate.at = Date.now();
+  } catch {
+    rubRate.at = Date.now() - 3000_000; // повтор через 10 минут
+  }
+  return rubRate;
+}
+
+export function buildStats(state, equity, trades, runs, rate = rubRate) {
   const startBalance = state?.startBalance ?? 100;
   const spark = sparkByBot(equity);
   const lastPrice = lastFinite(equity.map(r => Number(r.price)));
@@ -93,6 +111,8 @@ export function buildStats(state, equity, trades, runs) {
       name,
       equity: round(value, 4),
       pnlPct: round(((value - startBalance) / startBalance) * 100, 2),
+      equityRub: round(value * rate.value, 2),
+      cash: round(Number(led.cash) || 0, 4),
       position: Number(led.position) || 0,
       entryPrice: Number(led.entryPrice) || null,
       trades: Number(led.tradeCount) || 0,
@@ -105,9 +125,15 @@ export function buildStats(state, equity, trades, runs) {
   const closed = trades.filter(t => t.pnlPct !== '' && t.pnlPct != null);
   const wins = closed.filter(t => Number(t.pnlPct) > 0);
 
+  const symbol = state?.symbol ?? process.env.SYMBOL ?? 'BTCUSDT';
+  const totalEquity = bots.reduce((s, b) => s + b.equity, 0);
+
   return {
     updatedAt: state?.updatedAt ?? null,
-    symbol: state?.symbol ?? process.env.SYMBOL ?? 'BTCUSDT',
+    baseAsset: symbol.replace(/USDT$/, ''),
+    rubPerUsd: round(rate.value, 4),
+    rateSource: rate.source,
+    symbol,
     interval: state?.interval ?? process.env.INTERVAL ?? '5',
     startBalance,
     price: lastPrice,
@@ -117,8 +143,11 @@ export function buildStats(state, equity, trades, runs) {
     running: Boolean(state?.currentRun),
     bots,
     totals: {
-      equity: round(bots.reduce((s, b) => s + b.equity, 0), 2),
+      equity: round(totalEquity, 2),
+      equityRub: round(totalEquity * rate.value, 2),
       invested: round(startBalance * bots.length, 2),
+      investedRub: round(startBalance * bots.length * rate.value, 2),
+      position: bots.reduce((s, b) => s + b.position, 0),
       inProfit: bots.filter(b => b.pnlPct > 0).length,
       tradesTotal: trades.length,
       tradesClosed: closed.length,
@@ -142,8 +171,8 @@ function round(v, digits) {
 }
 
 export async function collect() {
-  const [state, equity, trades, runs] = await Promise.all([
-    readState(), readEquity(), readTrades(), readRuns(),
+  const [state, equity, trades, runs, rate] = await Promise.all([
+    readState(), readEquity(), readTrades(), readRuns(), rubPerUsd(),
   ]);
-  return buildStats(state, equity, trades, runs);
+  return buildStats(state, equity, trades, runs, rate);
 }
