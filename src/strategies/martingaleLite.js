@@ -55,5 +55,11 @@ export function createStrategy() {
         ? snapshot.referencePrice
         : ctx?.price ?? null;
     },
+
+    // Сделка не исполнилась (не хватило на минимальный ордер): позицию берём
+    // из леджера, иначе стратегия ждала бы продажи того, чего не покупала.
+    sync(ctx) {
+      inPosition = Boolean(ctx?.inPosition);
+    },
   };
 }

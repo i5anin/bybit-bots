@@ -1,12 +1,15 @@
 import { Ledger } from './lib/ledger.js';
 
+// Один бот = одна стратегия + свой счёт.
+//   startBalance — стартовый счёт; snapshot — сохранённое состояние после рестарта;
+//   downtimeSec — сколько бот простоял; costs — издержки и лот (см. Ledger).
 export class Bot {
-  constructor(strategy, startBalance, snapshot, resume) {
+  constructor(strategy, { startBalance, snapshot = null, downtimeSec = 0, costs } = {}) {
     this.strategy = strategy;
-    this.ledger = Ledger.from(snapshot?.ledger, startBalance);
+    this.ledger = Ledger.from(snapshot?.ledger, startBalance, costs);
     this.restored = Boolean(snapshot);
     this.pendingStrategyState = snapshot?.strategy ?? null;
-    this.resume = resume ?? { downtimeSec: 0 };
+    this.downtimeSec = downtimeSec;
     this.strategyReady = !this.restored;
     this.lastSignalCandle = snapshot?.lastSignalCandle ?? null;
   }
@@ -20,22 +23,13 @@ export class Bot {
     // остановки могли устареть.
     if (!this.strategyReady) {
       this.strategyReady = true;
-      if (typeof this.strategy.restore === 'function') {
-        this.strategy.restore(this.pendingStrategyState, {
-          price,
-          downtimeSec: this.resume.downtimeSec,
-          inPosition: this.ledger.position > 0,
-          entryPrice: this.ledger.entryPrice,
-        });
-      }
+      this.strategy.restore?.(this.pendingStrategyState, this.context(price));
     }
 
     // Одно решение на закрытую свечу: внутри незакрытой свечи сигнал мигает
     // от минуты к минуте и даёт лишние сделки, каждая из которых платит комиссию.
     const candleTime = candles[candles.length - 1].time;
-    if (candleTime === this.lastSignalCandle) {
-      return { action: 'hold', trade: null, price, equity: this.ledger.equity, position: this.ledger.position };
-    }
+    if (candleTime === this.lastSignalCandle) return this.result('hold', null, price);
     this.lastSignalCandle = candleTime;
 
     const action = this.strategy.signal(candles);
@@ -43,6 +37,25 @@ export class Bot {
     if (action === 'buy') trade = this.ledger.buy(price);
     if (action === 'sell') trade = this.ledger.sell(price);
 
+    // Сделка не прошла (на минимальный ордер не хватило денег) — стратегия
+    // с собственным учётом позиции должна узнать, что в рынок она не вошла.
+    if (!trade && (action === 'buy' || action === 'sell')) {
+      this.strategy.sync?.(this.context(price));
+    }
+
+    return this.result(action, trade, price);
+  }
+
+  context(price) {
+    return {
+      price,
+      downtimeSec: this.downtimeSec,
+      inPosition: this.ledger.position > 0,
+      entryPrice: this.ledger.entryPrice,
+    };
+  }
+
+  result(action, trade, price) {
     return { action, trade, price, equity: this.ledger.equity, position: this.ledger.position };
   }
 
@@ -66,6 +79,6 @@ export class Bot {
   }
 }
 
-function round2(value) {
+export function round2(value) {
   return Math.round(value * 100) / 100;
 }

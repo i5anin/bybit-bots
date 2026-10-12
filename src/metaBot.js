@@ -1,16 +1,26 @@
 import { Ledger } from './lib/ledger.js';
+import { round2 } from './bot.js';
 
 // Авто-выбор: свой счёт, а решения копирует у той стратегии, что лучше всех
 // заработала за последнее окно. Лидер меняется, только если новый обгоняет
 // текущего с запасом, — иначе бот метался бы между равными и платил комиссии.
-const WINDOW = Number(process.env.META_WINDOW_CANDLES || 288); // 288 × 5м = сутки
-const MARGIN_PCT = Number(process.env.META_SWITCH_MARGIN_PCT || 0.5);
+// Если за окно в плюсе нет никого, бот стоит вне рынка: копировать
+// «наименее убыточную» — значит гарантированно терять вместе с ней.
+export const META_DEFAULTS = Object.freeze({
+  windowCandles: 288, // 288 × 5м = сутки
+  switchMarginPct: 0.5,
+});
+
+export function metaName(count) {
+  return `Авто-выбор лучшей (${count})`;
+}
 
 export class MetaBot {
-  constructor(bots, startBalance, snapshot) {
+  constructor(bots, { startBalance, snapshot = null, costs, ...options } = {}) {
     this.bots = bots;
-    this.strategy = { name: `Авто-выбор лучшей (${bots.length})` };
-    this.ledger = Ledger.from(snapshot?.ledger, startBalance);
+    this.options = { ...META_DEFAULTS, ...options };
+    this.strategy = { name: metaName(bots.length) };
+    this.ledger = Ledger.from(snapshot?.ledger, startBalance, costs);
     this.lastSignalCandle = snapshot?.lastSignalCandle ?? null;
     this.leader = snapshot?.leader ?? null;
     this.history = snapshot?.history ?? {}; // имя бота → equity на закрытых свечах
@@ -20,31 +30,30 @@ export class MetaBot {
   step(candles, price) {
     this.ledger.mark(price);
     const candleTime = candles[candles.length - 1].time;
-    const idle = { action: 'hold', trade: null, price, equity: this.ledger.equity, position: this.ledger.position };
-    if (candleTime === this.lastSignalCandle) return idle;
+    if (candleTime === this.lastSignalCandle) return this.result('hold', null, price);
     this.lastSignalCandle = candleTime;
 
-    for (const bot of this.bots) {
-      const series = (this.history[bot.strategy.name] ??= []);
-      series.push(bot.ledger.equity);
-      if (series.length > WINDOW + 1) series.splice(0, series.length - WINDOW - 1);
-    }
+    this.record();
     this.leader = this.pickLeader();
 
     const leaderBot = this.bots.find(b => b.strategy.name === this.leader);
-    if (!leaderBot) return idle;
-
-    let action = 'hold';
-    let trade = null;
-    const leaderIn = leaderBot.ledger.position > 0;
-    if (leaderIn && this.ledger.position === 0) {
-      action = 'buy';
-      trade = this.ledger.buy(price);
-    } else if (!leaderIn && this.ledger.position > 0) {
-      action = 'sell';
-      trade = this.ledger.sell(price);
+    const wantIn = Boolean(leaderBot && leaderBot.ledger.position > 0);
+    if (wantIn && this.ledger.position === 0) {
+      return this.result('buy', this.ledger.buy(price), price);
     }
-    return { action, trade, price, equity: this.ledger.equity, position: this.ledger.position };
+    if (!wantIn && this.ledger.position > 0) {
+      return this.result('sell', this.ledger.sell(price), price);
+    }
+    return this.result('hold', null, price);
+  }
+
+  record() {
+    const keep = this.options.windowCandles + 1;
+    for (const bot of this.bots) {
+      const series = (this.history[bot.strategy.name] ??= []);
+      series.push(bot.ledger.equity);
+      if (series.length > keep) series.splice(0, series.length - keep);
+    }
   }
 
   windowReturn(name) {
@@ -55,17 +64,28 @@ export class MetaBot {
 
   pickLeader() {
     let best = null;
-    let bestRet = -Infinity;
+    let bestRet = 0; // ноль — порог: лидером может стать только стратегия в плюсе
     for (const bot of this.bots) {
       const r = this.windowReturn(bot.strategy.name);
       if (r > bestRet) { best = bot.strategy.name; bestRet = r; }
     }
-    if (!this.leader || !this.bots.some(b => b.strategy.name === this.leader)) return best;
-    return bestRet > this.windowReturn(this.leader) + MARGIN_PCT ? best : this.leader;
+    if (!best) return null;
+
+    const current = this.bots.some(b => b.strategy.name === this.leader) ? this.leader : null;
+    const currentRet = current ? this.windowReturn(current) : 0;
+    if (current && currentRet > 0 && bestRet <= currentRet + this.options.switchMarginPct) {
+      return current;
+    }
+    return best;
+  }
+
+  result(action, trade, price) {
+    return { action, trade, price, equity: this.ledger.equity, position: this.ledger.position };
   }
 
   snapshot() {
     return {
+      meta: true,
       ledger: this.ledger.toJSON(),
       lastSignalCandle: this.lastSignalCandle,
       leader: this.leader,
@@ -76,11 +96,11 @@ export class MetaBot {
   status() {
     return {
       name: this.strategy.name,
-      equity: Math.round(this.ledger.equity * 100) / 100,
+      equity: round2(this.ledger.equity),
       position: this.ledger.position > 0 ? 'в позиции' : '—',
       trades: this.ledger.tradeCount,
-      'pnl %': Math.round(this.ledger.realizedPnlPct * 100) / 100,
-      fees: Math.round(this.ledger.feesPaid * 100) / 100,
+      'pnl %': round2(this.ledger.realizedPnlPct),
+      fees: round2(this.ledger.feesPaid),
       leader: this.leader ?? '—',
     };
   }

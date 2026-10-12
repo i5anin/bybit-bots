@@ -1,25 +1,33 @@
 // Виртуальный леджер одного бота: бумажная торговля без реальных ордеров.
 // Состояние сериализуемо — бот продолжает счёт после рестарта контейнера.
-// Издержки исполнения, % за сторону: комиссия тейкера Bybit spot и проскальзывание.
-const FEE = Number(process.env.FEE_PCT ?? 0.1) / 100;
-const SLIPPAGE = Number(process.env.SLIPPAGE_PCT ?? 0.02) / 100;
 
-// Размер одной сделки: минимальный ордер биржи (ORDER_USDT поверх него, если задан).
-let lotRules = { minOrderAmt: 0, minOrderQty: 0, qtyStep: 0 };
-const ORDER_USDT = Number(process.env.ORDER_USDT || 0);
-export function setLotRules(rules) {
-  lotRules = rules;
+// Издержки и размер сделки задаются при создании леджера, а не читаются из
+// окружения внутри модуля: так их видно в index.js и можно подставить в тестах.
+//   feePct, slippagePct — % за сторону сделки (комиссия тейкера и проскальзывание);
+//   lot — правила биржи {minOrderAmt, minOrderQty, qtyStep}; без них вход на весь счёт;
+//   orderUsdt — желаемая сумма сделки, не меньше минимального ордера биржи.
+export const NO_COSTS = Object.freeze({ feePct: 0, slippagePct: 0, lot: null, orderUsdt: 0 });
+
+// Количество для ордера: сумма не меньше минимальной, шаг количества — биржевой,
+// округление вверх, чтобы ордер не оказался чуть меньше минимума.
+export function lotQty(price, lot, orderUsdt = 0) {
+  const amount = Math.max(orderUsdt, lot.minOrderAmt || 0);
+  let qty = amount / price;
+  if (lot.qtyStep > 0) {
+    const steps = Math.ceil(qty / lot.qtyStep - 1e-9);
+    qty = Number((steps * lot.qtyStep).toFixed(decimals(lot.qtyStep)));
+  }
+  return Math.max(qty, lot.minOrderQty || 0);
 }
 
-function orderQty(price) {
-  const amount = Math.max(ORDER_USDT, lotRules.minOrderAmt);
-  let qty = amount / price;
-  if (lotRules.qtyStep > 0) qty = Math.ceil(qty / lotRules.qtyStep - 1e-9) * lotRules.qtyStep;
-  return Math.max(qty, lotRules.minOrderQty);
+function decimals(step) {
+  const text = String(step);
+  return text.includes('.') ? text.split('.')[1].length : 0;
 }
 
 export class Ledger {
-  constructor(startBalance) {
+  constructor(startBalance, costs = NO_COSTS) {
+    this.costs = { ...NO_COSTS, ...costs };
     this.cash = startBalance;
     this.position = 0; // количество базового актива в позиции
     this.entryPrice = 0;
@@ -40,30 +48,33 @@ export class Ledger {
 
   buy(price) {
     if (this.position > 0) return null; // уже в позиции
-    const fill = price * (1 + SLIPPAGE);
-    // Берём минимальный лот, а не весь счёт; без правил лота — весь счёт, как раньше.
-    const qty = lotRules.minOrderAmt > 0 ? orderQty(fill) : this.cash / fill / (1 + FEE);
+    const fee = this.costs.feePct / 100;
+    const fill = price * (1 + this.costs.slippagePct / 100);
+    // С правилами лота берём минимальный ордер, без них — весь счёт.
+    const qty = this.costs.lot?.minOrderAmt > 0
+      ? lotQty(fill, this.costs.lot, this.costs.orderUsdt)
+      : this.cash / fill / (1 + fee);
     const cost = qty * fill;
-    const fee = cost * FEE;
-    if (cost + fee > this.cash + 1e-9) return null; // денег на минимальный ордер не хватает
-    this.feesPaid += fee;
-    this.entryCost = cost + fee;
+    const feePaid = cost * fee;
+    if (!(qty > 0) || cost + feePaid > this.cash + 1e-9) return null; // на ордер не хватает
+    this.feesPaid += feePaid;
+    this.entryCost = cost + feePaid;
     this.position = qty;
     this.entryPrice = fill;
-    this.cash -= cost + fee;
+    this.cash = Math.max(0, this.cash - cost - feePaid);
     this.tradeCount += 1;
     return { side: 'buy', price, time: Date.now() };
   }
 
   sell(price) {
     if (this.position === 0) return null; // нет позиции
-    const gross = this.position * price * (1 - SLIPPAGE);
-    const fee = gross * FEE;
-    this.feesPaid += fee;
-    const proceeds = gross - fee;
-    this.cash += proceeds;
+    const gross = this.position * price * (1 - this.costs.slippagePct / 100);
+    const feePaid = gross * (this.costs.feePct / 100);
+    const proceeds = gross - feePaid;
     // Доходность чистая: от всех потраченных на вход денег до полученных на выходе.
     const pnlPct = this.entryCost > 0 ? (proceeds / this.entryCost - 1) * 100 : 0;
+    this.feesPaid += feePaid;
+    this.cash += proceeds;
     this.entryCost = 0;
     this.position = 0;
     this.entryPrice = 0;
@@ -86,8 +97,8 @@ export class Ledger {
   }
 
   // Битое поле откатывается к значению по умолчанию, а не роняет запуск.
-  static from(snapshot, startBalance) {
-    const ledger = new Ledger(startBalance);
+  static from(snapshot, startBalance, costs) {
+    const ledger = new Ledger(startBalance, costs);
     if (!snapshot) return ledger;
 
     ledger.cash = num(snapshot.cash, startBalance);
