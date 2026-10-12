@@ -1,45 +1,23 @@
 // Чтение результатов ботов из файлов, которые пишет основной процесс.
-// Своего состояния не держит: источник истины — data/state.json и logs/*.csv.
+// Источник истины — data/state.json и logs/*.csv; в памяти держим только
+// уже прочитанную часть логов, чтобы не разбирать их заново на каждый запрос.
 import { readFile } from 'node:fs/promises';
+import { createCsvTail, DecimatedSeries } from './csvTail.mjs';
 
 const DATA_DIR = process.env.DATA_DIR || '/app/data';
 const LOGS_DIR = process.env.LOGS_DIR || '/app/logs';
+// Старт счёта в рублях. Пересчёт по сегодняшнему курсу показывал бы «из 1017 ₽»
+// при заявленных 1000: курс за неделю сдвинулся, а вложено было ровно 1000.
+const START_RUB = Number(process.env.START_RUB || 0);
+const SPARK_POINTS = 60;
 
-async function readTextOrNull(path) {
+export async function readState() {
+  let raw;
   try {
-    return await readFile(path, 'utf8');
+    raw = await readFile(`${DATA_DIR}/state.json`, 'utf8');
   } catch {
     return null; // файла ещё нет — бот не отработал ни одного тика
   }
-}
-
-// Парсер под наш формат: запятая, без экранирования кроме кавычек в note.
-function parseCsv(text) {
-  const lines = text.trim().split('\n');
-  if (lines.length < 2) return [];
-  const head = lines[0].split(',');
-  return lines.slice(1).map(line => {
-    const cells = splitRow(line);
-    return Object.fromEntries(head.map((k, i) => [k, cells[i] ?? '']));
-  });
-}
-
-function splitRow(line) {
-  const out = [];
-  let cur = '';
-  let quoted = false;
-  for (const ch of line) {
-    if (ch === '"') quoted = !quoted;
-    else if (ch === ',' && !quoted) { out.push(cur); cur = ''; }
-    else cur += ch;
-  }
-  out.push(cur);
-  return out;
-}
-
-export async function readState() {
-  const raw = await readTextOrNull(`${DATA_DIR}/state.json`);
-  if (!raw) return null;
   try {
     return JSON.parse(raw);
   } catch {
@@ -47,37 +25,42 @@ export async function readState() {
   }
 }
 
-export async function readTrades() {
-  const raw = await readTextOrNull(`${LOGS_DIR}/trades.csv`);
-  return raw ? parseCsv(raw) : [];
-}
+// Накопители логов: equity — прорежённые ряды по ботам, сделки и запуски — целиком
+// (их на порядки меньше).
+const equity = { series: new Map(), lastPrice: null };
+const trades = [];
+const runs = [];
 
-export async function readEquity() {
-  const raw = await readTextOrNull(`${LOGS_DIR}/equity.csv`);
-  return raw ? parseCsv(raw) : [];
-}
+const tails = {
+  equity: createCsvTail(`${LOGS_DIR}/equity.csv`, {
+    onRows: rows => addEquity(equity, rows),
+    onReset: () => { equity.series.clear(); equity.lastPrice = null; },
+  }),
+  trades: createCsvTail(`${LOGS_DIR}/trades.csv`, {
+    onRows: rows => trades.push(...rows),
+    onReset: () => { trades.length = 0; },
+  }),
+  runs: createCsvTail(`${LOGS_DIR}/runs.csv`, {
+    onRows: rows => runs.push(...rows),
+    onReset: () => { runs.length = 0; },
+  }),
+};
 
-export async function readRuns() {
-  const raw = await readTextOrNull(`${LOGS_DIR}/runs.csv`);
-  return raw ? parseCsv(raw) : [];
-}
-
-// История доходности по каждому боту, прорежённая до points значений:
-// на графике-искре больше не видно, а объём ответа падает в десятки раз.
-function sparkByBot(equity, points = 60) {
-  const byBot = new Map();
-  for (const row of equity) {
+export function addEquity(acc, rows) {
+  for (const row of rows) {
     const v = Number(row.equity);
     if (!row.bot || !Number.isFinite(v)) continue;
-    if (!byBot.has(row.bot)) byBot.set(row.bot, []);
-    byBot.get(row.bot).push(v);
+    if (!acc.series.has(row.bot)) acc.series.set(row.bot, new DecimatedSeries());
+    acc.series.get(row.bot).push(v);
+    const price = Number(row.price);
+    if (Number.isFinite(price)) acc.lastPrice = price;
   }
-  const out = {};
-  for (const [bot, series] of byBot) {
-    const step = Math.max(1, Math.ceil(series.length / points));
-    out[bot] = series.filter((_, i) => i % step === 0).slice(-points);
-  }
-  return out;
+  return acc;
+}
+
+export async function readTrades() {
+  await tails.trades();
+  return trades;
 }
 
 // Курс рубля к доллару по ЦБ: USDT считаем равным доллару. Обновляется раз в час,
@@ -98,32 +81,45 @@ async function rubPerUsd() {
   return rubRate;
 }
 
-export function buildStats(state, equity, trades, runs, rate = rubRate) {
+// Мета-бот помечен в состоянии флагом meta; у старых снимков флага нет,
+// но есть поле leader, которое бывает только у него.
+function isMeta(snapshot) {
+  return snapshot?.meta === true || Object.hasOwn(snapshot ?? {}, 'leader');
+}
+
+export function buildStats({
+  state, equity: eq, trades: tradeRows = [], runs: runRows = [], rate = rubRate, startRub = START_RUB,
+}) {
   const startBalance = state?.startBalance ?? 100;
-  const spark = sparkByBot(equity);
-  const lastPrice = lastFinite(equity.map(r => Number(r.price)));
+  const lastPrice = eq?.lastPrice ?? null;
+  // Рублёвая доходность считается от фиксированного старта, долларовая — от startBalance.
+  const startRubValue = startRub > 0 ? startRub : startBalance * rate.value;
 
   const bots = Object.entries(state?.bots ?? {}).map(([name, b]) => {
     const led = b?.ledger ?? {};
     const price = Number(led.lastPrice) || lastPrice || 0;
     const value = (Number(led.cash) || 0) + (Number(led.position) || 0) * price;
+    const valueRub = value * rate.value;
     return {
       name,
+      isMeta: isMeta(b),
       equity: round(value, 4),
       pnlPct: round(((value - startBalance) / startBalance) * 100, 2),
-      equityRub: round(value * rate.value, 2),
+      equityRub: round(valueRub, 2),
+      pnlRubPct: round((valueRub / startRubValue - 1) * 100, 2),
       cash: round(Number(led.cash) || 0, 4),
       position: Number(led.position) || 0,
       entryPrice: Number(led.entryPrice) || null,
       trades: Number(led.tradeCount) || 0,
+      fees: round(Number(led.feesPaid) || 0, 4),
       leader: b?.leader ?? null,
-      spark: spark[name] ?? [],
+      spark: eq?.series?.get(name)?.sample(SPARK_POINTS) ?? [],
     };
   });
 
   bots.sort((a, b) => b.equity - a.equity);
 
-  const closed = trades.filter(t => t.pnlPct !== '' && t.pnlPct != null);
+  const closed = tradeRows.filter(t => t.pnlPct !== '' && t.pnlPct != null);
   const wins = closed.filter(t => Number(t.pnlPct) > 0);
 
   const symbol = state?.symbol ?? process.env.SYMBOL ?? 'BTCUSDT';
@@ -137,6 +133,7 @@ export function buildStats(state, equity, trades, runs, rate = rubRate) {
     symbol,
     interval: state?.interval ?? process.env.INTERVAL ?? '5',
     startBalance,
+    startRub: round(startRubValue, 2),
     price: lastPrice,
     runs: state?.runs ?? 0,
     uptimeSecTotal: state?.uptimeSecTotal ?? 0,
@@ -147,23 +144,16 @@ export function buildStats(state, equity, trades, runs, rate = rubRate) {
       equity: round(totalEquity, 2),
       equityRub: round(totalEquity * rate.value, 2),
       invested: round(startBalance * bots.length, 2),
-      investedRub: round(startBalance * bots.length * rate.value, 2),
+      investedRub: round(startRubValue * bots.length, 2),
       position: bots.reduce((s, b) => s + b.position, 0),
       inProfit: bots.filter(b => b.pnlPct > 0).length,
-      tradesTotal: trades.length,
+      tradesTotal: tradeRows.length,
       tradesClosed: closed.length,
       winRatePct: closed.length ? round((wins.length / closed.length) * 100, 1) : null,
     },
-    lastTrades: trades.slice(-25).reverse(),
-    lastRuns: runs.slice(-10).reverse(),
+    lastTrades: tradeRows.slice(-25).reverse(),
+    lastRuns: runRows.slice(-10).reverse(),
   };
-}
-
-function lastFinite(values) {
-  for (let i = values.length - 1; i >= 0; i--) {
-    if (Number.isFinite(values[i])) return values[i];
-  }
-  return null;
 }
 
 function round(v, digits) {
@@ -172,8 +162,8 @@ function round(v, digits) {
 }
 
 export async function collect() {
-  const [state, equity, trades, runs, rate] = await Promise.all([
-    readState(), readEquity(), readTrades(), readRuns(), rubPerUsd(),
+  const [state, rate] = await Promise.all([
+    readState(), rubPerUsd(), tails.equity(), tails.trades(), tails.runs(),
   ]);
-  return buildStats(state, equity, trades, runs, rate);
+  return buildStats({ state, equity, trades, runs, rate });
 }

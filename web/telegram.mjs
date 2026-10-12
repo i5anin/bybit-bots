@@ -64,7 +64,7 @@ function profitableSince(trades, sinceIso) {
   });
 }
 
-function tradeMessage(t, symbol) {
+export function tradeMessage(t, symbol) {
   const pnl = Number(t.pnlPct).toFixed(2);
   const time = new Date(t.time).toLocaleTimeString('ru-RU', { hour12: false });
   return [
@@ -79,12 +79,12 @@ function tradeMessage(t, symbol) {
   ].join('\n');
 }
 
-function digestMessage(stats, webUrl) {
+export function digestMessage(stats, webUrl) {
   const top = stats.bots.slice(0, 5);
   const lines = top.map((b, i) => {
     const sign = b.pnlPct >= 0 ? '+' : '';
     return `${i + 1}. ${escapeHtml(b.name)} — <b>${sign}${b.pnlPct} %</b>` +
-           ` (${b.equity.toFixed(2)})`;
+           ` (${Math.round(b.equityRub)} ₽)`;
   });
   const hours = Math.floor(stats.uptimeSecTotal / 3600);
   const win = stats.totals.winRatePct;
@@ -96,7 +96,7 @@ function digestMessage(stats, webUrl) {
     `В плюсе: <b>${stats.totals.inProfit}</b> из ${stats.bots.length}`,
     `Сделок всего: ${stats.totals.tradesTotal}` +
       (win === null ? '' : `, доля удачных: <b>${win} %</b>`),
-    `Общий счёт: <b>${stats.totals.equity}</b> из ${stats.totals.invested}`,
+    `Старт у каждого бота: ${Math.round(stats.startRub)} ₽ (${stats.startBalance} USDT)`,
     `Наработка: ${hours} ч, запусков: ${stats.runs}`,
     webUrl ? `\n<a href="${escapeHtml(webUrl)}">Подробности</a>` : '',
   ].join('\n');

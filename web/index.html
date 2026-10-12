@@ -112,20 +112,21 @@ function hours(sec) {
 // Каждый бот торгует своими деньгами со старта в startBalance, поэтому
 // показываем счёт одного бота, а не сумму по всем.
 function accountCards(s) {
-  const startRub = s.startBalance * s.rubPerUsd;
+  // Старт в рублях фиксирован (START_RUB), а не пересчитан по сегодняшнему курсу.
+  const startRub = s.startRub;
   const card = (title, b) => b
     ? [title, money(b.equityRub) + ' ₽',
-       `${sign(b.pnlPct)} % · $${money(b.equity)} · ${money(b.position, 1)} ${base} · из ${money(startRub, 0)} ₽`]
+       `${sign(b.pnlRubPct)} % в ₽ · ${sign(b.pnlPct)} % в $ · $${money(b.equity)} · ${money(b.position, 1)} ${base} · из ${money(startRub, 0)} ₽`]
     : [title, '—', ''];
-  const meta = s.bots.find(b => b.leader);
-  const best = s.bots.filter(b => !b.leader)[0];
+  const meta = s.bots.find(b => b.isMeta);
+  const best = s.bots.filter(b => !b.isMeta)[0];
   const n = s.bots.length || 1;
   const avg = s.bots.reduce((a, b) => a + b.equityRub, 0) / n;
-  const avgPct = s.bots.reduce((a, b) => a + b.pnlPct, 0) / n;
+  const avgPct = s.bots.reduce((a, b) => a + b.pnlRubPct, 0) / n;
   return [
     card('Авто-выбор', meta),
     card('Лучшая стратегия', best),
-    ['В среднем на бота', money(avg) + ' ₽', `${sign(avgPct)} % · из ${money(startRub, 0)} ₽ · курс ${fmt(s.rubPerUsd)} (${s.rateSource})`],
+    ['В среднем на бота', money(avg) + ' ₽', `${sign(avgPct)} % в ₽ · из ${money(startRub, 0)} ₽ · курс ${fmt(s.rubPerUsd)} (${s.rateSource})`],
   ];
 }
 
@@ -150,7 +151,8 @@ function renderBots(bots) {
   }
   $('bots').innerHTML = bots.map((b, i) => `<tr>
     <td class="rank">${i + 1}</td>
-    <td class="nm">${b.name}${b.leader ? `<div class="dim" style="font-weight:400;font-size:12px">повторяет: ${b.leader}</div>` : ''}</td>
+    <td class="nm">${b.name}${b.isMeta ? `<div class="dim" style="font-weight:400;font-size:12px">${
+      b.leader ? 'повторяет: ' + b.leader : 'вне рынка: за сутки в плюсе нет никого'}</div>` : ''}</td>
     <td class="num">${money(b.equityRub)}</td>
     <td class="num">${money(b.equity)}</td>
     <td class="num">${b.position ? money(b.position, 1) : '<span class="dim">—</span>'}</td>
