@@ -51,7 +51,9 @@ export class MetaBot {
     const keep = this.options.windowCandles + 1;
     for (const bot of this.bots) {
       const series = (this.history[bot.strategy.name] ??= []);
-      series.push(bot.ledger.equity);
+      // 8 знаков хватает для доходности за окно, а state.json, который пишется
+      // каждую минуту, становится вдвое меньше.
+      series.push(Number(bot.ledger.equity.toFixed(8)));
       if (series.length > keep) series.splice(0, series.length - keep);
     }
   }

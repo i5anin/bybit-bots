@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { fetchKlines, fetchLotRules, splitClosed, MARKET } from './lib/bybit.js';
+import { fetchKlines, fetchLotRules, splitClosed, withRetry, MARKET } from './lib/bybit.js';
 import { logEquity, logTrade, logRun } from './lib/logger.js';
 import { loadState, saveState, STATE_VERSION } from './lib/state.js';
 import { formatDuration } from './lib/time.js';
@@ -42,7 +42,12 @@ const factories = [
   adaptiveRegime,
 ]; // 11 ботов: десять с жёстким приёмом и один адаптивный (grid избыточен рядом с martingale — оставлен в strategies/ на выбор)
 
-const lotRules = await fetchLotRules(SYMBOL);
+// Без правил лота торговать нельзя. Если биржа недоступна на старте, ждём её
+// здесь, а не падаем: иначе Docker перезапускал бы контейнер по кругу.
+const lotRules = await withRetry(() => fetchLotRules(SYMBOL), {
+  attempts: 8,
+  onError: (err, delayMs) => console.warn(`Правила лота не получены (${err.message}), повтор через ${delayMs / 1000} с`),
+});
 const costs = { feePct: FEE_PCT, slippagePct: SLIPPAGE_PCT, lot: lotRules, orderUsdt: ORDER_USDT };
 
 const runStartedAt = Date.now();
@@ -214,11 +219,12 @@ async function runTick() {
     if (!candles.length || !Number.isFinite(price)) throw new Error('биржа вернула пустые свечи');
     await logResumeGap(price);
 
+    const equityRows = [];
     for (const bot of bots) {
       const result = bot.step(candles, price);
       const name = bot.strategy.name;
 
-      await logEquity({
+      equityRows.push({
         symbol: SYMBOL,
         bot: name,
         price: result.price,
@@ -239,6 +245,7 @@ async function runTick() {
         });
       }
     }
+    await logEquity(equityRows);
 
     ticks += 1;
     runUptimeSec = (Date.now() - runStartedAt) / 1000;

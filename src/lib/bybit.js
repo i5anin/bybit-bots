@@ -60,3 +60,18 @@ export async function fetchLotRules(symbol) {
   const json = await getJson(`/v5/market/instruments-info?category=${CATEGORY}&symbol=${symbol}`);
   return parseLotRules(json, symbol);
 }
+
+// Повтор с растущей паузой: 5, 10, 20 с… но не дольше минуты между попытками.
+export async function withRetry(fn, { attempts = 5, baseMs = 5000, maxMs = 60000, onError, sleep } = {}) {
+  const wait = sleep ?? (ms => new Promise(resolve => setTimeout(resolve, ms)));
+  for (let i = 1; ; i += 1) {
+    try {
+      return await fn();
+    } catch (err) {
+      if (i >= attempts) throw err;
+      const delayMs = Math.min(maxMs, baseMs * 2 ** (i - 1));
+      onError?.(err, delayMs);
+      await wait(delayMs);
+    }
+  }
+}

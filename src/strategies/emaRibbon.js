@@ -9,9 +9,11 @@ export function createStrategy() {
       const c = closes(candles);
       const values = PERIODS.map(p => ema(c, p));
       if (values.some(v => v == null)) return 'hold';
-      // Бычий веер: быстрая EMA выше медленных (ema5 > ema10 > ... > ema25)
-      const bullish = values.every((v, i) => i === 0 || v <= values[i - 1]);
-      const bearish = values.every((v, i) => i === 0 || v >= values[i - 1]);
+      // Бычий веер: быстрая EMA выше медленных (ema5 > ema10 > ... > ema25).
+      // Сравнение строгое: на ровном рынке все EMA равны, и нестрогое условие
+      // объявляло веер бычьим и медвежьим сразу — с покупкой.
+      const bullish = values.every((v, i) => i === 0 || v < values[i - 1]);
+      const bearish = values.every((v, i) => i === 0 || v > values[i - 1]);
       if (bullish) return 'buy';
       if (bearish) return 'sell';
       return 'hold';
