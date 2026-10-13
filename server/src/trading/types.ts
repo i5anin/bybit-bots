@@ -1,0 +1,121 @@
+// Общие типы торгового движка. Формы снимков совпадают с data/state.json
+// прежней JS-версии: накопленная статистика переживает переход без сброса.
+
+export interface Candle {
+  time: number;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+}
+
+export type Action = 'buy' | 'sell' | 'hold';
+
+// Реальное состояние на момент восстановления или несостоявшейся сделки.
+export interface StrategyContext {
+  price: number;
+  downtimeSec: number;
+  inPosition: boolean;
+  entryPrice: number;
+}
+
+export interface Strategy {
+  readonly name: string;
+  signal(candles: readonly Candle[]): Action;
+  // Стратегии с собственной памятью сохраняют её между перезапусками.
+  toJSON?(): unknown;
+  restore?(snapshot: unknown, ctx: StrategyContext): void;
+  // Сделка не исполнилась — стратегия сверяет свою позицию с леджером.
+  sync?(ctx: StrategyContext): void;
+}
+
+export type StrategyFactory = () => Strategy;
+
+// Правила биржи на размер ордера.
+export interface LotRules {
+  minOrderAmt: number;
+  minOrderQty: number;
+  qtyStep: number;
+}
+
+// Издержки и размер сделки: % за сторону, правила лота, желаемая сумма.
+export interface Costs {
+  feePct: number;
+  slippagePct: number;
+  lot: LotRules | null;
+  orderUsdt: number;
+}
+
+export interface LedgerSnapshot {
+  cash: number;
+  position: number;
+  entryPrice: number;
+  lastPrice: number;
+  tradeCount: number;
+  realizedPnlPct: number;
+  entryCost: number;
+  feesPaid: number;
+}
+
+export interface Trade {
+  side: 'buy' | 'sell';
+  price: number;
+  time: number;
+  pnlPct?: number;
+}
+
+export interface StepResult {
+  action: Action;
+  trade: Trade | null;
+  price: number;
+  equity: number;
+  position: number;
+}
+
+export interface BotSnapshot {
+  ledger: LedgerSnapshot;
+  lastSignalCandle: number | null;
+  strategy?: unknown;
+}
+
+export interface MetaSnapshot {
+  meta: true;
+  ledger: LedgerSnapshot;
+  lastSignalCandle: number | null;
+  leader: string | null;
+  history: Record<string, number[]>;
+}
+
+// Всё, что движок сохраняет и откуда восстанавливается.
+export interface EngineState {
+  version: number;
+  symbol: string;
+  interval: string;
+  startBalance: number;
+  market: string;
+  feePct: number;
+  slippagePct: number;
+  orderUsdt: number;
+  updatedAt: string;
+  runs: number;
+  uptimeSecTotal: number;
+  lastRun: RunInfo | null;
+  currentRun: RunInfo | null;
+  bots: Record<string, Partial<BotSnapshot> & Partial<MetaSnapshot>>;
+}
+
+export interface RunInfo {
+  runId: string;
+  startedAt: string;
+  runUptimeSec: number;
+  ticks: number;
+}
+
+// Общий интерфейс обычного бота и мета-бота для цикла движка.
+export interface Trader {
+  readonly strategy: { readonly name: string };
+  readonly ledger: { readonly equity: number; readonly position: number; readonly tradeCount: number };
+  step(candles: readonly Candle[], price: number): StepResult;
+  snapshot(): BotSnapshot | MetaSnapshot;
+}
