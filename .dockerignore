@@ -1,6 +1,11 @@
 node_modules
+**/node_modules
+**/dist
 logs
 data
+archive
+builds
 .env
 .git
 .idea
+.githooks

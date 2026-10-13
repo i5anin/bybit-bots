@@ -1,20 +1,21 @@
 {
   "name": "bybit-bots",
-  "version": "1.0.0",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Бумажная торговля 11 стратегий и мета-бота на реальном споте Bybit: NestJS-движок и панель на Vue",
   "type": "module",
-  "description": "Бумажная торговля 11 стратегий и мета-бота на реальном споте Bybit с комиссиями и минимальным лотом",
-  "main": "src/index.js",
+  "workspaces": [
+    "server",
+    "client"
+  ],
   "scripts": {
-    "start": "node src/index.js",
-    "test": "node --test",
-    "migrate:logs": "node scripts/migrate-logs.mjs",
-    "seed:state": "node scripts/seed-state.mjs",
+    "build": "npm run build -w client && npm run build -w server",
+    "start": "node server/dist/main.js",
+    "test": "npm test -w server && npm test -w client",
+    "typecheck": "npm run typecheck -w server && npm run typecheck -w client",
     "build:tar": "bash scripts/build-tar.sh"
   },
-  "dependencies": {
-    "dotenv": "^16.4.5"
-  },
   "engines": {
-    "node": ">=20"
+    "node": ">=20.19"
   }
 }

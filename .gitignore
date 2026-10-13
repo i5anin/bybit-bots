@@ -4,3 +4,5 @@ node_modules/
 logs/
 data/
 builds/
+dist/
+archive/

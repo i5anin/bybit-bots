@@ -9,10 +9,14 @@ cd "$(dirname "$0")/.."
 HOST="${DEPLOY_HOST:-root@bots.home}"
 DIR="${DEPLOY_DIR:-/srv/appdata/bybit-bots}"
 
+npm run typecheck --silent
 npm test --silent
 
-tar -cf - package.json package-lock.json Dockerfile Dockerfile.web docker-compose.yml \
-    .env.example README.md src web scripts \
-  | ssh "$HOST" "cd '$DIR' && tar -xf - --no-same-owner && docker compose up -d --build"
+# Код без node_modules и сборок: образ собирается на сервере с нуля.
+# --remove-orphans убирает контейнеры сервисов, которых больше нет в compose.
+tar -cf - --exclude=node_modules --exclude=dist \
+    package.json package-lock.json Dockerfile .dockerignore docker-compose.yml \
+    .env.example README.md server client scripts \
+  | ssh "$HOST" "cd '$DIR' && tar -xf - --no-same-owner && docker compose up -d --build --remove-orphans"
 
-ssh "$HOST" "cd '$DIR' && sleep 15 && docker compose ps --format '{{.Name}} {{.Status}}' && docker compose logs --tail 2 bybit-bots"
+ssh "$HOST" "cd '$DIR' && sleep 15 && docker compose ps --format '{{.Name}} {{.Status}}' && docker compose logs --tail 3 bybit-bots"

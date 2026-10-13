@@ -14,7 +14,7 @@ tar -czf "$OUT_FILE" \
   --exclude='.git' \
   --exclude='logs' \
   --exclude='.env' \
-  --exclude='builds' \
+  --exclude='builds'   --exclude='dist'   --exclude='data'   --exclude='archive' \
   --exclude='.idea' \
   --exclude='.td-maps' \
   .

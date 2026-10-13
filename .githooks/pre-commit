@@ -1,10 +1,11 @@
 #!/usr/bin/env sh
-# Перед коммитом: нет лишних пробелов и конфликтных маркеров, тесты зелёные.
-# Включается один раз: git config core.hooksPath .githooks
+# Перед коммитом: нет лишних пробелов и конфликтных маркеров, типы сходятся,
+# тесты зелёные. Включается один раз: git config core.hooksPath .githooks
 set -e
 
 git diff --cached --check
 
-if git diff --cached --name-only | grep -qE '\.(js|mjs|json)$'; then
+if git diff --cached --name-only | grep -qE '\.(ts|vue|js|mjs|json)$'; then
+  npm run typecheck --silent
   npm test --silent
 fi

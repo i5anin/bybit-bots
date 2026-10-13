@@ -1,8 +1,0 @@
-FROM node:20-alpine
-
-WORKDIR /app
-
-# Панели зависимостей не нужны: только встроенные модули Node.
-COPY web ./web
-
-CMD ["node", "web/server.mjs"]

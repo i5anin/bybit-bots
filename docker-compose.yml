@@ -1,37 +1,22 @@
 services:
+  # Один процесс NestJS: торговый движок, API и панель на Vue.
   bybit-bots:
     build: .
     env_file: .env
+    environment:
+      # Внутри контейнера порт всегда 3004; наружу — WEB_PORT из .env.
+      WEB_PORT: "3004"
+    ports:
+      - "${WEB_BIND:-0.0.0.0}:${WEB_PORT:-3004}:3004"
     volumes:
       - ./logs:/app/logs
       - ./data:/app/data # состояние ботов: продолжение счёта после рестарта
     stop_grace_period: 30s # хватает на штатное сохранение состояния по SIGTERM
     restart: unless-stopped
-    # Жив, пока раз в минуту обновляет state.json; пять минут тишины — завис.
+    # Здоров, пока бот раз в минуту обновляет состояние (/api/health → 200).
     healthcheck:
-      test: ["CMD", "node", "-e", "const s = require('fs').statSync('/app/data/state.json'); process.exit(Date.now() - s.mtimeMs < 300000 ? 0 : 1)"]
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3004/api/health').then(r => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
       interval: 1m
       timeout: 10s
       start_period: 5m
       retries: 3
-
-  web:
-    build:
-      context: .
-      dockerfile: Dockerfile.web
-    env_file: .env
-    ports:
-      - "${WEB_BIND:-0.0.0.0}:${WEB_PORT:-3004}:3004"
-    volumes:
-      - ./logs:/app/logs:ro # панель только читает результаты
-      - ./data:/app/data # сюда пишется отметка об отправленных оповещениях
-    restart: unless-stopped
-    # Проверяет саму панель; состояние бота — в /api/health (503, если он молчит).
-    healthcheck:
-      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3004/').then(r => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
-      interval: 1m
-      timeout: 10s
-      start_period: 30s
-      retries: 3
-    depends_on:
-      - bybit-bots
