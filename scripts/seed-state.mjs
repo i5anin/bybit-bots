@@ -2,7 +2,7 @@
 // чтобы переход на персистентное состояние не обнулил счёт ботов.
 // Запускать после migrate-logs.mjs и только при остановленном контейнере.
 import 'dotenv/config';
-import { readFile } from 'node:fs/promises';
+import { readFile, access } from 'node:fs/promises';
 import path from 'node:path';
 import { parseCsvLine } from '../src/lib/csv.js';
 import { saveState, STATE_VERSION, STATE_FILE } from '../src/lib/state.js';
@@ -14,6 +14,15 @@ const INTERVAL = process.env.INTERVAL || '5';
 const START_BALANCE = Number(process.env.START_BALANCE || 100);
 const POLL_MS = Number(process.env.POLL_MS || 60000);
 const GAP_MS = POLL_MS * 3; // больший разрыв между записями = контейнер стоял
+
+// Скрипт пишет состояние старого формата (без рынка и комиссий): текущий бот
+// счёл бы его несовместимым и обнулил счёт. Поэтому поверх живого состояния —
+// только по явному --force.
+if (!process.argv.includes('--force') && await access(STATE_FILE).then(() => true, () => false)) {
+  console.error(`${STATE_FILE} уже есть — перенос из логов затёр бы накопленный счёт.`);
+  console.error('Разовый скрипт для перехода на state.json (август 2026). Перезаписать: npm run seed:state -- --force');
+  process.exit(1);
+}
 
 const equityRows = await readCsv(path.join(LOG_DIR, 'equity.csv'));
 const tradeRows = await readCsv(path.join(LOG_DIR, 'trades.csv'));
