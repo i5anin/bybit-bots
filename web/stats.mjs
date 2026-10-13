@@ -10,6 +10,23 @@ const LOGS_DIR = process.env.LOGS_DIR || '/app/logs';
 // при заявленных 1000: курс за неделю сдвинулся, а вложено было ровно 1000.
 const START_RUB = Number(process.env.START_RUB || 0);
 const SPARK_POINTS = 60;
+// Бот пишет состояние раз в минуту. Дольше пяти минут тишины — он завис или
+// упал, даже если в state.json остался флаг текущего запуска.
+const STALE_SEC = Number(process.env.STALE_SEC || 300);
+
+// running — бот жив и пишет; stale — запуск не завершён штатно, но обновлений
+// нет (завис, убит); stopped — остановлен штатно или ещё не запускался.
+export function botStatus(state, now = Date.now(), staleSec = STALE_SEC) {
+  const updated = Date.parse(state?.updatedAt ?? '');
+  const ageSec = Number.isFinite(updated) ? Math.max(0, Math.round((now - updated) / 1000)) : null;
+  if (!state?.currentRun) return { status: 'stopped', ageSec };
+  if (ageSec === null || ageSec > staleSec) return { status: 'stale', ageSec };
+  return { status: 'running', ageSec };
+}
+
+export async function health() {
+  return botStatus(await readState());
+}
 
 export async function readState() {
   let raw;
@@ -89,9 +106,11 @@ function isMeta(snapshot) {
 
 export function buildStats({
   state, equity: eq, trades: tradeRows = [], runs: runRows = [], rate = rubRate, startRub = START_RUB,
+  now = Date.now(),
 }) {
   const startBalance = state?.startBalance ?? 100;
   const lastPrice = eq?.lastPrice ?? null;
+  const run = botStatus(state, now);
   // Рублёвая доходность считается от фиксированного старта, долларовая — от startBalance.
   const startRubValue = startRub > 0 ? startRub : startBalance * rate.value;
 
@@ -138,7 +157,8 @@ export function buildStats({
     runs: state?.runs ?? 0,
     uptimeSecTotal: state?.uptimeSecTotal ?? 0,
     ticks: state?.currentRun?.ticks ?? state?.lastRun?.ticks ?? 0,
-    running: Boolean(state?.currentRun),
+    ...run,
+    running: run.status === 'running',
     bots,
     totals: {
       equity: round(totalEquity, 2),

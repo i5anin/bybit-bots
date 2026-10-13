@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
-import { collect, readTrades } from './stats.mjs';
+import { collect, health, readTrades } from './stats.mjs';
 import * as telegram from './telegram.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -14,12 +14,17 @@ const WEB_URL = process.env.WEB_PUBLIC_URL || '';
 
 const routes = {
   '/api/stats': async () => json(await collect()),
-  '/api/health': async () => json({ ok: true, telegram: telegram.enabled }),
+  // Для Uptime Kuma и healthcheck: 503, пока бот не пишет состояние.
+  '/api/health': async () => {
+    const bot = await health();
+    const ok = bot.status === 'running';
+    return json({ ok, bot: bot.status, ageSec: bot.ageSec, telegram: telegram.enabled }, ok ? 200 : 503);
+  },
 };
 
-function json(data) {
+function json(data, status = 200) {
   return {
-    status: 200,
+    status,
     type: 'application/json; charset=utf-8',
     body: JSON.stringify(data),
   };

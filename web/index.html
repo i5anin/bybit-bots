@@ -83,6 +83,9 @@ footer{padding:0 22px 40px;color:var(--dim);font-size:12px;
 
 <script>
 const $ = id => document.getElementById(id);
+// Имена стратегий и строки логов вставляются в разметку — экранируем.
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c =>
+  ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const fmt = (v, d = 2) => Number(v).toFixed(d);
 const cls = v => v > 0 ? 'up' : v < 0 ? 'down' : '';
 const sign = v => (v > 0 ? '+' : '') + fmt(v);
@@ -140,8 +143,8 @@ function renderCards(s) {
     ['Наработка', hours(s.uptimeSecTotal), `запусков ${s.runs}`],
   ];
   $('cards').innerHTML = items.map(([k, v, sub]) =>
-    `<div class="card"><div class="k">${k}</div><div class="v">${v}</div>
-     <div class="k">${sub}</div></div>`).join('');
+    `<div class="card"><div class="k">${esc(k)}</div><div class="v">${esc(v)}</div>
+     <div class="k">${esc(sub)}</div></div>`).join('');
 }
 
 function renderBots(bots) {
@@ -151,8 +154,8 @@ function renderBots(bots) {
   }
   $('bots').innerHTML = bots.map((b, i) => `<tr>
     <td class="rank">${i + 1}</td>
-    <td class="nm">${b.name}${b.isMeta ? `<div class="dim" style="font-weight:400;font-size:12px">${
-      b.leader ? 'повторяет: ' + b.leader : 'вне рынка: за сутки в плюсе нет никого'}</div>` : ''}</td>
+    <td class="nm">${esc(b.name)}${b.isMeta ? `<div class="dim" style="font-weight:400;font-size:12px">${
+      b.leader ? 'повторяет: ' + esc(b.leader) : 'вне рынка: за сутки в плюсе нет никого'}</div>` : ''}</td>
     <td class="num">${money(b.equityRub)}</td>
     <td class="num">${money(b.equity)}</td>
     <td class="num">${b.position ? money(b.position, 1) : '<span class="dim">—</span>'}</td>
@@ -174,7 +177,7 @@ function renderTrades(rows) {
     const when = new Date(r.time).toLocaleString('ru-RU', { hour12: false });
     return `<tr>
       <td class="dim">${when}</td>
-      <td>${r.bot}</td>
+      <td>${esc(r.bot)}</td>
       <td>${r.side === 'buy' ? 'покупка' : 'продажа'}</td>
       <td class="num">${priceFmt(Number(r.price))}</td>
       <td class="num ${pnl === null ? '' : cls(pnl)}">${
@@ -190,7 +193,10 @@ async function refresh() {
     $('thTok').textContent = `Токены, ${base}`;
     $('price').textContent = s.price ? priceFmt(s.price) + ' $' : '—';
     $('dot').className = 'dot' + (s.running ? ' on' : '');
-    $('run').textContent = s.running ? `работает, тиков ${s.ticks}` : 'остановлен';
+    $('dot').style.background = s.status === 'stale' ? 'var(--down)' : '';
+    $('run').textContent = s.status === 'running' ? `работает, тиков ${s.ticks}`
+      : s.status === 'stale' ? `не отвечает ${Math.round((s.ageSec ?? 0) / 60)} мин`
+      : 'остановлен';
     $('upd').textContent = s.updatedAt
       ? 'обновлено ' + new Date(s.updatedAt).toLocaleTimeString('ru-RU', { hour12: false })
       : '';

@@ -7,6 +7,13 @@ services:
       - ./data:/app/data # состояние ботов: продолжение счёта после рестарта
     stop_grace_period: 30s # хватает на штатное сохранение состояния по SIGTERM
     restart: unless-stopped
+    # Жив, пока раз в минуту обновляет state.json; пять минут тишины — завис.
+    healthcheck:
+      test: ["CMD", "node", "-e", "const s = require('fs').statSync('/app/data/state.json'); process.exit(Date.now() - s.mtimeMs < 300000 ? 0 : 1)"]
+      interval: 1m
+      timeout: 10s
+      start_period: 5m
+      retries: 3
 
   web:
     build:
@@ -19,5 +26,12 @@ services:
       - ./logs:/app/logs:ro # панель только читает результаты
       - ./data:/app/data # сюда пишется отметка об отправленных оповещениях
     restart: unless-stopped
+    # Проверяет саму панель; состояние бота — в /api/health (503, если он молчит).
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3004/').then(r => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
+      interval: 1m
+      timeout: 10s
+      start_period: 30s
+      retries: 3
     depends_on:
       - bybit-bots
