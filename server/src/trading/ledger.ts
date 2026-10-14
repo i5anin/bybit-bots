@@ -73,6 +73,7 @@ export class Ledger {
     const proceeds = gross - feePaid;
     // Доходность чистая: от всех потраченных на вход денег до полученных на выходе.
     const pnlPct = this.entryCost > 0 ? (proceeds / this.entryCost - 1) * 100 : 0;
+    const pnlUsdt = this.entryCost > 0 ? proceeds - this.entryCost : 0;
     this.feesPaid += feePaid;
     this.cash += proceeds;
     this.entryCost = 0;
@@ -80,7 +81,7 @@ export class Ledger {
     this.entryPrice = 0;
     this.tradeCount += 1;
     this.realizedPnlPct += pnlPct;
-    return { side: 'sell', price, time: Date.now(), pnlPct };
+    return { side: 'sell', price, time: Date.now(), pnlPct, pnlUsdt };
   }
 
   toJSON(): LedgerSnapshot {

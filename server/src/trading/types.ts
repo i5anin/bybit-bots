@@ -63,6 +63,7 @@ export interface Trade {
   price: number;
   time: number;
   pnlPct?: number;
+  pnlUsdt?: number; // чистая прибыль закрытой сделки в деньгах, после всех издержек
 }
 
 export interface StepResult {

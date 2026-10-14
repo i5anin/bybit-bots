@@ -9,6 +9,20 @@ import { MetaBot, metaName } from './meta-bot.js';
 import { ACTIVE_STRATEGIES } from './strategies/index.js';
 import type { Costs, EngineState, LotRules, StrategyFactory, Trader } from './types.js';
 
+// Сделка, о которой движок сообщает подписчикам (Telegram) сразу, в том же
+// процессе: с точной прибылью в деньгах, которой нет в CSV-логе.
+export interface TradeEvent {
+  bot: string;
+  side: 'buy' | 'sell';
+  price: number;
+  pnlPct?: number;
+  pnlUsdt?: number;
+  equity: number; // счёт бота сразу после сделки, USDT
+  time: string;
+}
+
+export type TradeListener = (event: TradeEvent) => void;
+
 // Торговый движок: раз в POLL_MS берёт свечи, даёт каждому боту принять
 // решение по последней закрытой свече, пишет логи и состояние.
 @Injectable()
@@ -30,6 +44,7 @@ export class EngineService implements OnApplicationBootstrap, BeforeApplicationS
   private inFlight: Promise<void> | null = null; // текущий тик: остановка дожидается его
   private stopping = false;
   private started = false;
+  private readonly tradeListeners = new Set<TradeListener>();
 
   constructor(
     @Inject(APP_CONFIG) private readonly config: AppConfig,
@@ -170,6 +185,23 @@ export class EngineService implements OnApplicationBootstrap, BeforeApplicationS
     };
   }
 
+  // Подписка на сделки; возвращает отписку.
+  onTrade(listener: TradeListener): () => void {
+    this.tradeListeners.add(listener);
+    return () => this.tradeListeners.delete(listener);
+  }
+
+  // Ошибка подписчика не должна остановить тик.
+  private emitTrade(event: TradeEvent): void {
+    for (const listener of this.tradeListeners) {
+      try {
+        listener(event);
+      } catch (err) {
+        this.logger.warn(`Подписчик сделок упал: ${(err as Error).message}`);
+      }
+    }
+  }
+
   // Последнее сохранённое состояние — его же видит панель.
   state(): EngineState | null {
     return this.lastState;
@@ -234,6 +266,15 @@ export class EngineService implements OnApplicationBootstrap, BeforeApplicationS
             price: result.trade.price,
             pnlPct: result.trade.pnlPct,
             runId: this.runId,
+          });
+          this.emitTrade({
+            bot: name,
+            side: result.trade.side,
+            price: result.trade.price,
+            pnlPct: result.trade.pnlPct,
+            pnlUsdt: result.trade.pnlUsdt,
+            equity: result.equity,
+            time: new Date(result.trade.time).toISOString(),
           });
         }
       }

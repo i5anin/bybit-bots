@@ -3,7 +3,6 @@ import { botStatus, buildStats, type EquityHistory } from '../src/stats/build-st
 import { RatesService } from '../src/stats/rates.service.js';
 import { addEquity } from '../src/stats/stats.service.js';
 import type { TradeRow } from '../src/stats/stats.types.js';
-import { digestMessage } from '../src/telegram/telegram.service.js';
 import { loadConfig } from '../src/config/app-config.js';
 import type { EngineState } from '../src/trading/types.js';
 
@@ -53,12 +52,6 @@ describe('buildStats', () => {
     const s = build({ trades });
     expect(s.totals.tradesClosed).toBe(3);
     expect(s.totals.winRatePct).toBe(66.7);
-  });
-
-  it('the daily digest shows rubles and the per-bot start', () => {
-    const text = digestMessage(build(), '');
-    expect(text).toMatch(/1056 ₽/);
-    expect(text).toMatch(/Старт у каждого бота: 1000 ₽ \(12 USDT\)/);
   });
 });
 

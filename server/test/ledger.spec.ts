@@ -72,6 +72,16 @@ describe('Ledger with real costs', () => {
     expect(l.cash).toBeLessThan(11.98);
   });
 
+  it('reports the closed trade profit in money after all costs', () => {
+    const l = new Ledger(11.98, REAL);
+    l.buy(0.1);
+    const spent = l.entryCost;
+    const cashBefore = l.cash;
+    const trade = l.sell(0.101)!;
+    expect(trade.pnlUsdt).toBeCloseTo(l.cash - cashBefore - spent, 12);
+    expect(trade.pnlUsdt! / spent * 100).toBeCloseTo(trade.pnlPct!, 9);
+  });
+
   it('reports a net profit only when the move beats the costs', () => {
     const small = new Ledger(11.98, REAL);
     small.buy(0.1);
