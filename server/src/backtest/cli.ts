@@ -25,7 +25,7 @@ const days = Number(arg('days') ?? 90);
 const stopPct = Number(arg('stop') ?? 3);
 const intervals = (arg('intervals') ?? '15,60,240').split(',');
 const symbols = arg('symbols')?.split(',')
-  ?? [...new Set([config.symbol, ...rankVolatility(await client.tickers()).slice(0, 10).map(v => v.symbol)])];
+  ?? [...new Set([config.symbol, ...rankVolatility(await client.tickers(), { minTurnover: Number(arg('min-turnover') ?? 1e6) }).slice(0, Number(arg('top') ?? 10)).map(v => v.symbol)])];
 
 const VARIANTS = {
   base: { label: 'как сейчас', trend: false, stop: 0 },
