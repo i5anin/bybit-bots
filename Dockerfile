@@ -13,10 +13,12 @@ RUN npm run build
 FROM node:24-alpine
 WORKDIR /app
 ENV NODE_ENV=production
+# Шрифт с кириллицей для графиков в Telegram: в Alpine своих шрифтов нет.
+RUN apk add --no-cache font-dejavu
 COPY package.json package-lock.json ./
 COPY server/package.json server/
 COPY client/package.json client/
-RUN npm ci --omit=dev --omit=optional --workspace server && npm cache clean --force
+RUN npm ci --omit=dev --workspace server && npm cache clean --force
 COPY --from=build /app/server/dist server/dist
 COPY --from=build /app/client/dist client/dist
 CMD ["node", "server/dist/main.js"]
