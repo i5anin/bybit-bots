@@ -22,12 +22,17 @@ export interface ChartBar {
   highlight?: boolean;
 }
 
+export interface ChartSection {
+  title: string;
+  bars: readonly ChartBar[];
+}
+
 export interface ChartInput {
   title: string;
   subtitle: string;
-  prices: readonly ChartPoint[];
-  trades: readonly ChartTrade[];
-  bars: readonly ChartBar[];
+  prices?: readonly ChartPoint[]; // нет — без панели цены (сводка по многим парам)
+  trades?: readonly ChartTrade[];
+  sections: readonly ChartSection[];
   periodLabel: string; // «за час», «за сутки»
 }
 
@@ -55,8 +60,10 @@ function text(x: number, y: number, body: string, attrs = ''): string {
 }
 
 function rub(v: number, sign = true): string {
-  const r = Math.round(v);
-  const abs = Math.abs(r).toLocaleString('ru-RU').replace(/\s/g, ' ');
+  // Меньше 10 ₽ — с копейками: при ставке 1 % изменения — копейки.
+  const small = Math.abs(v) < 10 && Math.abs(v) >= 0.005;
+  const r = small ? Math.round(v * 100) / 100 : Math.round(v);
+  const abs = small ? Math.abs(r).toFixed(2).replace('.', ',') : Math.abs(r).toLocaleString('ru-RU').replace(/\s/g, ' ');
   return `${r > 0 && sign ? '+' : r < 0 ? '−' : sign ? '±' : ''}${abs} ₽`;
 }
 
@@ -79,7 +86,7 @@ function pricePanel(input: ChartInput, top: number, height: number): string {
   const out: string[] = [
     `<rect x="${PAD / 2}" y="${top - 20}" width="${W - PAD}" height="${height + 60}" rx="14" fill="${C.card}" stroke="${C.line}"/>`,
   ];
-  const pts = input.prices;
+  const pts = input.prices ?? [];
   if (pts.length < 2) {
     out.push(text(W / 2, top + height / 2, 'нет данных о цене', `fill="${C.dim}" font-size="24" text-anchor="middle"`));
     return out.join('');
@@ -111,7 +118,7 @@ function pricePanel(input: ChartInput, top: number, height: number): string {
   out.push(`<path d="${path}" fill="none" stroke="${C.price}" stroke-width="3" stroke-linejoin="round"/>`);
 
   // Сделки ботов: покупка — зелёный треугольник вверх, продажа — красный вниз.
-  for (const t of input.trades) {
+  for (const t of input.trades ?? []) {
     if (t.time < t0 || t.time > t1 || t.price < lo || t.price > hi) continue;
     const tx = x(t.time);
     const ty = y(t.price);
@@ -126,8 +133,8 @@ function pricePanel(input: ChartInput, top: number, height: number): string {
   return out.join('');
 }
 
-function barsPanel(input: ChartInput, top: number, rowH: number): string {
-  const bars = input.bars;
+function barsPanel(input: ChartInput, section: ChartSection, top: number, rowH: number): string {
+  const bars = section.bars;
   const nameRight = 400;
   const zoneLeft = nameRight + 20;
   const zoneRight = W - 230;
@@ -144,7 +151,7 @@ function barsPanel(input: ChartInput, top: number, rowH: number): string {
 
   const out: string[] = [
     `<rect x="${PAD / 2}" y="${top - 70}" width="${W - PAD}" height="${height + 100}" rx="14" fill="${C.card}" stroke="${C.line}"/>`,
-    text(PAD, top - 30, 'Заработок ботов с начала', `fill="${C.text}" font-size="26" font-weight="bold"`),
+    text(PAD, top - 30, section.title, `fill="${C.text}" font-size="26" font-weight="bold"`),
     hasPeriod ? text(W - PAD, top - 30, `ниже — ${input.periodLabel}`, `fill="${C.dim}" font-size="20" text-anchor="end"`) : '',
     `<line x1="${zero.toFixed(1)}" y1="${top - 6}" x2="${zero.toFixed(1)}" y2="${top + height}" stroke="${C.dim}" stroke-width="1.5"/>`,
   ];
@@ -170,11 +177,20 @@ function barsPanel(input: ChartInput, top: number, rowH: number): string {
 }
 
 export function renderChartSvg(input: ChartInput): string {
-  const priceTop = 150;
-  const priceH = 340;
   const rowH = 50;
-  const barsTop = priceTop + priceH + 140;
-  const H = barsTop + input.bars.length * rowH + 50;
+  const parts: string[] = [];
+  let y = 150;
+  if (input.prices) {
+    parts.push(pricePanel(input, y, 340));
+    y += 340 + 140;
+  } else {
+    y += 70;
+  }
+  for (const section of input.sections) {
+    parts.push(barsPanel(input, section, y, rowH));
+    y += section.bars.length * rowH + 130;
+  }
+  const H = y - 80;
   return [
     `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">`,
     `<defs><linearGradient id="area" x1="0" y1="0" x2="0" y2="1">`,
@@ -183,8 +199,7 @@ export function renderChartSvg(input: ChartInput): string {
     `<rect width="${W}" height="${H}" fill="${C.bg}"/>`,
     text(PAD, 62, input.title, `fill="${C.text}" font-size="36" font-weight="bold"`),
     text(PAD, 104, input.subtitle, `fill="${C.dim}" font-size="22"`),
-    pricePanel(input, priceTop, priceH),
-    barsPanel(input, barsTop, rowH),
+    ...parts,
     '</svg>',
   ].join('');
 }
