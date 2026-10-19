@@ -8,6 +8,8 @@ export interface BotOptions {
   snapshot?: Partial<BotSnapshot> | null;
   downtimeSec?: number;
   costs?: Partial<Costs>;
+  // Принудительная продажа, если цена ушла ниже входа на столько процентов.
+  stopLossPct?: number;
 }
 
 // Один бот = одна стратегия + свой счёт.
@@ -18,8 +20,10 @@ export class Bot implements Trader {
   private readonly pendingStrategyState: unknown;
   private readonly downtimeSec: number;
   private strategyReady: boolean;
+  private readonly stopLossPct: number;
 
-  constructor(readonly strategy: Strategy, { startBalance, snapshot = null, downtimeSec = 0, costs }: BotOptions) {
+  constructor(readonly strategy: Strategy, { startBalance, snapshot = null, downtimeSec = 0, costs, stopLossPct = 0 }: BotOptions) {
+    this.stopLossPct = stopLossPct;
     this.ledger = Ledger.from(snapshot?.ledger as Partial<LedgerSnapshot> | undefined, startBalance, costs);
     this.restored = Boolean(snapshot);
     this.pendingStrategyState = snapshot?.strategy ?? null;
@@ -45,6 +49,15 @@ export class Bot implements Trader {
     const candleTime = candles[candles.length - 1]?.time ?? null;
     if (candleTime === this.lastSignalCandle) return this.result('hold', null, price);
     this.lastSignalCandle = candleTime;
+
+    // Стоп-лосс срабатывает раньше сигнала: позиция закрывается, стратегия
+    // узнаёт, что она больше не в рынке.
+    if (this.stopLossPct > 0 && this.ledger.position > 0
+      && price <= this.ledger.entryPrice * (1 - this.stopLossPct / 100)) {
+      const stop = this.ledger.sell(price);
+      this.strategy.sync?.(this.context(price));
+      return this.result('sell', stop, price);
+    }
 
     const action = this.strategy.signal(candles);
     let trade: Trade | null = null;

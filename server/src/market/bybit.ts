@@ -46,6 +46,26 @@ export class BybitClient {
     ));
   }
 
+  // История свечей за период: Bybit отдаёт не больше 1000 за запрос,
+  // поэтому листаем назад от to. Незакрытая последняя свеча отбрасывается.
+  async history(symbol: string, interval: string, from: number, to = Date.now()): Promise<Candle[]> {
+    const { category } = this.options;
+    const byTime = new Map<number, Candle>();
+    let end = to;
+    while (end > from) {
+      const page = parseKlines(await this.getJson<KlineRow>(
+        `/v5/market/kline?category=${category}&symbol=${symbol}&interval=${interval}&start=${from}&end=${end}&limit=1000`,
+      ));
+      if (!page.length) break;
+      for (const c of page) byTime.set(c.time, c);
+      const oldest = page[0]!.time;
+      if (oldest <= from || page.length < 1000) break;
+      end = oldest - 1;
+    }
+    const ms = Number(interval) * 60_000;
+    return [...byTime.values()].sort((a, b) => a.time - b.time).filter(c => c.time + ms <= to);
+  }
+
   // Тикеры всех пар категории: цена, размах и оборот за 24 часа.
   async tickers(): Promise<Ticker[]> {
     const json = await this.getJson<Record<string, string>>(`/v5/market/tickers?category=${this.options.category}`);
