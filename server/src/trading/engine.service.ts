@@ -45,6 +45,7 @@ export class EngineService implements OnApplicationBootstrap, BeforeApplicationS
   private inFlight: Promise<void> | null = null; // текущий тик: остановка дожидается его
   private stopping = false;
   private stream: KlineStream | null = null;
+  private lastDecidedCandle: number | null = null;
   private feed: FeedStatus = { source: 'опрос', streamConnected: false, lagSec: null, fetchMs: null, staleSkips: 0 };
   private started = false;
   private readonly tradeListeners = new Set<TradeListener>();
@@ -267,14 +268,21 @@ export class EngineService implements OnApplicationBootstrap, BeforeApplicationS
       // Если она старше ещё одной свечи — биржа отдала устаревшие данные,
       // торговать по ним нельзя.
       const intervalMs = Number(c.interval) * 60_000;
-      const ageMs = now - (candles[candles.length - 1]!.time + intervalMs);
-      this.feed = {
-        source,
-        streamConnected: this.stream?.connected ?? false,
-        lagSec: Math.max(0, Math.round(ageMs / 100) / 10),
-        fetchMs: Date.now() - askedAt,
-        staleSkips: this.feed.staleSkips,
-      };
+      const lastClosed = candles[candles.length - 1]!.time;
+      const ageMs = now - (lastClosed + intervalMs);
+      // Задержку меряем только на решении по новой свече: тики опроса внутри
+      // свечи ничего не решают, и их «свеча закрыта 3 минуты назад» — не опоздание.
+      const decides = lastClosed !== this.lastDecidedCandle;
+      this.feed = decides
+        ? {
+          source,
+          streamConnected: this.stream?.connected ?? false,
+          lagSec: Math.max(0, Math.round(ageMs / 100) / 10),
+          fetchMs: Date.now() - askedAt,
+          staleSkips: this.feed.staleSkips,
+        }
+        : { ...this.feed, streamConnected: this.stream?.connected ?? false };
+      if (decides && ageMs <= intervalMs) this.lastDecidedCandle = lastClosed;
       if (ageMs > intervalMs) {
         this.feed.staleSkips += 1;
         this.logger.warn(`данные устарели: последняя свеча закрыта ${Math.round(ageMs / 1000)} с назад — тик пропущен`);

@@ -200,12 +200,14 @@ describe('TelegramService', () => {
   let dir: string;
   let calls: Call[];
   let richFails: boolean;
+  let draftFails: boolean;
   let listener: TradeListener | null;
 
   beforeEach(async () => {
     dir = await mkdtemp(join(tmpdir(), 'bybit-tg-'));
     calls = [];
     richFails = false;
+    draftFails = false;
     listener = null;
   });
   afterEach(async () => { await rm(dir, { recursive: true, force: true }); });
@@ -229,6 +231,9 @@ describe('TelegramService', () => {
         ? Object.fromEntries([...init.body.entries()].map(([k, v]) => [k, typeof v === 'string' ? v : `<file ${v.size}>`]))
         : JSON.parse(String(init.body));
       calls.push({ method, fields });
+      if (method === 'sendRichMessageDraft' && draftFails) {
+        return new Response(JSON.stringify({ ok: false, description: 'Bad Request: method not found' }), { status: 404 });
+      }
       if (method === 'sendRichMessage' && richFails) {
         return new Response(JSON.stringify({ ok: false, description: "Bad Request: can't parse rich message" }), { status: 400 });
       }
@@ -298,9 +303,35 @@ describe('TelegramService', () => {
     await tg.handleUpdate({ update_id: 2, message: { chat: { id: 42 }, text: '/now', date: now - 3600 } });
     expect(calls).toHaveLength(0);
     await tg.handleUpdate({ update_id: 3, message: { chat: { id: 42 }, text: '/now@bybit_bot', date: now } });
-    expect(JSON.parse(String(calls[0]!.fields.rich_message)).html).toContain('⚡ Сейчас');
+    const report = calls.find(c => c.method === 'sendRichMessage')!;
+    expect(JSON.parse(String(report.fields.rich_message)).html).toContain('⚡ Сейчас');
+    calls = [];
     await tg.handleUpdate({ update_id: 4, callback_query: { id: 'q', data: 'now', message: { chat: { id: 42 } } } });
-    expect(methods().slice(1)).toEqual(['answerCallbackQuery', 'sendRichMessage']);
+    expect(methods().filter(m => m !== 'sendRichMessageDraft')).toEqual(['answerCallbackQuery', 'sendRichMessage']);
+  });
+
+  it('animates a draft while the report on demand is being built', async () => {
+    await service().sendNow(at(19, 14, 30));
+    expect(methods()).toEqual(['sendRichMessageDraft', 'sendRichMessageDraft', 'sendRichMessageDraft', 'sendRichMessage']);
+    const drafts = calls.slice(0, 3);
+    expect(new Set(drafts.map(c => c.fields.draft_id)).size).toBe(1);
+    expect(drafts.map(c => (c.fields.rich_message as { html: string }).html)).toEqual([
+      '<tg-thinking>Беру счета ботов…</tg-thinking>',
+      '<tg-thinking>Беру цены с биржи…</tg-thinking>',
+      '<tg-thinking>Рисую график…</tg-thinking>',
+    ]);
+    expect(drafts[0]!.fields.chat_id).toBe(42);
+  });
+
+  it('falls back to the upload status when drafts are not supported', async () => {
+    draftFails = true;
+    await service().sendNow(at(19, 14, 30));
+    expect(methods()).toEqual(['sendRichMessageDraft', 'sendChatAction', 'sendChatAction', 'sendChatAction', 'sendRichMessage']);
+  });
+
+  it('hourly reports come without a draft', async () => {
+    await service().tick(at(19, 14));
+    expect(methods()).toEqual(['sendRichMessage']);
   });
 
   it('a report on demand does not move the hourly comparison point', async () => {

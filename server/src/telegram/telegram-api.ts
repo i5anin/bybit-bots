@@ -86,6 +86,21 @@ export class TelegramApi {
     return this.call('sendPhoto', form, 60_000);
   }
 
+  // Черновик rich-сообщения: виден до 30 секунд, изменения с тем же draftId
+  // Telegram показывает анимацией. Пропадает, когда приходит настоящее сообщение.
+  async sendDraft(draftId: number, html: string): Promise<ApiResult> {
+    return this.call('sendRichMessageDraft', {
+      chat_id: Number(this.chatId),
+      draft_id: draftId,
+      rich_message: { html, skip_entity_detection: true },
+    });
+  }
+
+  // Статус «отправляет фото…» на 5 секунд — запасная анимация.
+  async chatAction(action: 'typing' | 'upload_photo'): Promise<ApiResult> {
+    return this.call('sendChatAction', { chat_id: this.chatId, action });
+  }
+
   // Команды в меню бота: «/» в чате показывает их с описанием.
   async setCommands(commands: readonly { command: string; description: string }[]): Promise<ApiResult> {
     return this.call('setMyCommands', { commands });

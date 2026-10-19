@@ -156,12 +156,14 @@ export class TelegramService implements OnApplicationBootstrap, OnApplicationShu
   }
 
   // Собирает отчёт: текст, запасной текст и картинку (если удалось нарисовать).
-  async buildReport(kind: ReportKind, seen: Seen, now: Date) {
+  async buildReport(kind: ReportKind, seen: Seen, now: Date, step: (text: string) => Promise<void> = async () => {}) {
+    await step('Беру счета ботов');
     const [stats, trades] = await Promise.all([this.stats.stats(now.getTime()), this.stats.allTrades()]);
     const isDay = kind === 'day';
     const sinceIso = (isDay ? seen.lastDigestAt : seen.lastReportAt)
       ?? new Date(now.getTime() - (isDay ? 24 : 1) * HOUR_MS).toISOString();
     const prev = isDay ? seen.digestRub : seen.reportRub;
+    await step('Беру цены с биржи');
     const [candles, tickers] = await Promise.all([
       this.bybit.klines(this.config.symbol, '15', 96).catch(() => []),
       this.bybit.tickers().catch(() => []),
@@ -182,6 +184,7 @@ export class TelegramService implements OnApplicationBootstrap, OnApplicationShu
       volatility: rankVolatility(tickers),
     };
 
+    await step('Рисую график');
     let photo: Buffer | null = null;
     try {
       const dayAgo = new Date(now.getTime() - 24 * HOUR_MS).toISOString();
@@ -258,9 +261,26 @@ export class TelegramService implements OnApplicationBootstrap, OnApplicationShu
   // Отчёт по запросу: изменения — с прошлого часового отчёта, снимок не трогаем.
   async sendNow(now = new Date()): Promise<boolean> {
     const seen = await this.loadSeen();
-    const { input, stats, photo } = await this.buildReport('now', seen, now);
+    const { input, stats, photo } = await this.buildReport('now', seen, now, this.progress());
     if (!stats.bots.length) return (await this.api.sendMessage('Данных пока нет: бот ещё не сделал ни одного тика')).ok;
     return this.deliver(reportRichHtml(input), reportClassic(input), photo);
+  }
+
+  // Анимация, пока собирается отчёт по запросу: черновик с <tg-thinking>, шаги
+  // которого Telegram плавно сменяет; готовый отчёт его заменяет. Если черновики
+  // не поддерживаются — статус «отправляет фото…».
+  private progress(): (text: string) => Promise<void> {
+    const draftId = Math.floor(Date.now() / 1000) % 2_000_000_000 || 1;
+    let drafts = true;
+    return async text => {
+      if (drafts) {
+        const res = await this.api.sendDraft(draftId, `<tg-thinking>${esc(text)}…</tg-thinking>`);
+        if (res.ok) return;
+        drafts = false;
+        this.logger.warn(`черновик не принят (${res.description}), показываю статус`);
+      }
+      await this.api.chatAction('upload_photo');
+    };
   }
 
   // Только из настроенного чата: бот публичный, найти его может кто угодно.
