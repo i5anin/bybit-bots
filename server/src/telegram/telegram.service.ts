@@ -301,14 +301,14 @@ export class TelegramService implements OnApplicationBootstrap, OnApplicationShu
   async sendStartupNotice(): Promise<void> {
     const t = this.config.telegram;
     const items = [
-      t.hourly ? `каждый час с ${t.dayFrom}:00 до ${t.dayTo}:00 — итоги часа с графиком` : '',
-      `в ${t.digestHour}:00 — итог дня: счёт и заработок каждого бота`,
-      `прибыльные сделки от +${t.minPnlPct} % — сразу, ночью без звука`,
-      t.commands ? '/now — результаты прямо сейчас' : '',
+      t.hourly ? `каждый час с <b>${t.dayFrom}:00</b> до <b>${t.dayTo}:00</b> — итоги часа с графиком` : '',
+      `в <b>${t.digestHour}:00</b> — итог дня: счёт и заработок каждого бота`,
+      `прибыльные сделки от <b>+${t.minPnlPct} %</b> — сразу, ночью без звука`,
+      t.commands ? '<b>/now</b> — результаты прямо сейчас' : '',
     ].filter(Boolean);
     const rich = `<h2>🤖 Боты Bybit на связи</h2><p>${esc(this.config.symbol)}, свечи ${esc(this.config.interval)} мин. Буду присылать:</p>`
-      + `<ul>${items.map(i => `<li>${esc(i)}</li>`).join('')}</ul>`;
-    const classic = ['🤖 <b>Боты Bybit на связи</b>', ...items.map(i => `• ${esc(i)}`)].join('\n');
+      + `<ul>${items.map(i => `<li>${i}</li>`).join('')}</ul>`;
+    const classic = ['🤖 <b>Боты Bybit на связи</b>', ...items.map(i => `• ${i}`)].join('\n');
     await this.deliver(rich, { caption: classic, text: classic }, null);
   }
 }
