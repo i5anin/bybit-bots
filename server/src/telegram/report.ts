@@ -1,3 +1,4 @@
+import type { VolatilityRow } from '../market/volatility.js';
 import type { BotStats, Stats, TradeRow } from '../stats/stats.types.js';
 import type { TradeEvent } from '../trading/engine.service.js';
 import { priceLabel } from './chart.js';
@@ -21,10 +22,12 @@ export interface ReportInput {
   hasPhoto: boolean;
   refreshButton: boolean;
   schedule: string; // «каждый час 9–22, итог дня в 21:00»
+  volatility?: readonly VolatilityRow[]; // рейтинг пар по размаху за сутки
 }
 
 const NBSP = ' ';
 const MAX_TRADE_ROWS = { hour: 20, now: 20, day: 40 } as const;
+const TOP_PAIRS = 10;
 
 export function esc(s: unknown): string {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -183,6 +186,25 @@ export function reportRichHtml(input: ReportInput): string {
   }
   parts.push(`<ul>${facts.map(f => `<li>${f}</li>`).join('')}</ul>`);
 
+  const vol = input.volatility ?? [];
+  if (vol.length) {
+    const row = (v: VolatilityRow, i: number) => {
+      const name = v.symbol === stats.symbol ? `<b>${esc(v.symbol.replace(/USDT$/, ''))}</b> ◀ торгуем` : esc(v.symbol.replace(/USDT$/, ''));
+      return `<tr><td>${i + 1}</td><td>${name}</td><td align="right"><b>${v.rangePct.toFixed(1)}${NBSP}%</b></td>`
+        + `<td align="right">${pct(v.changePct)}</td><td align="right">${turnover(v.turnover)}</td></tr>`;
+    };
+    const head = '<tr><th>#</th><th>Пара</th><th>Размах</th><th>За сутки</th><th>Оборот</th></tr>';
+    parts.push(`<h3>🔥 Топ-${Math.min(TOP_PAIRS, vol.length)} по волатильности</h3>`);
+    parts.push(`<table bordered striped compact><caption>Размах цены за 24 ч, пары к USDT с оборотом от 1 млн $</caption>${head}`
+      + vol.slice(0, TOP_PAIRS).map(row).join('') + '</table>');
+    const own = vol.findIndex(v => v.symbol === stats.symbol);
+    if (own >= TOP_PAIRS) parts.push(`<p>${esc(stats.baseAsset)} — на ${own + 1}-м месте из ${vol.length}</p>`);
+    if (vol.length > TOP_PAIRS) {
+      parts.push(`<details><summary>Остальные пары · ${vol.length - TOP_PAIRS}</summary><table striped compact>${head}`
+        + vol.slice(TOP_PAIRS).map((v, i) => row(v, i + TOP_PAIRS)).join('') + '</table></details>');
+    }
+  }
+
   if (input.trades.length) {
     parts.push(`<details><summary>Сделки ${label} · ${input.trades.length}</summary>${tradeRowsHtml(input.trades, MAX_TRADE_ROWS[kind])}</details>`);
   }
@@ -225,17 +247,26 @@ export function reportClassic(input: ReportInput): { caption: string; text: stri
     `${hhmm(new Date(t.time))} ${esc(shortName(t.bot))} ${t.side === 'buy' ? '▲' : '▼'} ${esc(t.price)}`
     + (t.pnlPct === '' ? '' : ` ${pct(Number(t.pnlPct))}`)).join('\n');
 
+  const vol = (input.volatility ?? []).slice(0, TOP_PAIRS)
+    .map((v, i) => `${String(i + 1).padStart(2)} ${v.symbol.replace(/USDT$/, '').padEnd(9)} ${v.rangePct.toFixed(1).padStart(5)}% ${pct(v.changePct).padStart(8)}`)
+    .join('\n');
+
   const text = [
     head,
     market,
     totals,
     `<pre>${esc(table)}</pre>`,
+    vol ? `🔥 Топ-${TOP_PAIRS} по волатильности (размах за сутки):\n<pre>${esc(vol)}</pre>` : '',
     s.worst ? `Худший ${label}: <tg-spoiler>${esc(shortName(s.worst.name))} ${rub(s.change(s.worst)!, true)}</tg-spoiler>` : '',
     trades ? `<blockquote expandable>Сделки ${label} · ${input.trades.length}\n${trades}</blockquote>` : `Сделок ${label} не было`,
     input.webUrl ? `<a href="${esc(input.webUrl)}">Панель</a>` : '',
   ].filter(Boolean).join('\n');
 
   return { caption: [head, market, totals].join('\n'), text };
+}
+
+function turnover(usdt: number): string {
+  return usdt >= 1e9 ? `${(usdt / 1e9).toFixed(1)}${NBSP}млрд $` : `${(usdt / 1e6).toFixed(1)}${NBSP}млн $`;
 }
 
 export interface TradeContext {

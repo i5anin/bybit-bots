@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { inDayHours, loadConfig } from '../src/config/app-config.js';
+import { rankVolatility, type Ticker } from '../src/market/volatility.js';
 import type { BotStats, Stats, TradeRow } from '../src/stats/stats.types.js';
 import { renderChartPng, renderChartSvg, type ChartInput } from '../src/telegram/chart.js';
 import { reportClassic, reportRichHtml, shortName, tradeRichHtml, type ReportInput } from '../src/telegram/report.js';
@@ -97,6 +98,32 @@ describe('hourly report', () => {
   it('never lets a strategy name break the markup', () => {
     const evil = plain(reportRichHtml(input({ stats: stats([bot('<b>x</b> & "y"', 1000)]), prevRub: null })));
     expect(evil).toContain('&lt;b&gt;x&lt;/b&gt; &amp; &quot;y&quot;');
+  });
+});
+
+const tick = (symbol: string, low: number, high: number, turnover = 5e6): Ticker =>
+  ({ symbol, lastPrice: high, highPrice24h: high, lowPrice24h: low, price24hPcnt: 0.05, turnover24h: turnover });
+
+describe('volatility ranking', () => {
+  it('ranks liquid USDT pairs by the 24h range and skips stables, leveraged tokens and thin pairs', () => {
+    const rows = rankVolatility([
+      tick('AUSDT', 1, 1.1), tick('BUSDT', 1, 1.5), tick('USDCUSDT', 0.9, 1.1), tick('BTC3LUSDT', 1, 2),
+      tick('THINUSDT', 1, 3, 1e5), tick('CBTC', 1, 2),
+    ]);
+    expect(rows.map(r => r.symbol)).toEqual(['BUSDT', 'AUSDT']);
+    expect(rows[0]!.rangePct).toBeCloseTo(50, 9);
+    expect(rows[0]!.changePct).toBeCloseTo(5, 9);
+  });
+
+  it('shows the top ten openly and the rest in a collapsible table', () => {
+    const vol = rankVolatility(Array.from({ length: 15 }, (_, i) => tick(`P${i}USDT`, 1, 2 - i / 20)).concat(tick('DOGEUSDT', 1, 1.01)));
+    const html = plain(reportRichHtml(input({ volatility: vol })));
+    expect(html).toContain('<h3>🔥 Топ-10 по волатильности</h3>');
+    expect(html).toContain('<td>1</td><td>P0</td><td align="right"><b>100.0 %</b></td>');
+    expect(html).toContain('<details><summary>Остальные пары · 6</summary>');
+    expect(html).toContain('<td>16</td><td><b>DOGE</b> ◀ торгуем</td>');
+    expect(html).toContain('DOGE — на 16-м месте из 16');
+    expect(plain(reportClassic(input({ volatility: vol })).text)).toContain('🔥 Топ-10 по волатильности');
   });
 });
 
@@ -195,7 +222,7 @@ describe('TelegramService', () => {
     const candles: Candle[] = Array.from({ length: 96 }, (_, i) => ({
       time: Date.UTC(2026, 9, 18, 12) + i * 900_000, open: 0.08, high: 0.081, low: 0.079, close: 0.08 + i * 0.00001, volume: 1,
     }));
-    const bybit = { klines: async () => candles };
+    const bybit = { klines: async () => candles, tickers: async () => [tick('ZKUSDT', 1, 1.2), tick('DOGEUSDT', 1, 1.05)] };
     const fetchFn = (async (url: string, init: RequestInit) => {
       const method = url.split('/').pop()!;
       const fields = init.body instanceof FormData
@@ -233,6 +260,7 @@ describe('TelegramService', () => {
     const rich = JSON.parse(String(call.fields.rich_message));
     expect(rich.media).toEqual([{ id: 'report', media: { type: 'photo', media: 'attach://report' } }]);
     expect(rich.html).toContain('<h2>🕐 Итоги часа · 14:00</h2>');
+    expect(rich.html).toContain('<td>1</td><td>ZK</td>');
     expect(call.fields.disable_notification).toBe('false');
   });
 

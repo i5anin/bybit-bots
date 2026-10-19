@@ -1,4 +1,5 @@
 import type { Candle, LotRules } from '../trading/types.js';
+import type { Ticker } from './volatility.js';
 
 interface BybitResponse<T> {
   retCode: number;
@@ -43,6 +44,19 @@ export class BybitClient {
     return parseKlines(await this.getJson<KlineRow>(
       `/v5/market/kline?category=${category}&symbol=${symbol}&interval=${interval}&limit=${limit}`,
     ));
+  }
+
+  // Тикеры всех пар категории: цена, размах и оборот за 24 часа.
+  async tickers(): Promise<Ticker[]> {
+    const json = await this.getJson<Record<string, string>>(`/v5/market/tickers?category=${this.options.category}`);
+    return (json.result?.list ?? []).map(r => ({
+      symbol: r.symbol ?? '',
+      lastPrice: Number(r.lastPrice),
+      highPrice24h: Number(r.highPrice24h),
+      lowPrice24h: Number(r.lowPrice24h),
+      price24hPcnt: Number(r.price24hPcnt),
+      turnover24h: Number(r.turnover24h),
+    }));
   }
 
   async lotRules(symbol: string): Promise<LotRules> {

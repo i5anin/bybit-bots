@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { APP_CONFIG, inDayHours, type AppConfig } from '../config/app-config.js';
 import { BybitClient } from '../market/bybit.js';
+import { rankVolatility } from '../market/volatility.js';
 import { RatesService } from '../stats/rates.service.js';
 import { StatsService } from '../stats/stats.service.js';
 import { EngineService, type TradeEvent } from '../trading/engine.service.js';
@@ -161,7 +162,10 @@ export class TelegramService implements OnApplicationBootstrap, OnApplicationShu
     const sinceIso = (isDay ? seen.lastDigestAt : seen.lastReportAt)
       ?? new Date(now.getTime() - (isDay ? 24 : 1) * HOUR_MS).toISOString();
     const prev = isDay ? seen.digestRub : seen.reportRub;
-    const candles = await this.bybit.klines(this.config.symbol, '15', 96).catch(() => []);
+    const [candles, tickers] = await Promise.all([
+      this.bybit.klines(this.config.symbol, '15', 96).catch(() => []),
+      this.bybit.tickers().catch(() => []),
+    ]);
 
     const input: ReportInput = {
       kind,
@@ -175,6 +179,7 @@ export class TelegramService implements OnApplicationBootstrap, OnApplicationShu
       hasPhoto: false,
       refreshButton: this.config.telegram.commands,
       schedule: this.schedule(),
+      volatility: rankVolatility(tickers),
     };
 
     let photo: Buffer | null = null;
