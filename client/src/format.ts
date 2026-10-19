@@ -47,3 +47,25 @@ export function sparkPoints(values: readonly number[], w: number, h: number): st
     return `${x.toFixed(1)},${y.toFixed(1)}`;
   }).join(' ');
 }
+
+// Рубли: меньше 10 ₽ — с копейками (при ставке 1 % изменения — копейки).
+export function rub(v: number, sign = false): string {
+  const small = Math.abs(v) < 10 && Math.abs(v) >= 0.005;
+  const text = money(Math.abs(v), small ? 2 : 0);
+  const r = small ? Math.round(v * 100) : Math.round(v);
+  if (!sign) return `${r < 0 ? '−' : ''}${text} ₽`;
+  return `${r > 0 ? '+' : r < 0 ? '−' : '±'}${text} ₽`;
+}
+
+// Годовые; null — ещё мало данных (первые часы сессии).
+export function apr(v: number | null): string {
+  return v === null ? '—' : `${signed(v, 1)} %`;
+}
+
+export function pairName(symbol: string): string {
+  return symbol.replace(/USDT$/, '');
+}
+
+export function shortName(name: string): string {
+  return name.replace(/\s*\(.*\)\s*$/, '') || name;
+}

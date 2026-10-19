@@ -74,6 +74,22 @@ footer {
 }
 .empty { padding: 24px; color: var(--dim); }
 
+tr.link { cursor: pointer; }
+a.pair, a { color: var(--price, #8fb4ff); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.tools { display: flex; gap: 10px; margin: 0 0 10px; flex-wrap: wrap; }
+.tools input {
+  flex: 1 1 240px; background: var(--card); color: var(--text); border: 1px solid var(--line);
+  border-radius: 6px; padding: 7px 10px; font: inherit;
+}
+.tools button {
+  background: var(--chip); color: var(--text); border: 1px solid var(--line);
+  border-radius: 6px; padding: 7px 12px; font: inherit; cursor: pointer;
+}
+img.chart { display: block; width: 100%; max-width: 760px; height: auto; border-radius: 10px; margin: 8px 0 16px; }
+.card .v.up { color: var(--up); }
+.card .v.down { color: var(--down); }
+
 @media (max-width: 600px) {
   .bar, main, footer { padding-inline: 16px; }
 }

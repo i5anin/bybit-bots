@@ -32,8 +32,8 @@ const updated = computed(() => {
   <header>
     <div class="bar">
       <h1>Боты Bybit</h1>
-      <span class="dim">{{ stats ? `${stats.symbol} · ${stats.interval}м` : '—' }}</span>
-      <span class="dim">цена <b style="color: var(--text)">{{ stats?.price ? `${price(stats.price)} $` : '—' }}</b></span>
+      <span class="dim">{{ !stats ? '—' : stats.symbols.length > 1 ? `${stats.symbols.length} пар · ${stats.totals.bots} ботов · ${stats.interval}м` : `${stats.symbol} · ${stats.interval}м` }}</span>
+      <span v-if="stats?.price" class="dim">цена <b style="color: var(--text)">{{ `${price(stats.price)} $` }}</b></span>
       <span class="dim">
         <span class="dot" :class="{ on: stats?.status === 'running', stale: stats?.status === 'stale' }" />{{ runText }}
       </span>
