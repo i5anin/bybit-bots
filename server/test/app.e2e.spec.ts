@@ -40,6 +40,7 @@ async function boot(): Promise<{ app: INestApplication; engine: EngineService }>
     START_RUB: '1000',
     POLL_MS: '3600000',
     RUB_PER_USDT: '80',
+    BYBIT_STREAM: '0',
   });
   const moduleRef = await Test.createTestingModule({ imports: [AppModule] })
     .overrideProvider(APP_CONFIG).useValue(config)

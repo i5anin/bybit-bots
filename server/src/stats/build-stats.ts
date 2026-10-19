@@ -99,6 +99,7 @@ export function buildStats(input: BuildStatsInput): Stats {
     startBalance,
     startRub: round(startRubValue, 2),
     feePct: state?.feePct ?? null,
+    feed: state?.feed ?? null,
     slippagePct: state?.slippagePct ?? null,
     runs: state?.runs ?? 0,
     uptimeSecTotal: state?.uptimeSecTotal ?? 0,

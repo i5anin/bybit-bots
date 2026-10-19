@@ -1,13 +1,14 @@
 import { Inject, Injectable, Logger, type BeforeApplicationShutdown, type OnApplicationBootstrap } from '@nestjs/common';
 import { APP_CONFIG, marketId, type AppConfig } from '../config/app-config.js';
 import { BybitClient, splitClosed, withRetry } from '../market/bybit.js';
+import { KlineStream } from '../market/bybit-stream.js';
 import { STATE_VERSION, StateStore } from '../storage/state-store.js';
 import { formatDuration } from '../storage/time.js';
 import { TradeLog, type EquityEntry } from '../storage/trade-log.js';
 import { Bot } from './bot.js';
 import { MetaBot, metaName } from './meta-bot.js';
 import { ACTIVE_STRATEGIES } from './strategies/index.js';
-import type { Costs, EngineState, LotRules, StrategyFactory, Trader } from './types.js';
+import type { Costs, EngineState, FeedStatus, LotRules, StrategyFactory, Trader } from './types.js';
 
 // Сделка, о которой движок сообщает подписчикам (Telegram) сразу, в том же
 // процессе: с точной прибылью в деньгах, которой нет в CSV-логе.
@@ -43,6 +44,8 @@ export class EngineService implements OnApplicationBootstrap, BeforeApplicationS
   private timer: NodeJS.Timeout | null = null;
   private inFlight: Promise<void> | null = null; // текущий тик: остановка дожидается его
   private stopping = false;
+  private stream: KlineStream | null = null;
+  private feed: FeedStatus = { source: 'опрос', streamConnected: false, lagSec: null, fetchMs: null, staleSkips: 0 };
   private started = false;
   private readonly tradeListeners = new Set<TradeListener>();
 
@@ -75,7 +78,18 @@ export class EngineService implements OnApplicationBootstrap, BeforeApplicationS
     await this.init(lot, factories);
     await this.tick();
     if (this.stopping) return;
-    this.timer = setInterval(() => void this.tick(), this.config.pollMs);
+    // Минутный опрос остаётся страховкой на случай обрыва потока.
+    this.timer = setInterval(() => void this.tick('опрос'), this.config.pollMs);
+    if (this.config.bybitStream) {
+      this.stream = new KlineStream({
+        url: this.config.bybitStreamUrl,
+        symbol: this.config.symbol,
+        interval: this.config.interval,
+        onCandleClosed: start => void this.tick('поток', start + Number(this.config.interval) * 60_000),
+        log: message => this.logger.log(message),
+      });
+      this.stream.start();
+    }
   }
 
   async init(lot: LotRules, factories: readonly StrategyFactory[] = ACTIVE_STRATEGIES): Promise<void> {
@@ -182,6 +196,7 @@ export class EngineService implements OnApplicationBootstrap, BeforeApplicationS
       lastRun: run,
       currentRun: closing ? null : run,
       bots: Object.fromEntries(this.bots.map(bot => [bot.strategy.name, bot.snapshot()])),
+      feed: this.feed,
     };
   }
 
@@ -228,20 +243,42 @@ export class EngineService implements OnApplicationBootstrap, BeforeApplicationS
 
   // Новый тик не стартует, пока не закончился прошлый: при медленной бирже
   // setInterval иначе запускал бы их внахлёст, с двойными сделками.
-  tick(): Promise<void> {
+  // closedUntil — конец свечи, о закрытии которой сообщил поток: Bybit шлёт
+  // это событие на десятки миллисекунд раньше формального конца свечи.
+  tick(source: FeedStatus['source'] = 'опрос', closedUntil = 0): Promise<void> {
     if (this.stopping || !this.started) return this.inFlight ?? Promise.resolve();
     if (this.inFlight) return this.inFlight;
-    this.inFlight = this.runTick().finally(() => { this.inFlight = null; });
+    this.inFlight = this.runTick(source, closedUntil).finally(() => { this.inFlight = null; });
     return this.inFlight;
   }
 
-  private async runTick(): Promise<void> {
+  private async runTick(source: FeedStatus['source'], closedUntil: number): Promise<void> {
     const c = this.config;
     try {
+      const askedAt = Date.now();
       const all = await this.bybit.klines(c.symbol, c.interval, 101);
-      const { closed: candles, price } = splitClosed(all, c.interval);
+      const now = Math.max(Date.now(), closedUntil);
+      const { closed: candles, price } = splitClosed(all, c.interval, now);
       if (!candles.length || price === null || !Number.isFinite(price)) {
         throw new Error('биржа вернула пустые свечи');
+      }
+
+      // Актуальность: последняя закрытая свеча должна быть только что закрытой.
+      // Если она старше ещё одной свечи — биржа отдала устаревшие данные,
+      // торговать по ним нельзя.
+      const intervalMs = Number(c.interval) * 60_000;
+      const ageMs = now - (candles[candles.length - 1]!.time + intervalMs);
+      this.feed = {
+        source,
+        streamConnected: this.stream?.connected ?? false,
+        lagSec: Math.max(0, Math.round(ageMs / 100) / 10),
+        fetchMs: Date.now() - askedAt,
+        staleSkips: this.feed.staleSkips,
+      };
+      if (ageMs > intervalMs) {
+        this.feed.staleSkips += 1;
+        this.logger.warn(`данные устарели: последняя свеча закрыта ${Math.round(ageMs / 1000)} с назад — тик пропущен`);
+        return;
       }
       await this.logResumeGap(price);
 
@@ -301,7 +338,8 @@ export class EngineService implements OnApplicationBootstrap, BeforeApplicationS
     this.logger.log(
       `тик ${this.ticks} · ${c.symbol} ${price} · в рынке ${inMarket}/${this.bots.length}`
       + ` · счёт ${total.toFixed(2)}/${invested.toFixed(2)} (${pnlPct >= 0 ? '+' : ''}${pnlPct.toFixed(2)} %)`
-      + ` · лидер ${meta?.leader ?? '—'}`,
+      + ` · лидер ${meta?.leader ?? '—'}`
+      + ` · ${this.feed.source}, через ${this.feed.lagSec} с после закрытия свечи, ответ биржи ${this.feed.fetchMs} мс`,
     );
   }
 
@@ -310,6 +348,7 @@ export class EngineService implements OnApplicationBootstrap, BeforeApplicationS
     if (this.stopping) return;
     this.stopping = true;
     if (this.timer) clearInterval(this.timer);
+    this.stream?.stop();
     await this.inFlight;
     if (!this.started) return;
     this.runUptimeSec = (Date.now() - this.runStartedAt) / 1000;

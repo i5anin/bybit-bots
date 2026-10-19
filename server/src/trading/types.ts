@@ -104,6 +104,17 @@ export interface EngineState {
   lastRun: RunInfo | null;
   currentRun: RunInfo | null;
   bots: Record<string, Partial<BotSnapshot> & Partial<MetaSnapshot>>;
+  feed?: FeedStatus;
+}
+
+// Откуда и насколько свежие данные: по ним видно, не решают ли боты по
+// устаревшей цене.
+export interface FeedStatus {
+  source: 'поток' | 'опрос'; // что запустило последний тик
+  streamConnected: boolean;
+  lagSec: number | null; // через сколько секунд после закрытия свечи принято решение
+  fetchMs: number | null; // сколько шёл ответ биржи на запрос свечей
+  staleSkips: number; // тиков пропущено из-за устаревших данных с запуска
 }
 
 export interface RunInfo {

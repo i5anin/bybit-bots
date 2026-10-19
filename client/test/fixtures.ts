@@ -35,6 +35,7 @@ export function stats(overrides: Partial<Stats> = {}): Stats {
     startRub: 1000,
     feePct: 0.1,
     slippagePct: 0.02,
+    feed: { source: 'поток', streamConnected: true, lagSec: 0.4, fetchMs: 180, staleSkips: 0 },
     runs: 3,
     uptimeSecTotal: 748_018,
     ticks: 819,

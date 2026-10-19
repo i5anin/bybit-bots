@@ -1,6 +1,14 @@
 // Ответ GET /api/stats — зеркало server/src/stats/stats.types.ts.
 // При изменении правьте обе копии.
 
+export interface FeedStatus {
+  source: 'поток' | 'опрос';
+  streamConnected: boolean;
+  lagSec: number | null;
+  fetchMs: number | null;
+  staleSkips: number;
+}
+
 export type BotRunStatus = 'running' | 'stale' | 'stopped';
 
 export interface BotStats {
@@ -44,6 +52,7 @@ export interface Stats {
   startRub: number;
   feePct: number | null;
   slippagePct: number | null;
+  feed: FeedStatus | null;
   runs: number;
   uptimeSecTotal: number;
   ticks: number;

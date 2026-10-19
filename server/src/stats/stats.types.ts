@@ -1,6 +1,8 @@
 // Ответ GET /api/stats. Клиент держит зеркальную копию этих типов
 // в client/src/types.ts — при изменении правьте обе.
 
+import type { FeedStatus } from '../trading/types.js';
+
 export type BotRunStatus = 'running' | 'stale' | 'stopped';
 
 export interface BotStats {
@@ -54,6 +56,7 @@ export interface Stats {
   startRub: number;
   feePct: number | null;
   slippagePct: number | null;
+  feed: FeedStatus | null;
   runs: number;
   uptimeSecTotal: number;
   ticks: number;

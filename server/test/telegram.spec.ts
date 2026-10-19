@@ -30,7 +30,7 @@ function stats(bots: BotStats[] = BOTS): Stats {
   return {
     updatedAt: null, status: 'running', ageSec: 1, running: true, symbol: 'DOGEUSDT', baseAsset: 'DOGE',
     interval: '5', price: 0.08, rubPerUsd: 85, rateSource: 'ЦБ РФ', startBalance: 11.98, startRub: 1000,
-    feePct: 0.1, slippagePct: 0.02, runs: 1, uptimeSecTotal: 0, ticks: 1, bots,
+    feePct: 0.1, slippagePct: 0.02, feed: null, runs: 1, uptimeSecTotal: 0, ticks: 1, bots,
     totals: { equity: 0, equityRub: 0, invested: 0, investedRub: 0, position: 0, inProfit: 0, tradesTotal: 0, tradesClosed: 0, winRatePct: null },
     lastTrades: [],
     lastRuns: [],

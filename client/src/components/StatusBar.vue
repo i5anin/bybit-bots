@@ -13,6 +13,15 @@ const runText = computed(() => {
   return 'остановлен';
 });
 
+// Насколько свежие решения: поток — доли секунды после закрытия свечи,
+// опрос — до минуты. Пропуски из-за устаревших данных — красным.
+const feedText = computed(() => {
+  const f = props.stats?.feed;
+  if (!f || f.lagSec === null) return '';
+  const src = f.streamConnected ? 'поток' : 'опрос';
+  return `${src} · задержка ${f.lagSec} с · биржа ${f.fetchMs} мс${f.staleSkips ? ` · пропусков ${f.staleSkips}` : ''}`;
+});
+
 const updated = computed(() => {
   if (props.offline) return 'нет связи с сервером';
   return props.stats?.updatedAt ? `обновлено ${time(props.stats.updatedAt)}` : '';
@@ -28,6 +37,7 @@ const updated = computed(() => {
       <span class="dim">
         <span class="dot" :class="{ on: stats?.status === 'running', stale: stats?.status === 'stale' }" />{{ runText }}
       </span>
+      <span v-if="feedText" class="dim" :class="{ down: stats?.feed?.staleSkips }" data-feed>{{ feedText }}</span>
       <span class="dim" style="margin-left: auto">{{ updated }}</span>
     </div>
   </header>

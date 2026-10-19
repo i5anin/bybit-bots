@@ -80,6 +80,14 @@ describe('StatusBar', () => {
     expect(w.get('.dot').classes()).toContain('stale');
   });
 
+  it('shows where the data comes from and how fresh it is', () => {
+    const w = mount(StatusBar, { props: { stats: stats(), offline: false } });
+    expect(w.get('[data-feed]').text()).toBe('поток · задержка 0.4 с · биржа 180 мс');
+    const stale = mount(StatusBar, { props: { stats: stats({ feed: { source: 'опрос', streamConnected: false, lagSec: 400, fetchMs: 200, staleSkips: 3 } }), offline: false } });
+    expect(stale.get('[data-feed]').text()).toContain('опрос');
+    expect(stale.get('[data-feed]').classes()).toContain('down');
+  });
+
   it('warns when the server is unreachable', () => {
     const w = mount(StatusBar, { props: { stats: stats(), offline: true } });
     expect(w.text()).toContain('нет связи с сервером');

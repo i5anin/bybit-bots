@@ -16,6 +16,9 @@ export interface AppConfig {
   bybitBaseUrl: string;
   bybitCategory: string;
   bybitTimeoutMs: number;
+  // Поток свечей WebSocket: решение сразу после закрытия свечи, а не на опросе.
+  bybitStream: boolean;
+  bybitStreamUrl: string;
   dataDir: string;
   logDir: string;
   clientDir: string;
@@ -79,6 +82,10 @@ export function loadConfig(env: Env = process.env, cwd = process.cwd()): AppConf
     bybitBaseUrl: str(env, 'BYBIT_BASE_URL', 'https://api.bybit.com'),
     bybitCategory: str(env, 'BYBIT_CATEGORY', 'spot'),
     bybitTimeoutMs: num(env, 'BYBIT_TIMEOUT_MS', 15_000),
+    bybitStream: bool(env, 'BYBIT_STREAM', true),
+    bybitStreamUrl: str(env, 'BYBIT_STREAM_URL',
+      `${str(env, 'BYBIT_BASE_URL', '').includes('testnet') ? 'wss://stream-testnet.bybit.com' : 'wss://stream.bybit.com'}`
+      + `/v5/public/${str(env, 'BYBIT_CATEGORY', 'spot')}`),
     // STATE_DIR/LOGS_DIR — имена прежних бота и панели, оставлены для совместимости.
     dataDir: path.resolve(cwd, str(env, 'DATA_DIR', str(env, 'STATE_DIR', 'data'))),
     logDir: path.resolve(cwd, str(env, 'LOG_DIR', str(env, 'LOGS_DIR', 'logs'))),
