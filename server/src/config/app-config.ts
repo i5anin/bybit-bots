@@ -27,6 +27,13 @@ export interface AppConfig {
     chatId: string;
     minPnlPct: number;
     digestHour: number;
+    // Отчёт каждый час с dayFrom до dayTo включительно (местное время, TZ);
+    // ночью отчётов нет, а сделки приходят без звука.
+    hourly: boolean;
+    dayFrom: number;
+    dayTo: number;
+    // Отвечать на /now и кнопку «Обновить» (опрос getUpdates).
+    commands: boolean;
     intervalMs: number;
     publicUrl: string;
   };
@@ -47,6 +54,14 @@ function num(env: Env, key: string, fallback: number): number {
 function str(env: Env, key: string, fallback: string): string {
   const raw = env[key];
   return raw === undefined || raw.trim() === '' ? fallback : raw.trim();
+}
+
+function bool(env: Env, key: string, fallback: boolean): boolean {
+  const raw = env[key]?.trim().toLowerCase();
+  if (!raw) return fallback;
+  if (['1', 'true', 'yes', 'on', 'да'].includes(raw)) return true;
+  if (['0', 'false', 'no', 'off', 'нет'].includes(raw)) return false;
+  throw new Error(`${key}=${env[key]}: ожидалось 1 или 0`);
 }
 
 export function loadConfig(env: Env = process.env, cwd = process.cwd()): AppConfig {
@@ -76,10 +91,19 @@ export function loadConfig(env: Env = process.env, cwd = process.cwd()): AppConf
       chatId: str(env, 'TELEGRAM_CHAT_ID', ''),
       minPnlPct: num(env, 'TELEGRAM_MIN_PNL_PCT', 0.5),
       digestHour: num(env, 'TELEGRAM_DIGEST_HOUR', 21),
+      hourly: bool(env, 'TELEGRAM_HOURLY', true),
+      dayFrom: num(env, 'TELEGRAM_DAY_FROM', 9),
+      dayTo: num(env, 'TELEGRAM_DAY_TO', 22),
+      commands: bool(env, 'TELEGRAM_COMMANDS', true),
       intervalMs: num(env, 'NOTIFY_INTERVAL_MS', 60_000),
       publicUrl: str(env, 'WEB_PUBLIC_URL', ''),
     },
   };
+}
+
+// Час входит в дневное окно; окно может переходить через полночь (22 → 2).
+export function inDayHours(hour: number, from: number, to: number): boolean {
+  return from <= to ? hour >= from && hour <= to : hour >= from || hour <= to;
 }
 
 // Рынок в состоянии: смена тестнета на реальный рынок сбрасывает счёт.

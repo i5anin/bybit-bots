@@ -18,6 +18,6 @@ import { EngineService } from './engine.service.js';
     { provide: TradeLog, inject: [APP_CONFIG], useFactory: (c: AppConfig) => new TradeLog(c.logDir) },
     EngineService,
   ],
-  exports: [APP_CONFIG, StateStore, TradeLog, EngineService],
+  exports: [APP_CONFIG, BybitClient, StateStore, TradeLog, EngineService],
 })
 export class TradingModule {}

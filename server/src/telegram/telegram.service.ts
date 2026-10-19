@@ -3,98 +3,58 @@ import path from 'node:path';
 import {
   Inject, Injectable, Logger, type OnApplicationBootstrap, type OnApplicationShutdown,
 } from '@nestjs/common';
-import { APP_CONFIG, type AppConfig } from '../config/app-config.js';
+import { APP_CONFIG, inDayHours, type AppConfig } from '../config/app-config.js';
+import { BybitClient } from '../market/bybit.js';
 import { RatesService } from '../stats/rates.service.js';
 import { StatsService } from '../stats/stats.service.js';
-import type { Stats, TradeRow } from '../stats/stats.types.js';
 import { EngineService, type TradeEvent } from '../trading/engine.service.js';
+import { priceLabel, renderChartPng } from './chart.js';
+import {
+  esc, pct, reportClassic, reportRichHtml, rub, tradeClassic, tradeRichHtml,
+  type ReportInput, type ReportKind,
+} from './report.js';
+import { TelegramApi, type Update } from './telegram-api.js';
 
-// Что уже отправлено: сводка — раз в день, а «за сутки» в ней считается
-// от счетов на момент прошлой сводки.
-interface Seen {
+// Что уже отправлено и с чем сравнивать: «за час» — от счетов на момент
+// прошлого часового отчёта, «за сутки» — от прошлого итога дня.
+export interface Seen {
   lastDigestDay: string | null;
   lastDigestAt: string | null;
   digestRub: Record<string, number>;
+  digestPrice: number | null;
+  lastReportKey: string | null;
+  lastReportAt: string | null;
+  reportRub: Record<string, number>;
+  reportPrice: number | null;
 }
 
-const EMPTY_SEEN: Seen = { lastDigestDay: null, lastDigestAt: null, digestRub: {} };
+const EMPTY_SEEN: Seen = {
+  lastDigestDay: null, lastDigestAt: null, digestRub: {}, digestPrice: null,
+  lastReportKey: null, lastReportAt: null, reportRub: {}, reportPrice: null,
+};
 
-function escapeHtml(s: unknown): string {
-  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const HOUR_MS = 3_600_000;
+const STALE_COMMAND_SEC = 300; // команду, пролежавшую дольше (сервер стоял), не выполняем
+const FIRST_REPORT_DELAY_MS = 15_000; // дать движку сделать первый тик после запуска
+
+function localDay(d: Date): string {
+  return d.toLocaleDateString('sv-SE'); // ГГГГ-ММ-ДД в местном времени (TZ)
 }
 
-// «1 234 ₽» с неразрывными пробелами, чтобы сумма не переносилась по частям;
-// знак — у прибыли и убытка.
-const NBSP = ' ';
-function rub(v: number, sign = false): string {
-  const text = `${Math.abs(Math.round(v)).toLocaleString('ru-RU').replace(/\s/g, NBSP)}${NBSP}₽`;
-  if (!sign) return Math.round(v) < 0 ? `−${text}` : text;
-  return Math.round(v) > 0 ? `+${text}` : Math.round(v) < 0 ? `−${text}` : `±${text}`;
-}
-
-function pct(v: number): string {
-  return `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toFixed(2)} %`;
-}
-
-export interface TradeMessageContext {
-  rubPerUsd: number;
-  startRub: number;
-}
-
-export function tradeMessage(e: TradeEvent, ctx: TradeMessageContext): string {
-  const profitRub = (e.pnlUsdt ?? 0) * ctx.rubPerUsd;
-  const equityRub = e.equity * ctx.rubPerUsd;
-  return [
-    `✅ <b>${rub(profitRub, true)}</b> (${pct(e.pnlPct ?? 0)}) — ${escapeHtml(e.bot)}`,
-    `Продажа по ${e.price}, прибыль $${(e.pnlUsdt ?? 0).toFixed(4)} после комиссий`,
-    `Счёт бота: <b>${rub(equityRub)}</b>, с начала ${rub(equityRub - ctx.startRub, true)}`,
-  ].join('\n');
-}
-
-export function digestMessage(stats: Stats, seen: Seen, trades: readonly TradeRow[], webUrl: string, now: Date): string {
-  const hasPrev = Object.keys(seen.digestRub).length > 0;
-  const lines = stats.bots.map((b, i) => {
-    const sinceStart = b.equityRub - stats.startRub;
-    const prev = seen.digestRub[b.name];
-    const day = prev === undefined ? '' : ` · за сутки ${rub(b.equityRub - prev, true)}`;
-    const follows = b.isMeta ? `\n    ${b.leader ? `повторяет ${escapeHtml(b.leader)}` : 'вне рынка: в плюсе никого'}` : '';
-    return `${i + 1}. ${escapeHtml(b.name)} — <b>${rub(b.equityRub)}</b> (${rub(sinceStart, true)})${day}${follows}`;
-  });
-
-  const total = stats.bots.reduce((s, b) => s + b.equityRub, 0);
-  const invested = stats.startRub * stats.bots.length;
-  const prevTotal = hasPrev ? Object.values(seen.digestRub).reduce((s, v) => s + v, 0) : null;
-  const since = seen.lastDigestAt;
-  const dayTrades = trades.filter(t => !since || t.time > since);
-  const dayClosed = dayTrades.filter(t => t.pnlPct !== '');
-  const dayWins = dayClosed.filter(t => Number(t.pnlPct) > 0).length;
-  const date = now.toLocaleDateString('ru-RU');
-
-  return [
-    `📊 <b>Итог дня ${date}</b> — ${escapeHtml(stats.symbol)}`,
-    `У каждого бота старт ${rub(stats.startRub)}. В скобках — сколько заработал с начала.`,
-    '',
-    ...lines,
-    '',
-    `<b>Все ${stats.bots.length} вместе: ${rub(total)} из ${rub(invested)} (${rub(total - invested, true)})</b>`
-      + (prevTotal === null ? '' : `, за сутки ${rub(total - prevTotal, true)}`),
-    `В плюсе с начала: ${stats.bots.filter(b => b.equityRub > stats.startRub).length} из ${stats.bots.length}`,
-    `Сделок ${since ? 'за сутки' : 'всего'}: ${dayTrades.length}, закрыто ${dayClosed.length}`
-      + (dayClosed.length ? `, в плюс ${dayWins}` : ''),
-    `Курс ${stats.rubPerUsd.toFixed(2)} ₽ за $ (${escapeHtml(stats.rateSource)})`,
-    webUrl ? `\n<a href="${escapeHtml(webUrl)}">Панель</a>` : '',
-  ].join('\n');
-}
-
-// Оповещения в Telegram: итог дня со счётом и заработком каждого бота и
-// прибыльные сделки с суммой. Без токена в окружении молча не работает:
-// движок и панель от этого не страдают.
+// Оповещения в Telegram: каждый час днём — итоги часа с графиком, раз в день —
+// итог дня, прибыльные сделки — сразу (ночью без звука), /now — отчёт по
+// запросу. Без токена в окружении молча не работает: движок и панель от этого
+// не страдают.
 @Injectable()
 export class TelegramService implements OnApplicationBootstrap, OnApplicationShutdown {
   private readonly logger = new Logger('Telegram');
   private readonly seenFile: string;
-  private timer: NodeJS.Timeout | null = null;
+  private readonly api: TelegramApi;
+  private timers: NodeJS.Timeout[] = [];
   private unsubscribe: (() => void) | null = null;
+  private polling: AbortController | null = null;
+  private ticking: Promise<ReportKind | null> | null = null;
+  private richFailed = false;
   readonly enabled: boolean;
 
   constructor(
@@ -102,58 +62,83 @@ export class TelegramService implements OnApplicationBootstrap, OnApplicationShu
     @Inject(StatsService) private readonly stats: StatsService,
     @Inject(RatesService) private readonly rates: RatesService,
     @Inject(EngineService) private readonly engine: EngineService,
-    private readonly fetchFn: typeof fetch = fetch,
+    @Inject(BybitClient) private readonly bybit: BybitClient,
+    fetchFn: typeof fetch = fetch,
   ) {
-    this.enabled = Boolean(config.telegram.token && config.telegram.chatId);
+    const { token, chatId } = config.telegram;
+    this.enabled = Boolean(token && chatId);
     this.seenFile = path.join(config.dataDir, 'notify-state.json');
+    this.api = new TelegramApi(token, chatId, fetchFn);
+  }
+
+  schedule(): string {
+    const t = this.config.telegram;
+    const hourly = t.hourly ? `каждый час с ${t.dayFrom}:00 до ${t.dayTo}:00` : 'без часовых отчётов';
+    return `${hourly}, итог дня в ${t.digestHour}:00`;
   }
 
   onApplicationBootstrap(): void {
-    this.logger.log(this.enabled
-      ? `оповещения включены: сделки от +${this.config.telegram.minPnlPct} %, итог дня после ${this.config.telegram.digestHour}:00`
-      : 'оповещения выключены: нет TELEGRAM_BOT_TOKEN или TELEGRAM_CHAT_ID');
-    if (!this.enabled) return;
+    const t = this.config.telegram;
+    if (!this.enabled) {
+      this.logger.log('оповещения выключены: нет TELEGRAM_BOT_TOKEN или TELEGRAM_CHAT_ID');
+      return;
+    }
+    this.logger.log(`оповещения включены: ${this.schedule()}, сделки от +${t.minPnlPct} %`);
     this.unsubscribe = this.engine.onTrade(e => void this.notifyTrade(e));
     void this.sendStartupNotice();
-    this.timer = setInterval(() => void this.digestIfDue(), this.config.telegram.intervalMs);
+    this.timers.push(setTimeout(() => void this.tick(), FIRST_REPORT_DELAY_MS));
+    this.timers.push(setInterval(() => void this.tick(), t.intervalMs));
+    if (t.commands) {
+      void this.api.setCommands([
+        { command: 'now', description: 'Результаты прямо сейчас' },
+        { command: 'help', description: 'Что и когда присылает бот' },
+      ]);
+      void this.pollCommands();
+    }
   }
 
   onApplicationShutdown(): void {
-    if (this.timer) clearInterval(this.timer);
+    for (const timer of this.timers) clearTimeout(timer);
+    this.timers = [];
     this.unsubscribe?.();
+    this.polling?.abort();
   }
 
-  async send(html: string): Promise<boolean> {
+  // Rich-сообщение; если Telegram его не принял — фото с подписью и текст.
+  private async deliver(rich: string, classic: { caption: string; text: string }, photo: Buffer | null, silent = false): Promise<boolean> {
     if (!this.enabled) return false;
-    const { token, chatId } = this.config.telegram;
-    try {
-      const res = await this.fetchFn(`https://api.telegram.org/bot${token}/sendMessage`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ chat_id: chatId, text: html, parse_mode: 'HTML', disable_web_page_preview: true }),
-        signal: AbortSignal.timeout(15_000),
-      });
-      if (!res.ok) {
-        this.logger.warn(`Telegram отказал: ${res.status} ${(await res.text()).slice(0, 200)}`);
-        return false;
-      }
-      return true;
-    } catch (err) {
-      this.logger.warn(`не отправлено: ${(err as Error).message}`);
-      return false;
+    const res = await this.api.sendRichMessage(rich, photo, { silent });
+    if (res.ok) return true;
+    if (!this.richFailed) {
+      this.logger.warn(`rich-сообщение не принято (${res.description}), отправляю обычным`);
+      this.richFailed = true;
     }
+    let ok = false;
+    if (photo) ok = (await this.api.sendPhoto(photo, classic.caption, { silent })).ok;
+    const text = await this.api.sendMessage(classic.text, { silent });
+    if (!text.ok) this.logger.warn(`Telegram отказал: ${text.description}`);
+    return ok || text.ok;
   }
 
   private startRub(rubPerUsd: number): number {
     return this.config.startRub > 0 ? this.config.startRub : this.config.startBalance * rubPerUsd;
   }
 
-  // Закрытая сделка с прибылью от порога — сразу, с суммой в рублях и долларах.
-  async notifyTrade(e: TradeEvent): Promise<boolean> {
+  // Закрытая сделка с прибылью от порога — сразу; ночью без звука.
+  async notifyTrade(e: TradeEvent, now = new Date()): Promise<boolean> {
     if (!this.enabled || e.side !== 'sell' || e.pnlPct === undefined) return false;
     if (e.pnlPct < this.config.telegram.minPnlPct) return false;
     const { value } = await this.rates.rubPerUsd();
-    return this.send(tradeMessage(e, { rubPerUsd: value, startRub: this.startRub(value) }));
+    const ctx = { rubPerUsd: value, startRub: this.startRub(value) };
+    const silent = !this.isDay(now);
+    const res = await this.api.sendRichMessage(tradeRichHtml(e, ctx), null, { silent });
+    if (res.ok) return true;
+    return (await this.api.sendMessage(tradeClassic(e, ctx), { silent })).ok;
+  }
+
+  private isDay(now: Date): boolean {
+    const t = this.config.telegram;
+    return inDayHours(now.getHours(), t.dayFrom, t.dayTo);
   }
 
   private async loadSeen(): Promise<Seen> {
@@ -169,39 +154,161 @@ export class TelegramService implements OnApplicationBootstrap, OnApplicationShu
     await writeFile(this.seenFile, JSON.stringify(seen, null, 2));
   }
 
-  // Итог дня — один раз в сутки, после DIGEST_HOUR по времени контейнера (TZ).
-  async digestIfDue(now = new Date()): Promise<boolean> {
-    if (!this.enabled) return false;
+  // Собирает отчёт: текст, запасной текст и картинку (если удалось нарисовать).
+  async buildReport(kind: ReportKind, seen: Seen, now: Date) {
+    const [stats, trades] = await Promise.all([this.stats.stats(now.getTime()), this.stats.allTrades()]);
+    const isDay = kind === 'day';
+    const sinceIso = (isDay ? seen.lastDigestAt : seen.lastReportAt)
+      ?? new Date(now.getTime() - (isDay ? 24 : 1) * HOUR_MS).toISOString();
+    const prev = isDay ? seen.digestRub : seen.reportRub;
+    const candles = await this.bybit.klines(this.config.symbol, '15', 96).catch(() => []);
+
+    const input: ReportInput = {
+      kind,
+      stats,
+      prevRub: Object.keys(prev).length ? prev : null,
+      prevPrice: isDay ? seen.digestPrice : seen.reportPrice,
+      price24hAgo: candles[0]?.open ?? null,
+      trades: trades.filter(t => t.time > sinceIso),
+      now,
+      webUrl: this.config.telegram.publicUrl,
+      hasPhoto: false,
+      refreshButton: this.config.telegram.commands,
+      schedule: this.schedule(),
+    };
+
+    let photo: Buffer | null = null;
+    try {
+      const dayAgo = new Date(now.getTime() - 24 * HOUR_MS).toISOString();
+      const total = stats.bots.reduce((s, b) => s + b.equityRub, 0);
+      const dayPct = stats.price && input.price24hAgo ? (stats.price / input.price24hAgo - 1) * 100 : null;
+      photo = renderChartPng({
+        title: `${stats.symbol} · ${kind === 'day' ? 'итог дня' : kind === 'hour' ? `итоги часа ${String(now.getHours()).padStart(2, '0')}:00` : 'сейчас'}`,
+        subtitle: [
+          stats.price ? `цена ${priceLabel(stats.price)} $` : '',
+          dayPct === null ? '' : `${pct(dayPct)} за сутки`,
+          `все ${stats.bots.length}: ${rub(total)} из ${rub(stats.startRub * stats.bots.length)}`,
+        ].filter(Boolean).join(' · ').replace(/ /g, ' '),
+        prices: candles.map(c => ({ time: c.time, price: c.close })),
+        trades: trades.filter(t => t.time > dayAgo).map(t => ({
+          time: Date.parse(t.time), price: Number(t.price), side: t.side === 'buy' ? 'buy' as const : 'sell' as const,
+        })),
+        bars: stats.bots.map(b => ({
+          name: b.name,
+          total: b.equityRub - stats.startRub,
+          period: input.prevRub?.[b.name] === undefined ? null : b.equityRub - input.prevRub[b.name]!,
+          highlight: b.isMeta,
+        })),
+        periodLabel: kind === 'day' ? 'за сутки' : kind === 'hour' ? 'за час' : 'с отчёта',
+      });
+      input.hasPhoto = true;
+    } catch (err) {
+      this.logger.warn(`график не нарисован: ${(err as Error).message}`);
+    }
+    return { input, stats, photo };
+  }
+
+  private snapshot(stats: { bots: { name: string; equityRub: number }[] }): Record<string, number> {
+    return Object.fromEntries(stats.bots.map(b => [b.name, Math.round(b.equityRub * 100) / 100]));
+  }
+
+  // Раз в минуту: итог дня, если пора, иначе отчёт за час, если он ещё не ушёл
+  // и сейчас не ночь. Отчёт за пропущенные часы не досылается — только текущий.
+  tick(now = new Date()): Promise<ReportKind | null> {
+    if (!this.enabled) return Promise.resolve(null);
+    this.ticking ??= this.runTick(now).finally(() => { this.ticking = null; });
+    return this.ticking;
+  }
+
+  private async runTick(now: Date): Promise<ReportKind | null> {
+    const t = this.config.telegram;
     try {
       const seen = await this.loadSeen();
-      const today = now.toLocaleDateString('sv-SE'); // ГГГГ-ММ-ДД в местном времени
-      if (now.getHours() < this.config.telegram.digestHour || seen.lastDigestDay === today) return false;
+      const day = localDay(now);
+      const hourKey = `${day} ${String(now.getHours()).padStart(2, '0')}`;
+      const digestDue = now.getHours() >= t.digestHour && seen.lastDigestDay !== day;
+      const hourlyDue = t.hourly && this.isDay(now) && seen.lastReportKey !== hourKey;
+      if (!digestDue && !hourlyDue) return null;
 
-      const [stats, trades] = await Promise.all([this.stats.stats(now.getTime()), this.stats.allTrades()]);
-      if (!stats.bots.length) return false;
-      const sent = await this.send(digestMessage(stats, seen, trades, this.config.telegram.publicUrl, now));
-      if (!sent) return false;
-      await this.saveSeen({
-        lastDigestDay: today,
-        lastDigestAt: now.toISOString(),
-        digestRub: Object.fromEntries(stats.bots.map(b => [b.name, b.equityRub])),
-      });
-      return true;
+      const kind: ReportKind = digestDue ? 'day' : 'hour';
+      const { input, stats, photo } = await this.buildReport(kind, seen, now);
+      if (!stats.bots.length) return null;
+      const sent = await this.deliver(reportRichHtml(input), reportClassic(input), photo);
+      if (!sent) return null;
+
+      // Итог дня заменяет отчёт своего часа, поэтому обновляет и часовой снимок.
+      const snap = this.snapshot(stats);
+      const next: Seen = { ...seen, lastReportKey: hourKey, lastReportAt: now.toISOString(), reportRub: snap, reportPrice: stats.price };
+      if (kind === 'day') {
+        Object.assign(next, { lastDigestDay: day, lastDigestAt: now.toISOString(), digestRub: snap, digestPrice: stats.price });
+      }
+      await this.saveSeen(next);
+      return kind;
     } catch (err) {
-      this.logger.warn(`итог дня не отправлен: ${(err as Error).message}`);
-      return false;
+      this.logger.warn(`отчёт не отправлен: ${(err as Error).message}`);
+      return null;
     }
   }
 
-  private async sendStartupNotice(): Promise<void> {
-    const { minPnlPct, digestHour, publicUrl } = this.config.telegram;
-    await this.send([
-      '🤖 <b>Боты Bybit на связи</b>',
-      '',
-      `${escapeHtml(this.config.symbol)}, свечи ${escapeHtml(this.config.interval)} мин`,
-      `Итог дня — после ${digestHour}:00: счёт и заработок каждого бота`,
-      `Сделки — сразу, если прибыль от +${minPnlPct} %`,
-      publicUrl ? `\n<a href="${escapeHtml(publicUrl)}">Панель</a>` : '',
-    ].join('\n'));
+  // Отчёт по запросу: изменения — с прошлого часового отчёта, снимок не трогаем.
+  async sendNow(now = new Date()): Promise<boolean> {
+    const seen = await this.loadSeen();
+    const { input, stats, photo } = await this.buildReport('now', seen, now);
+    if (!stats.bots.length) return (await this.api.sendMessage('Данных пока нет: бот ещё не сделал ни одного тика')).ok;
+    return this.deliver(reportRichHtml(input), reportClassic(input), photo);
+  }
+
+  // Только из настроенного чата: бот публичный, найти его может кто угодно.
+  async handleUpdate(u: Update, nowSec = Math.floor(Date.now() / 1000)): Promise<void> {
+    const mine = (id: number | undefined) => id !== undefined && String(id) === this.config.telegram.chatId;
+    if (u.callback_query) {
+      const q = u.callback_query;
+      if (!mine(q.message?.chat.id) || q.data !== 'now') return;
+      await this.api.answerCallback(q.id, 'Собираю свежий отчёт…');
+      await this.sendNow();
+      return;
+    }
+    const m = u.message;
+    if (!m || !mine(m.chat.id) || !m.text) return;
+    if (m.date !== undefined && nowSec - m.date > STALE_COMMAND_SEC) return;
+    const command = m.text.trim().split(/[\s@]/)[0]?.toLowerCase();
+    if (command === '/now') await this.sendNow();
+    else if (command === '/start' || command === '/help') await this.sendStartupNotice();
+  }
+
+  private async pollCommands(): Promise<void> {
+    this.polling = new AbortController();
+    const { signal } = this.polling;
+    let offset = 0;
+    let warned = false;
+    while (!signal.aborted) {
+      const res = await this.api.getUpdates(offset, 50, signal);
+      if (signal.aborted) break;
+      if (!res.ok) {
+        if (!warned) this.logger.warn(`команды не принимаются: ${res.description}`);
+        warned = true;
+        await new Promise(r => setTimeout(r, 10_000));
+        continue;
+      }
+      warned = false;
+      for (const u of res.result ?? []) {
+        offset = u.update_id + 1;
+        await this.handleUpdate(u).catch(err => this.logger.warn(`команда не выполнена: ${(err as Error).message}`));
+      }
+    }
+  }
+
+  async sendStartupNotice(): Promise<void> {
+    const t = this.config.telegram;
+    const items = [
+      t.hourly ? `каждый час с ${t.dayFrom}:00 до ${t.dayTo}:00 — итоги часа с графиком` : '',
+      `в ${t.digestHour}:00 — итог дня: счёт и заработок каждого бота`,
+      `прибыльные сделки от +${t.minPnlPct} % — сразу, ночью без звука`,
+      t.commands ? '/now — результаты прямо сейчас' : '',
+    ].filter(Boolean);
+    const rich = `<h2>🤖 Боты Bybit на связи</h2><p>${esc(this.config.symbol)}, свечи ${esc(this.config.interval)} мин. Буду присылать:</p>`
+      + `<ul>${items.map(i => `<li>${esc(i)}</li>`).join('')}</ul>`;
+    const classic = ['🤖 <b>Боты Bybit на связи</b>', ...items.map(i => `• ${esc(i)}`)].join('\n');
+    await this.deliver(rich, { caption: classic, text: classic }, null);
   }
 }
