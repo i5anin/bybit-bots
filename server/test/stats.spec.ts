@@ -17,18 +17,24 @@ const state = {
 } as unknown as EngineState;
 const rate = { value: 80, source: 'test' };
 const equity = (): EquityHistory => addEquity({ series: new Map(), lastPrice: null }, [
-  { bot: 'Stochastic Oscillator (14, 20/80)', equity: '12', price: '0.1' },
-  { bot: 'Stochastic Oscillator (14, 20/80)', equity: '13.2', price: '0.11' },
+  { symbol: 'DOGEUSDT', bot: 'Stochastic Oscillator (14, 20/80)', equity: '12', price: '0.1' },
+  { symbol: 'DOGEUSDT', bot: 'Stochastic Oscillator (14, 20/80)', equity: '13.2', price: '0.11' },
 ]);
 const build = (extra: Partial<Parameters<typeof buildStats>[0]> = {}) => buildStats({
-  state, equity: equity(), trades: [], runs: [], rate, startRub: 1000, staleSec: 300, ...extra,
+  state, equity: equity(), trades: [], runs: [], rate, startRub: 1000, staleSec: 300, bankRatePct: 16, ...extra,
 });
 
 describe('buildStats', () => {
-  it("counts rubles from the fixed start, not from today's rate", () => {
+  it('counts ruble profit as dollar profit at the current rate, from a fixed 1000 ₽ start', () => {
     const s = build();
-    expect(s.bots[0]).toMatchObject({ equityRub: 1056, pnlRubPct: 5.6, pnlPct: 10 });
+    // +1.2 $ × 80 ₽ = +96 ₽; курс сам по себе прибылью не считается.
+    expect(s.bots[0]).toMatchObject({ equityRub: 1096, pnlRub: 96, pnlRubPct: 9.6, pnlPct: 10 });
     expect(s.startRub).toBe(1000);
+  });
+
+  it('a bot that has not traded shows exactly the start, whatever the rate', () => {
+    const flat = { ...state, bots: { A: { ledger: { cash: 12, position: 0, lastPrice: 0.1 } } } } as unknown as EngineState;
+    expect(build({ state: flat, rate: { value: 83.62, source: 'ЦБ' } }).bots[0]).toMatchObject({ equityRub: 1000, pnlRub: 0 });
   });
 
   it('falls back to start balance times the rate without START_RUB', () => {
@@ -40,11 +46,67 @@ describe('buildStats', () => {
     expect(meta).toEqual(['Old meta', 'Авто-выбор лучшей (11)']);
   });
 
-  it('takes the price and sparkline from the equity log', () => {
+  it('takes the price from the bots and the sparkline from the equity log', () => {
     const s = build();
-    expect(s.price).toBe(0.11);
+    expect(s.price).toBe(0.1);
     expect(s.bots[0]!.spark).toEqual([12, 13.2, 13.2]);
     expect(s.baseAsset).toBe('DOGE');
+  });
+
+  describe('many pairs', () => {
+    const now = Date.parse('2026-10-29T12:00:00Z');
+    const multi = {
+      startBalance: 12,
+      symbol: 'ZKUSDT',
+      symbols: ['ZKUSDT', 'TIAUSDT'],
+      sessionStartedAt: '2026-10-19T12:00:00Z', // 10 дней назад
+      orderPct: 1,
+      enforceMinOrder: false,
+      lots: { ZKUSDT: { minOrderAmt: 5, minOrderQty: 0, qtyStep: 0.1 }, TIAUSDT: { minOrderAmt: 1, minOrderQty: 10, qtyStep: 0.01 } },
+      bots: {
+        'ZKUSDT:RSI (14, 30/70)': { ledger: { cash: 12.06, position: 0, lastPrice: 0.12 } },
+        'ZKUSDT:MACD (12/26/9)': { ledger: { cash: 11.94, position: 0, lastPrice: 0.12 } },
+        'TIAUSDT:RSI (14, 30/70)': { ledger: { cash: 12, position: 0, lastPrice: 0.9 } },
+        'TIAUSDT:MACD (12/26/9)': { ledger: { cash: 12.03, position: 0, lastPrice: 0.9 } },
+      },
+    } as unknown as EngineState;
+    const s = buildStats({
+      state: multi, equity: { series: new Map(), lastPrice: null }, trades: [], runs: [],
+      rate: { value: 100, source: 't' }, startRub: 1000, staleSec: 300, bankRatePct: 16, now,
+    });
+
+    it('parses pair and strategy from the bot key', () => {
+      expect(s.bots.map(b => `${b.symbol}|${b.name}`)).toContain('TIAUSDT|MACD (12/26/9)');
+      expect(s.baseAsset).toBe('');
+      expect(s.price).toBeNull();
+    });
+
+    it('sums each strategy over pairs and each pair over strategies', () => {
+      const rsi = s.strategies.find(g => g.name === 'RSI (14, 30/70)')!;
+      expect(rsi).toMatchObject({ bots: 2, equityRub: 2006, investedRub: 2000, pnlRub: 6, inPlus: 1 });
+      expect(rsi.best).toEqual({ name: 'ZK', pnlRub: 6 });
+      const tia = s.pairs.find(p => p.name === 'TIAUSDT')!;
+      expect(tia).toMatchObject({ bots: 2, pnlRub: 3, price: 0.9, minOrderUsdt: 9 });
+      expect(s.pairs[0]!.name).toBe('TIAUSDT');
+    });
+
+    it('annualizes the return over the session and compares it with the deposit', () => {
+      const zkRsi = s.bots.find(b => b.key === 'ZKUSDT:RSI (14, 30/70)')!;
+      // +0.6 % за 10 дней → 0.6 × 365 / 10 = 21.9 % годовых, вклад 16 % — обогнал.
+      expect(zkRsi.aprPct).toBeCloseTo(21.9, 1);
+      expect(s.totals.beatsBank).toBe(1);
+      expect(s.sessionDays).toBe(10);
+      expect(s.orderRub).toBe(10);
+    });
+
+    it('gives no annual return in the first hours', () => {
+      const early = buildStats({
+        state: multi, equity: { series: new Map(), lastPrice: null }, trades: [], runs: [],
+        rate: { value: 100, source: 't' }, startRub: 1000, staleSec: 300, bankRatePct: 16,
+        now: Date.parse('2026-10-19T14:00:00Z'),
+      });
+      expect(early.totals.aprPct).toBeNull();
+    });
   });
 
   it('counts win rate over closed trades only', () => {

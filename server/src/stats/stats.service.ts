@@ -6,17 +6,18 @@ import { StateStore } from '../storage/state-store.js';
 import { TradeLog } from '../storage/trade-log.js';
 import { EngineService } from '../trading/engine.service.js';
 import type { EngineState } from '../trading/types.js';
-import { botStatus, buildStats, type EquityHistory } from './build-stats.js';
+import { botStatus, buildStats, sparkOf, type EquityHistory } from './build-stats.js';
 import { RatesService } from './rates.service.js';
-import type { BotRunStatus, RunRow, Stats, TradeRow } from './stats.types.js';
+import type { BotRunStatus, PairDetail, RunRow, Stats, TradeRow } from './stats.types.js';
 
 // Добавляет строки equity.csv в прорежённые ряды по ботам.
 export function addEquity(acc: EquityHistory, rows: readonly CsvRecord[]): EquityHistory {
   for (const row of rows) {
     const v = Number(row.equity);
     if (!row.bot || !Number.isFinite(v)) continue;
-    let series = acc.series.get(row.bot);
-    if (!series) acc.series.set(row.bot, (series = new DecimatedSeries()));
+    const key = `${row.symbol}:${row.bot}`;
+    let series = acc.series.get(key);
+    if (!series) acc.series.set(key, (series = new DecimatedSeries()));
     series.push(v);
     const price = Number(row.price);
     if (Number.isFinite(price)) acc.lastPrice = price;
@@ -77,8 +78,21 @@ export class StatsService {
       rate,
       startRub: this.config.startRub,
       staleSec: this.config.staleSec,
+      bankRatePct: this.config.bankRatePct,
       now,
     });
+  }
+
+  // Отчёт по одной паре: её 12 ботов с рядами счёта и её сделки.
+  async pairDetail(symbol: string, now = Date.now()): Promise<PairDetail> {
+    const stats = await this.stats(now);
+    const pair = stats.pairs.find(p => p.name === symbol) ?? null;
+    return {
+      symbol,
+      pair,
+      bots: stats.bots.filter(b => b.symbol === symbol).map(b => ({ ...b, spark: sparkOf(this.equity, symbol, b.name) })),
+      trades: this.trades.filter(t => t.symbol === symbol).slice(-100).reverse(),
+    };
   }
 
   async allTrades(): Promise<readonly TradeRow[]> {
