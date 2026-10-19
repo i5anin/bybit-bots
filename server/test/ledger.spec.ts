@@ -3,7 +3,7 @@ import { Ledger, lotQty, NO_COSTS } from '../src/trading/ledger.js';
 import type { Costs } from '../src/trading/types.js';
 
 const DOGE_LOT = { minOrderAmt: 5, minOrderQty: 0.1, qtyStep: 0.1 };
-const REAL: Costs = { feePct: 0.1, slippagePct: 0.02, lot: DOGE_LOT, orderUsdt: 0 };
+const REAL: Costs = { feePct: 0.1, slippagePct: 0.02, lot: DOGE_LOT, orderUsdt: 0, orderPct: 0, enforceMinOrder: true };
 
 describe('lotQty', () => {
   it('rounds up to the exchange step so the order is never below the minimum', () => {

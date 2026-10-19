@@ -46,7 +46,10 @@ const runs: Run[] = [];
 
 for (const symbol of symbols) {
   const lot: LotRules = await client.lotRules(symbol).catch(() => ({ minOrderAmt: 5, minOrderQty: 0, qtyStep: 0 }));
-  const costs: Costs = { feePct: config.feePct, slippagePct: config.slippagePct, lot, orderUsdt: config.orderUsdt };
+  const costs: Costs = {
+    feePct: config.feePct, slippagePct: config.slippagePct, lot, orderUsdt: config.orderUsdt,
+    orderPct: config.orderPct, enforceMinOrder: config.enforceMinOrder,
+  };
   for (const interval of intervals) {
     try {
       const candles = await client.history(symbol, interval, from, to);

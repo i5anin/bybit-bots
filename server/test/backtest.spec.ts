@@ -8,7 +8,7 @@ import type { Action, Candle, Costs, Strategy } from '../src/trading/types.js';
 
 const candle = (time: number, close: number): Candle => ({ time, open: close, high: close, low: close, close, volume: 1 });
 const always = (action: Action): Strategy => ({ name: action, signal: () => action });
-const COSTS: Costs = { feePct: 0.1, slippagePct: 0.02, lot: { minOrderAmt: 5, minOrderQty: 0.1, qtyStep: 0.1 }, orderUsdt: 0 };
+const COSTS: Costs = { feePct: 0.1, slippagePct: 0.02, lot: { minOrderAmt: 5, minOrderQty: 0.1, qtyStep: 0.1 }, orderUsdt: 0, orderPct: 0, enforceMinOrder: true };
 
 describe('stop-loss', () => {
   it('sells once the price falls below entry by the stop', () => {

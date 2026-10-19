@@ -2,7 +2,15 @@
 // Состояние сериализуемо — бот продолжает счёт после рестарта контейнера.
 import type { Costs, LedgerSnapshot, LotRules, Trade } from './types.js';
 
-export const NO_COSTS: Readonly<Costs> = Object.freeze({ feePct: 0, slippagePct: 0, lot: null, orderUsdt: 0 });
+export const NO_COSTS: Readonly<Costs> = Object.freeze({
+  feePct: 0, slippagePct: 0, lot: null, orderUsdt: 0, orderPct: 0, enforceMinOrder: true,
+});
+
+// Минимальная сумма ордера пары в USDT по текущей цене: биржа требует и
+// минимальную сумму, и минимальное количество.
+export function minOrderUsdt(lot: LotRules, price: number): number {
+  return Math.max(lot.minOrderAmt || 0, (lot.minOrderQty || 0) * price);
+}
 
 // Количество для ордера: сумма не меньше минимальной, шаг количества — биржевой,
 // округление вверх, чтобы ордер не оказался чуть меньше минимума.
@@ -49,11 +57,18 @@ export class Ledger {
     if (this.position > 0) return null; // уже в позиции
     const fee = this.costs.feePct / 100;
     const fill = price * (1 + this.costs.slippagePct / 100);
-    // С правилами лота берём минимальный ордер, без них — весь счёт.
+    // Ставка в % от счёта; иначе минимальный ордер биржи; без правил лота — весь счёт.
     const lot = this.costs.lot;
-    const qty = lot && lot.minOrderAmt > 0
-      ? lotQty(fill, lot, this.costs.orderUsdt)
-      : this.cash / fill / (1 + fee);
+    let qty: number;
+    if (this.costs.orderPct > 0) {
+      qty = (this.cash * this.costs.orderPct / 100) / fill / (1 + fee);
+      if (this.costs.enforceMinOrder && lot) {
+        if (lot.qtyStep > 0) qty = Number((Math.floor(qty / lot.qtyStep + 1e-9) * lot.qtyStep).toFixed(decimals(lot.qtyStep)));
+        if (qty * fill < minOrderUsdt(lot, fill)) return null; // ставка меньше минимума биржи
+      }
+    } else {
+      qty = lot && lot.minOrderAmt > 0 ? lotQty(fill, lot, this.costs.orderUsdt) : this.cash / fill / (1 + fee);
+    }
     const cost = qty * fill;
     const feePaid = cost * fee;
     if (!(qty > 0) || cost + feePaid > this.cash + 1e-9) return null; // на ордер не хватает

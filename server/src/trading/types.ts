@@ -45,6 +45,11 @@ export interface Costs {
   slippagePct: number;
   lot: LotRules | null;
   orderUsdt: number;
+  // Ставка — доля счёта на одну сделку, %. 0 — минимальный ордер биржи.
+  orderPct: number;
+  // Соблюдать минимальный ордер биржи. В тесте со ставкой 1 % от 1000 ₽
+  // (0.12 $) это невозможно — минимум Bybit около 5 $, — поэтому выключено.
+  enforceMinOrder: boolean;
 }
 
 export interface LedgerSnapshot {
@@ -92,6 +97,11 @@ export interface MetaSnapshot {
 export interface EngineState {
   version: number;
   symbol: string;
+  symbols?: string[]; // пары сессии; нет — одна пара symbol
+  sessionStartedAt?: string; // начало сессии — от него считаются годовые
+  orderPct?: number;
+  enforceMinOrder?: boolean;
+  lots?: Record<string, LotRules>; // правила ордера по парам — для подписи минимальной ставки
   interval: string;
   startBalance: number;
   market: string;

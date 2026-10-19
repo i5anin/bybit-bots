@@ -4,6 +4,11 @@ import path from 'node:path';
 // прежние, .env на сервере менять не нужно.
 export interface AppConfig {
   symbol: string;
+  // Пары: явный список (SYMBOLS=A,B) или топ-N по волатильности (SYMBOLS=top:100),
+  // выбранный один раз на старте сессии. Пусто — одна пара SYMBOL.
+  symbols: string[];
+  symbolsTop: number;
+  symbolsMinTurnover: number;
   interval: string;
   startBalance: number;
   startRub: number;
@@ -11,6 +16,8 @@ export interface AppConfig {
   feePct: number;
   slippagePct: number;
   orderUsdt: number;
+  orderPct: number;
+  enforceMinOrder: boolean;
   metaWindowCandles: number;
   metaSwitchMarginPct: number;
   bybitBaseUrl: string;
@@ -24,6 +31,7 @@ export interface AppConfig {
   clientDir: string;
   port: number;
   staleSec: number;
+  bankRatePct: number;
   rubPerUsdt: number;
   telegram: {
     token: string;
@@ -59,6 +67,12 @@ function str(env: Env, key: string, fallback: string): string {
   return raw === undefined || raw.trim() === '' ? fallback : raw.trim();
 }
 
+function pairSpec(raw: string): { symbols: string[]; symbolsTop: number } {
+  const top = /^top:(\d+)$/i.exec(raw);
+  if (top) return { symbols: [], symbolsTop: Number(top[1]) };
+  return { symbols: raw.split(',').map(s => s.trim().toUpperCase()).filter(Boolean), symbolsTop: 0 };
+}
+
 function bool(env: Env, key: string, fallback: boolean): boolean {
   const raw = env[key]?.trim().toLowerCase();
   if (!raw) return fallback;
@@ -70,6 +84,8 @@ function bool(env: Env, key: string, fallback: boolean): boolean {
 export function loadConfig(env: Env = process.env, cwd = process.cwd()): AppConfig {
   return {
     symbol: str(env, 'SYMBOL', 'DOGEUSDT'),
+    ...pairSpec(str(env, 'SYMBOLS', '')),
+    symbolsMinTurnover: num(env, 'SYMBOLS_MIN_TURNOVER', 500_000),
     interval: str(env, 'INTERVAL', '5'),
     startBalance: num(env, 'START_BALANCE', 100),
     startRub: num(env, 'START_RUB', 0),
@@ -77,6 +93,9 @@ export function loadConfig(env: Env = process.env, cwd = process.cwd()): AppConf
     feePct: num(env, 'FEE_PCT', 0.1),
     slippagePct: num(env, 'SLIPPAGE_PCT', 0.02),
     orderUsdt: num(env, 'ORDER_USDT', 0),
+    // Ставка не больше 2 % счёта — правило владельца; больше конфиг не даст.
+    orderPct: Math.min(2, Math.max(0, num(env, 'ORDER_PCT', 0))),
+    enforceMinOrder: bool(env, 'ENFORCE_MIN_ORDER', true),
     metaWindowCandles: num(env, 'META_WINDOW_CANDLES', 288),
     metaSwitchMarginPct: num(env, 'META_SWITCH_MARGIN_PCT', 0.5),
     bybitBaseUrl: str(env, 'BYBIT_BASE_URL', 'https://api.bybit.com'),
@@ -92,6 +111,8 @@ export function loadConfig(env: Env = process.env, cwd = process.cwd()): AppConf
     clientDir: path.resolve(cwd, str(env, 'CLIENT_DIR', 'client/dist')),
     port: num(env, 'WEB_PORT', 3004),
     staleSec: num(env, 'STALE_SEC', 300),
+    // Ставка вклада, % годовых: с ней сравнивается доходность ботов.
+    bankRatePct: num(env, 'BANK_RATE_PCT', 16),
     rubPerUsdt: num(env, 'RUB_PER_USDT', 85),
     telegram: {
       token: str(env, 'TELEGRAM_BOT_TOKEN', ''),

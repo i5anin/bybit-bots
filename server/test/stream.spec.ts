@@ -28,8 +28,8 @@ describe('KlineStream', () => {
     const sockets: FakeSocket[] = [];
     const closedAt: number[] = [];
     const s = new KlineStream({
-      url: 'wss://x', symbol: 'DOGEUSDT', interval: '5',
-      onCandleClosed: start => closedAt.push(start),
+      url: 'wss://x', symbols: ['DOGEUSDT'], interval: '5',
+      onCandleClosed: (_, start) => closedAt.push(start),
       socket: () => { const ws = new FakeSocket(); sockets.push(ws); return ws; },
       pingMs: 1000,
     });
@@ -45,6 +45,24 @@ describe('KlineStream', () => {
     vi.advanceTimersByTime(2500);
     expect(sockets[0]!.sent.filter(m => m.includes('ping'))).toHaveLength(2);
     expect(s.connected).toBe(true);
+    s.stop();
+  });
+
+  it('subscribes to many pairs in batches of ten and names the pair on close', () => {
+    const sockets: FakeSocket[] = [];
+    const closed: string[] = [];
+    const symbols = Array.from({ length: 25 }, (_, i) => `P${i}USDT`);
+    const s = new KlineStream({
+      url: 'wss://x', symbols, interval: '5',
+      onCandleClosed: symbol => closed.push(symbol),
+      socket: () => { const ws = new FakeSocket(); sockets.push(ws); return ws; },
+    });
+    s.start();
+    sockets[0]!.onopen?.();
+    const subs = sockets[0]!.sent.map(m => JSON.parse(m) as { op: string; args: string[] }).filter(m => m.op === 'subscribe');
+    expect(subs.map(m => m.args.length)).toEqual([10, 10, 5]);
+    sockets[0]!.emit({ topic: 'kline.5.P17USDT', data: [{ start: 1, confirm: true }] });
+    expect(closed).toEqual(['P17USDT']);
     s.stop();
   });
 
@@ -100,7 +118,7 @@ describe('data freshness', () => {
     };
     const store = new StateStore(config.dataDir);
     const e = new EngineService(config, bybit as never, store, new TradeLog(config.logDir));
-    await e.init({ minOrderAmt: 5, minOrderQty: 0.1, qtyStep: 0.1 });
+    await e.init(['DOGEUSDT'], { minOrderAmt: 5, minOrderQty: 0.1, qtyStep: 0.1 });
     await e.tick('поток');
     return { e, store };
   }
@@ -134,10 +152,10 @@ describe('data freshness', () => {
 
   it('skips the tick when the exchange returns data older than one candle', async () => {
     const { e, store } = await engine(6 * 60_000);
-    expect(await store.load()).toBeNull();
     await e.tick('опрос');
-    expect(await store.load()).toBeNull();
-    await e.beforeApplicationShutdown('test');
-    expect((await store.load())!.feed!.staleSkips).toBe(2);
+    const state = (await store.load())!;
+    // Состояние сохранено, но ни один бот по устаревшим свечам не решал.
+    expect(Object.values(state.bots).every(b => b.lastSignalCandle === null)).toBe(true);
+    expect(state.feed!.staleSkips).toBe(2);
   });
 });

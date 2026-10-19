@@ -1,6 +1,8 @@
 // Публичный поток свечей Bybit (WebSocket). Биржа присылает обновления свечи
 // в реальном времени и отдельным сообщением с confirm=true — её закрытие:
 // по нему движок принимает решение сразу, а не на следующем минутном опросе.
+// Одно соединение на все пары; подписка пачками — Bybit spot принимает
+// не больше 10 тем в одном запросе.
 
 interface KlineMessage {
   topic?: string;
@@ -21,14 +23,16 @@ export type SocketFactory = (url: string) => SocketLike;
 
 export interface KlineStreamOptions {
   url: string;
-  symbol: string;
+  symbols: readonly string[];
   interval: string;
-  onCandleClosed: (start: number) => void;
+  onCandleClosed: (symbol: string, start: number) => void;
   log?: (message: string) => void;
   socket?: SocketFactory;
   pingMs?: number;
   maxBackoffMs?: number;
 }
+
+const TOPICS_PER_REQUEST = 10;
 
 export class KlineStream {
   connected = false;
@@ -38,10 +42,10 @@ export class KlineStream {
   private retry: ReturnType<typeof setTimeout> | null = null;
   private backoffMs = 1000;
   private stopped = false;
-  private readonly topic: string;
+  private readonly topics: Map<string, string>; // тема → пара
 
   constructor(private readonly opts: KlineStreamOptions) {
-    this.topic = `kline.${opts.interval}.${opts.symbol}`;
+    this.topics = new Map(opts.symbols.map(s => [`kline.${opts.interval}.${s}`, s]));
   }
 
   start(): void {
@@ -72,10 +76,13 @@ export class KlineStream {
     ws.onopen = () => {
       this.connected = true;
       this.backoffMs = 1000;
-      ws.send(JSON.stringify({ op: 'subscribe', args: [this.topic] }));
+      const all = [...this.topics.keys()];
+      for (let i = 0; i < all.length; i += TOPICS_PER_REQUEST) {
+        ws.send(JSON.stringify({ op: 'subscribe', args: all.slice(i, i + TOPICS_PER_REQUEST) }));
+      }
       // Bybit закрывает соединение без пинга дольше 30 секунд.
       this.ping = setInterval(() => ws.send(JSON.stringify({ op: 'ping' })), this.opts.pingMs ?? 20_000);
-      this.opts.log?.(`поток ${this.topic} подключён`);
+      this.opts.log?.(`поток свечей подключён: ${all.length} пар`);
     };
 
     ws.onmessage = ev => {
@@ -86,9 +93,10 @@ export class KlineStream {
       } catch {
         return;
       }
-      if (msg.topic !== this.topic) return;
+      const symbol = msg.topic ? this.topics.get(msg.topic) : undefined;
+      if (!symbol) return;
       for (const k of msg.data ?? []) {
-        if (k.confirm) this.opts.onCandleClosed(Number(k.start));
+        if (k.confirm) this.opts.onCandleClosed(symbol, Number(k.start));
       }
     };
 
@@ -98,7 +106,7 @@ export class KlineStream {
       this.connected = false;
       this.clearTimers();
       if (this.stopped) return;
-      if (was) this.opts.log?.(`поток ${this.topic} оборвался, переподключаюсь`);
+      if (was) this.opts.log?.('поток свечей оборвался, переподключаюсь');
       this.retry = setTimeout(() => this.connect(), this.backoffMs);
       this.backoffMs = Math.min(this.backoffMs * 2, this.opts.maxBackoffMs ?? 60_000);
     };
