@@ -10,7 +10,7 @@ import { renderChartPng, renderChartSvg, type ChartInput } from '../src/telegram
 import {
   chartSections, pairRichHtml, reportClassic, reportRichHtml, rub, shortName, tradeRichHtml, type ReportInput,
 } from '../src/telegram/report.js';
-import { TelegramService } from '../src/telegram/telegram.service.js';
+import { TelegramService, type Seen } from '../src/telegram/telegram.service.js';
 import type { TradeEvent, TradeListener } from '../src/trading/engine.service.js';
 import type { Candle, EngineState } from '../src/trading/types.js';
 
@@ -300,7 +300,10 @@ describe('TelegramService', () => {
 
   const at = (day: number, hour: number, minute = 0) => new Date(2026, 9, day, hour, minute);
   const methods = () => calls.map(c => c.method);
-  const richHtml = (c: Call) => plain(JSON.parse(String(c.fields.rich_message)).html as string);
+  const richHtml = (c: Call) => {
+    const rich = typeof c.fields.rich_message === 'string' ? JSON.parse(c.fields.rich_message) : c.fields.rich_message;
+    return plain((rich as { html: string }).html);
+  };
 
   it('reports every hour by day, the digest at 21:00 and nothing at night', async () => {
     const tg = service();
@@ -386,6 +389,29 @@ describe('TelegramService', () => {
     draftFails = true;
     await service().sendNow(at(19, 14, 30));
     expect(methods()).toEqual(['sendRichMessageDraft', 'sendChatAction', 'sendChatAction', 'sendChatAction', 'sendRichMessage']);
+  });
+
+  it('writes only about the best of all, at each +25 % step: 1250, then 1563 ₽', async () => {
+    const at250 = statsOf(stateOf(['DOGEUSDT'], { 'RSI (14, 30/70)': { pnl: 260 }, 'MACD (12/26/9)': { pnl: 100 } }));
+    const tg = service({ TELEGRAM_HOURLY: '0' }, at250);
+    const seen: Seen = { lastDigestDay: '2026-10-19', lastDigestAt: null, digestRub: {}, digestPrice: null, lastReportKey: null, lastReportAt: null, reportRub: {}, reportPrice: null };
+    expect(await tg.checkGoal(seen, at(19, 14))).toBe(true);
+    expect(await tg.checkGoal(seen, at(19, 14, 1))).toBe(false);
+    const html = richHtml(calls[0]!);
+    expect(html).toContain('💰 Стратегия RSI (14, 30/70): 1 260 ₽ из 1 000 ₽');
+    expect(html).toContain('пройдена ступень 1 250 ₽. Следующая — 1 563 ₽');
+    expect(calls).toHaveLength(1);
+
+    const tg2 = service({ TELEGRAM_HOURLY: '0' }, statsOf(stateOf(['DOGEUSDT'], { 'RSI (14, 30/70)': { pnl: 600 } })));
+    expect(await tg2.checkGoal(seen, at(19, 15))).toBe(true);
+    expect(richHtml(calls[1]!)).toContain('пройдена ступень 1 563 ₽');
+    expect(Object.values(seen.goalLevels ?? {})).toContain(2);
+  });
+
+  it('stays silent below +25 %', async () => {
+    const tg = service({ TELEGRAM_HOURLY: '0' });
+    expect(await tg.checkGoal({ lastDigestDay: null, lastDigestAt: null, digestRub: {}, digestPrice: null, lastReportKey: null, lastReportAt: null, reportRub: {}, reportPrice: null }, at(19, 14))).toBe(false);
+    expect(calls).toHaveLength(0);
   });
 
   it('a report on demand does not move the hourly comparison point', async () => {

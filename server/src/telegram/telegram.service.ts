@@ -25,6 +25,7 @@ export interface Seen {
   digestRub: Record<string, number>;
   digestPrice: number | null;
   lastReportKey: string | null;
+  goalLevels?: Record<string, number>; // пройденные ступени +25 % по группам
   lastReportAt: string | null;
   reportRub: Record<string, number>;
   reportPrice: number | null;
@@ -37,6 +38,8 @@ const EMPTY_SEEN: Seen = {
 
 const HOUR_MS = 3_600_000;
 const MAX_ALERTS_PER_HOUR = 3;
+// «Нормальные деньги» по правилу владельца: каждая ступень — капитал ×1.25.
+const GOAL_STEP = 1.25;
 const STALE_COMMAND_SEC = 300; // команду, пролежавшую дольше (сервер стоял), не выполняем
 const FIRST_REPORT_DELAY_MS = 15_000; // дать движку сделать первый тик после запуска
 
@@ -243,6 +246,7 @@ export class TelegramService implements OnApplicationBootstrap, OnApplicationShu
       const hourKey = `${day} ${String(now.getHours()).padStart(2, '0')}`;
       const digestDue = now.getHours() >= t.digestHour && seen.lastDigestDay !== day;
       const hourlyDue = t.hourly && this.isDay(now) && seen.lastReportKey !== hourKey;
+      await this.checkGoal(seen, now);
       if (!digestDue && !hourlyDue) return null;
 
       const kind: ReportKind = digestDue ? 'day' : 'hour';
@@ -263,6 +267,44 @@ export class TelegramService implements OnApplicationBootstrap, OnApplicationShu
       this.logger.warn(`отчёт не отправлен: ${(err as Error).message}`);
       return null;
     }
+  }
+
+  /**
+   * Сообщение «есть результат» — только про лучшего из лучших: из всех ботов,
+   * стратегий (сумма по парам) и пар берётся один с наибольшей доходностью от
+   * капитала. Пишем, когда он проходит очередную ступень +25 %: 1000 → 1250 →
+   * 1563 → 1953 ₽… (каждая ступень ×1.25 к предыдущей). Правило владельца:
+   * не присылать каждый час, только «нормальные деньги».
+   * Вызывается из runTick раз в минуту. Пройденные ступени хранятся в
+   * notify-state.json (goalLevels: группа → номер ступени), поэтому о каждой
+   * ступени сообщение одно. Возвращает true, если сообщение ушло.
+   */
+  async checkGoal(seen: Seen, now: Date): Promise<boolean> {
+    const stats = await this.stats.stats(now.getTime());
+    const pair = (s: string) => s.replace(/USDT$/, '');
+    const candidates = [
+      { id: 'all', title: `Все ${stats.totals.bots} ботов`, pnlRub: stats.totals.pnlRub, capital: stats.totals.investedRub },
+      ...stats.strategies.map(g => ({ id: `strategy:${g.name}`, title: `Стратегия ${g.name}`, pnlRub: g.pnlRub, capital: g.investedRub })),
+      ...(stats.symbols.length > 1 ? stats.pairs.map(g => ({ id: `pair:${g.name}`, title: `Пара ${pair(g.name)}`, pnlRub: g.pnlRub, capital: g.investedRub })) : []),
+      ...stats.bots.map(b => ({ id: `bot:${b.key}`, title: `Бот ${pair(b.symbol)} · ${b.name}`, pnlRub: b.pnlRub, capital: stats.startRub })),
+    ].filter(c => c.capital > 0);
+    const best = candidates.sort((x, y) => y.pnlRub / y.capital - x.pnlRub / x.capital)[0];
+    if (!best) return false;
+
+    const ratio = (best.capital + best.pnlRub) / best.capital; // 1.30 = капитал вырос на 30 %
+    const level = ratio >= GOAL_STEP ? Math.floor(Math.log(ratio) / Math.log(GOAL_STEP) + 1e-9) : 0;
+    const levels = seen.goalLevels ?? {};
+    if (level <= (levels[best.id] ?? 0)) return false;
+
+    const target = best.capital * GOAL_STEP ** level;
+    const html = `<h2>💰 ${esc(best.title)}: ${rub(best.capital + best.pnlRub)} из ${rub(best.capital)}</h2>`
+      + `<p>Лучший из всех: капитал вырос на <b>${pct((ratio - 1) * 100, 1)}</b>, пройдена ступень ${rub(target)}. `
+      + `Следующая — ${rub(target * GOAL_STEP)}.</p>`;
+    const text = html.replace(/<[^>]+>/g, ' ');
+    if (!(await this.deliver(html, { caption: text, text }, null))) return false;
+    seen.goalLevels = { ...levels, [best.id]: level };
+    await this.saveSeen(seen);
+    return true;
   }
 
   // Отчёт по запросу: изменения — с прошлого часового отчёта, снимок не трогаем.
