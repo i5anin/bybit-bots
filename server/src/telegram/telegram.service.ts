@@ -91,7 +91,7 @@ export class TelegramService implements OnApplicationBootstrap, OnApplicationShu
       this.logger.log('оповещения выключены: нет TELEGRAM_BOT_TOKEN или TELEGRAM_CHAT_ID');
       return;
     }
-    this.logger.log(`оповещения включены: ${this.schedule()}, сделки от +${t.minPnlPct} %`);
+    this.logger.log(`оповещения включены: ${this.schedule()}, ${t.tradeAlerts ? `сделки от +${t.minPnlPct} %` : 'без сообщений о сделках'}`);
     this.unsubscribe = this.engine.onTrade(e => void this.notifyTrade(e));
     void this.sendStartupNotice();
     this.timers.push(setTimeout(() => void this.tick(), FIRST_REPORT_DELAY_MS));
@@ -137,7 +137,7 @@ export class TelegramService implements OnApplicationBootstrap, OnApplicationShu
   // быть 1200, поэтому не больше трёх таких сообщений в час, остальное — в отчёте.
   async notifyTrade(e: TradeEvent, now = new Date()): Promise<boolean> {
     if (!this.enabled || e.side !== 'sell' || e.pnlPct === undefined) return false;
-    if (e.pnlPct < this.config.telegram.minPnlPct) return false;
+    if (!this.config.telegram.tradeAlerts || e.pnlPct < this.config.telegram.minPnlPct) return false;
     this.alertTimes = this.alertTimes.filter(t => now.getTime() - t < HOUR_MS);
     if (this.alertTimes.length >= MAX_ALERTS_PER_HOUR) return false;
     this.alertTimes.push(now.getTime());
@@ -397,7 +397,8 @@ export class TelegramService implements OnApplicationBootstrap, OnApplicationShu
     const items = [
       t.hourly ? `каждый час с <b>${t.dayFrom}:00</b> до <b>${t.dayTo}:00</b> — итоги часа с графиком` : '',
       `в <b>${t.digestHour}:00</b> — итог дня: счёт и заработок каждого бота`,
-      `прибыльные сделки от <b>+${t.minPnlPct} %</b> — сразу, ночью без звука`,
+      'когда лучший бот, стратегия или пара дойдёт до <b>1 250 ₽</b> с 1 000 — и дальше на каждые <b>+25 %</b>',
+      t.tradeAlerts ? `прибыльные сделки от <b>+${t.minPnlPct} %</b> — сразу, ночью без звука` : '',
       t.commands ? '<b>/now</b> — результаты прямо сейчас, <b>/pair ZK</b> — отчёт и график по паре' : '',
     ].filter(Boolean);
     const rich = `<h2>🤖 Боты Bybit на связи</h2><p>${esc(this.config.symbol)}, свечи ${esc(this.config.interval)} мин. Буду присылать:</p>`

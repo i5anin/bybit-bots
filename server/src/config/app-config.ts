@@ -37,6 +37,9 @@ export interface AppConfig {
     token: string;
     chatId: string;
     minPnlPct: number;
+    // Сообщения о каждой прибыльной сделке. Выключены по умолчанию: при ставке 1 %
+    // это копейки, владелец ждёт только «нормальных денег» (ступени +25 %).
+    tradeAlerts: boolean;
     digestHour: number;
     // Отчёт каждый час с dayFrom до dayTo включительно (местное время, TZ);
     // ночью отчётов нет, а сделки приходят без звука.
@@ -118,6 +121,7 @@ export function loadConfig(env: Env = process.env, cwd = process.cwd()): AppConf
       token: str(env, 'TELEGRAM_BOT_TOKEN', ''),
       chatId: str(env, 'TELEGRAM_CHAT_ID', ''),
       minPnlPct: num(env, 'TELEGRAM_MIN_PNL_PCT', 0.5),
+      tradeAlerts: bool(env, 'TELEGRAM_TRADE_ALERTS', false),
       digestHour: num(env, 'TELEGRAM_DIGEST_HOUR', 21),
       hourly: bool(env, 'TELEGRAM_HOURLY', true),
       dayFrom: num(env, 'TELEGRAM_DAY_FROM', 9),

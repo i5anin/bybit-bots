@@ -263,7 +263,7 @@ describe('TelegramService', () => {
 
   function service(env: Record<string, string> = {}, s: Stats = SINGLE) {
     const config = loadConfig({
-      TELEGRAM_BOT_TOKEN: 'test-token', TELEGRAM_CHAT_ID: '42', TELEGRAM_MIN_PNL_PCT: '1',
+      TELEGRAM_BOT_TOKEN: 'test-token', TELEGRAM_CHAT_ID: '42', TELEGRAM_MIN_PNL_PCT: '1', TELEGRAM_TRADE_ALERTS: '1',
       TELEGRAM_DIGEST_HOUR: '21', TELEGRAM_DAY_FROM: '9', TELEGRAM_DAY_TO: '22',
       START_RUB: '1000', DATA_DIR: dir, NOTIFY_INTERVAL_MS: '3600000', TELEGRAM_COMMANDS: '0', ...env,
     });
@@ -406,6 +406,17 @@ describe('TelegramService', () => {
     expect(await tg2.checkGoal(seen, at(19, 15))).toBe(true);
     expect(richHtml(calls[1]!)).toContain('пройдена ступень 1 563 ₽');
     expect(Object.values(seen.goalLevels ?? {})).toContain(2);
+  });
+
+  it('sends no trade alerts by default and does not mention them on start', async () => {
+    const tg = service({ TELEGRAM_TRADE_ALERTS: '0' });
+    const sale: TradeEvent = { symbol: 'ZKUSDT', bot: 'MACD (12/26/9)', side: 'sell', price: 0.08, pnlPct: 50, pnlUsdt: 0.08, equity: 12, time: '' };
+    expect(await tg.notifyTrade(sale, at(19, 14))).toBe(false);
+    await tg.sendStartupNotice();
+    const html = richHtml(calls[0]!);
+    expect(html).toContain('1 250 ₽');
+    expect(html).not.toContain('прибыльные сделки');
+    expect(loadConfig({}).telegram.tradeAlerts).toBe(false);
   });
 
   it('stays silent below +25 %', async () => {
