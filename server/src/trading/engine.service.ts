@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger, type BeforeApplicationShutdown, type OnApplicationBootstrap } from '@nestjs/common';
 import { APP_CONFIG, marketId, type AppConfig } from '../config/app-config.js';
 import { BybitClient, splitClosed, withRetry } from '../market/bybit.js';
-import { KlineStream } from '../market/bybit-stream.js';
+import { KlineStream, type SocketFactory } from '../market/bybit-stream.js';
 import { rankVolatility } from '../market/volatility.js';
 import { STATE_VERSION, StateStore } from '../storage/state-store.js';
 import { formatDuration } from '../storage/time.js';
@@ -89,6 +89,8 @@ export class EngineService implements OnApplicationBootstrap, BeforeApplicationS
     @Inject(BybitClient) private readonly bybit: BybitClient,
     @Inject(StateStore) private readonly store: StateStore,
     @Inject(TradeLog) private readonly log: TradeLog,
+    // В тестах — поддельный сокет; в работе — WebSocket из Node.
+    private readonly socket?: SocketFactory,
   ) {}
 
   // Старт не держит запуск HTTP-сервера: если биржа недоступна, панель уже
@@ -145,6 +147,7 @@ export class EngineService implements OnApplicationBootstrap, BeforeApplicationS
         interval: this.config.interval,
         onCandleClosed: (_, start) => void this.tick('поток', start + intervalMs),
         log: message => this.logger.log(message),
+        socket: this.socket,
       });
       this.stream.start();
     }

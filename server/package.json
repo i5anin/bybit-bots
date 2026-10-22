@@ -16,6 +16,7 @@
     "@types/express": "^5.0.6",
     "@types/node": "^24.19.2",
     "@types/supertest": "^7.2.1",
+    "@vitest/coverage-v8": "^5.0.4",
     "supertest": "^7.3.1",
     "tsx": "^4.23.15",
     "typescript": "~5.9",
