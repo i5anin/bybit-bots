@@ -93,3 +93,7 @@ img.chart { display: block; width: 100%; max-width: 760px; height: auto; border-
 @media (max-width: 600px) {
   .bar, main, footer { padding-inline: 16px; }
 }
+
+.tabs { display: flex; gap: 4px; margin: 16px 0 8px; border-bottom: 1px solid #ccc4; }
+.tabs button { background: none; border: 0; border-bottom: 2px solid transparent; padding: 8px 14px; font: inherit; color: inherit; opacity: .7; cursor: pointer; }
+.tabs button.active { border-bottom-color: currentColor; opacity: 1; font-weight: 600; }

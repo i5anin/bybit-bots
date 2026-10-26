@@ -142,3 +142,18 @@ describe('format: редкие случаи', () => {
     await expect(fetchStats(async () => new Response('', { status: 503 }))).rejects.toThrow('HTTP 503');
   });
 });
+
+describe('App: вкладки', () => {
+  it('переключает вкладку и запоминает её в адресе', async () => {
+    location.hash = '';
+    const w = mount(App);
+    await flushPromises();
+
+    await w.get('[data-tab="bots"]').trigger('click');
+
+    expect(location.hash).toBe('#/bots');
+    expect(w.get('[data-tab="bots"]').classes()).toContain('active');
+    w.unmount();
+    location.hash = '';
+  });
+});
