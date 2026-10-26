@@ -58,6 +58,10 @@ async function mapLimit<T, R>(items: readonly T[], limit: number, fn: (item: T) 
   return out;
 }
 
+// Сколько пар запрашиваем у биржи одновременно. 100 пар по 10 — около 3.3 с,
+// по 20 — вдвое быстрее; лимит Bybit (600 запросов за 5 с с адреса) не задевается.
+const FETCH_CONCURRENCY = 20;
+
 // Торговый движок: на каждую закрытую свечу (по потоку или опросу) берёт
 // свечи всех пар, даёт каждому боту принять решение, пишет логи и состояние.
 @Injectable()
@@ -334,7 +338,7 @@ export class EngineService implements OnApplicationBootstrap, BeforeApplicationS
     const intervalMs = Number(c.interval) * 60_000;
     try {
       const askedAt = Date.now();
-      const fetched = await mapLimit(this.markets, 10, m =>
+      const fetched = await mapLimit(this.markets, FETCH_CONCURRENCY, m =>
         this.bybit.klines(m.symbol, c.interval, 101).catch(() => null as Candle[] | null));
       const fetchMs = Date.now() - askedAt;
       const now = Math.max(Date.now(), closedUntil);
@@ -407,7 +411,12 @@ export class EngineService implements OnApplicationBootstrap, BeforeApplicationS
 
       // Задержку меряем только на решениях по новой свече: тики опроса внутри
       // свечи ничего не решают, и «свеча закрыта 3 минуты назад» — не опоздание.
-      this.feed = decided
+      // Опрос, который через минуту добирает 1–2 опоздавшие пары, тоже не
+      // показатель: иначе панель показывала бы «опрос · 55 с», хотя основная
+      // масса решена потоком за секунды. Статус обновляет тик, решивший
+      // большинство пар (для одной пары — любой решивший).
+      const mainTick = decided > 0 && decided * 2 >= this.markets.length;
+      this.feed = mainTick
         ? { source, streamConnected: this.stream?.connected ?? false, lagSec: Math.round(maxLagMs / 100) / 10, fetchMs, staleSkips: this.feed.staleSkips + stale }
         : { ...this.feed, streamConnected: this.stream?.connected ?? false, staleSkips: this.feed.staleSkips + stale };
       if (stale) this.logger.warn(`данные устарели по ${stale} из ${this.markets.length} пар — эти пары пропущены`);
@@ -417,7 +426,8 @@ export class EngineService implements OnApplicationBootstrap, BeforeApplicationS
       const state = this.buildState(false);
       this.lastState = state;
       if (decided || this.markets.length === 1) await this.store.save(state);
-      if (decided) this.logStatus(decided);
+      if (mainTick) this.logStatus(decided);
+      else if (decided) this.logger.log(`добраны опоздавшие пары: ${decided} (${source})`);
     } catch (err) {
       this.logger.error(`Ошибка опроса рынка: ${(err as Error).message}`);
     }

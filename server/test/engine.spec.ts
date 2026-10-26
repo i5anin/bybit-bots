@@ -14,10 +14,11 @@ let dir = '';
 afterEach(async () => { if (dir) await rm(dir, { recursive: true, force: true }); });
 
 // Биржа-заглушка: у каждой пары свои свечи; у STALE последняя закрыта 20 минут назад.
-function fakeBybit() {
+// late — пары, которые сейчас тоже отдают устаревшие свечи (их можно «оживить»).
+function fakeBybit(late: Set<string> = new Set()) {
   return {
     async klines(symbol: string): Promise<Candle[]> {
-      const lag = symbol === 'STALEUSDT' ? 20 * 60_000 : 0;
+      const lag = symbol === 'STALEUSDT' || late.has(symbol) ? 20 * 60_000 : 0;
       const lastOpen = Math.floor((Date.now() - lag) / STEP) * STEP - STEP;
       const base = symbol === 'AUSDT' ? 1 : 2;
       return Array.from({ length: 101 }, (_, i) => {
@@ -28,12 +29,12 @@ function fakeBybit() {
   };
 }
 
-async function engine(env: Record<string, string>) {
+async function engine(env: Record<string, string>, late?: Set<string>) {
   dir = await mkdtemp(join(tmpdir(), 'bybit-engine-'));
   const config = loadConfig({ DATA_DIR: join(dir, 'data'), LOG_DIR: join(dir, 'logs'), START_BALANCE: '11.98', BYBIT_STREAM: '0', ...env });
   const store = new StateStore(config.dataDir);
   const log = new TradeLog(config.logDir);
-  const e = new EngineService(config, fakeBybit() as never, store, log);
+  const e = new EngineService(config, fakeBybit(late) as never, store, log);
   return { e, store, log, config };
 }
 
@@ -47,6 +48,18 @@ describe('bot keys', () => {
 });
 
 describe('engine with many pairs', () => {
+  it('keeps the main tick status when a later poll catches up a late pair', async () => {
+    const late = new Set(['CUSDT']);
+    const { e } = await engine({ SYMBOLS: 'AUSDT,BUSDT,CUSDT', ORDER_PCT: '1', ENFORCE_MIN_ORDER: '0' }, late);
+    await e.init(['AUSDT', 'BUSDT', 'CUSDT'], { minOrderAmt: 5, minOrderQty: 0, qtyStep: 0.01 });
+    await e.tick('поток');
+    late.clear();
+
+    await e.tick('опрос');
+
+    expect(e.state()?.feed?.source).toBe('поток');
+  });
+
   it('runs 15 bots on every pair with their own accounts and skips a pair with stale data', async () => {
     const { e, store, log } = await engine({ SYMBOLS: 'AUSDT,BUSDT,STALEUSDT', ORDER_PCT: '1', ENFORCE_MIN_ORDER: '0' });
     await e.init(['AUSDT', 'BUSDT', 'STALEUSDT'], { minOrderAmt: 5, minOrderQty: 0, qtyStep: 0.01 });
