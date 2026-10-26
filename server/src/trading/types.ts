@@ -22,6 +22,8 @@ export interface StrategyContext {
 
 export interface Strategy {
   readonly name: string;
+  // Разрешить докупку при открытой позиции (усреднение, см. dca-holder.ts).
+  readonly averaging?: boolean;
   signal(candles: readonly Candle[]): Action;
   // Стратегии с собственной памятью сохраняют её между перезапусками.
   toJSON?(): unknown;

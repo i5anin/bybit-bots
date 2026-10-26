@@ -61,7 +61,7 @@ export class Bot implements Trader {
 
     const action = this.strategy.signal(candles);
     let trade: Trade | null = null;
-    if (action === 'buy') trade = this.ledger.buy(price);
+    if (action === 'buy') trade = this.ledger.buy(price, Boolean(this.strategy.averaging));
     if (action === 'sell') trade = this.ledger.sell(price);
 
     // Сделка не прошла (на минимальный ордер не хватило денег) — стратегия

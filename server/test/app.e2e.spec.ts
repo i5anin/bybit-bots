@@ -63,7 +63,7 @@ describe('application', () => {
 
     const stats = await request(first.app.getHttpServer()).get('/api/stats').expect(200);
     expect(stats.headers['cache-control']).toBe('no-store');
-    expect(stats.body.bots).toHaveLength(12);
+    expect(stats.body.bots).toHaveLength(15);
     expect(stats.body.bots.filter((b: { isMeta: boolean }) => b.isMeta)).toHaveLength(1);
     expect(stats.body.startRub).toBe(1000);
     expect(stats.body.ticks).toBe(1);

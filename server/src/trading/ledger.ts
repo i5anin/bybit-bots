@@ -53,8 +53,10 @@ export class Ledger {
     this.lastPrice = price;
   }
 
-  buy(price: number): Trade | null {
-    if (this.position > 0) return null; // уже в позиции
+  // allowAdd — докупка к открытой позиции (усреднение): количество и затраты
+  // складываются, цена входа становится средневзвешенной.
+  buy(price: number, allowAdd = false): Trade | null {
+    if (this.position > 0 && !allowAdd) return null; // уже в позиции
     const fee = this.costs.feePct / 100;
     const fill = price * (1 + this.costs.slippagePct / 100);
     // Ставка в % от счёта; иначе минимальный ордер биржи; без правил лота — весь счёт.
@@ -73,9 +75,10 @@ export class Ledger {
     const feePaid = cost * fee;
     if (!(qty > 0) || cost + feePaid > this.cash + 1e-9) return null; // на ордер не хватает
     this.feesPaid += feePaid;
-    this.entryCost = cost + feePaid;
-    this.position = qty;
-    this.entryPrice = fill;
+    const totalQty = this.position + qty;
+    this.entryPrice = (this.position * this.entryPrice + qty * fill) / totalQty;
+    this.entryCost += cost + feePaid;
+    this.position = totalQty;
     this.cash = Math.max(0, this.cash - cost - feePaid);
     this.tradeCount += 1;
     return { side: 'buy', price, time: Date.now() };

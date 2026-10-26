@@ -60,7 +60,7 @@ describe('runBacktest', () => {
 
   it('runs every strategy plus the meta bot with real costs', () => {
     const r = runBacktest(candles, ACTIVE_STRATEGIES, { startBalance: 11.98, costs: COSTS, metaWindow: 24 });
-    expect(r.strategies).toHaveLength(12);
+    expect(r.strategies).toHaveLength(15);
     expect(r.strategies.some(s => s.name.startsWith('Авто-выбор'))).toBe(true);
     expect(r.strategies.every(s => s.feesPct >= 0 && s.maxDrawdownPct >= 0)).toBe(true);
     expect(r.strategies.find(s => s.trades > 0)!.feesPct).toBeGreaterThan(0);
