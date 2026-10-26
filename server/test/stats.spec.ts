@@ -160,3 +160,17 @@ describe('RatesService', () => {
     expect(await rates.rubPerUsd(0)).toEqual({ value: 83.48, source: 'env' });
   });
 });
+
+describe('group fees', () => {
+  it('counts fees in dollars and as a share of income before fees', async () => {
+    const { group } = await import('../src/stats/build-stats.js');
+    const bot = (pnlRub: number, fees: number) => ({ equity: 10, equityRub: 1000 + pnlRub, pnlRub, fees, aprPct: null, position: 0, trades: 2 }) as never;
+
+    const earned = group('x', [bot(30, 0.1)], 1000, 1, 16, () => '');
+    const lost = group('y', [bot(-30, 0.1)], 1000, 1, 16, () => '');
+
+    expect(earned.feesUsd).toBe(0.1);
+    expect(earned.feesShareOfIncomePct).toBeCloseTo(10.30 / 40.30 * 100, 0);
+    expect(lost.feesShareOfIncomePct).toBeNull();
+  });
+});

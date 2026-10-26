@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { apr, pairName, price, rub, shortName, trend } from '../format';
+import { apr, feesText as fees, pairName, price, rub, shortName, trend } from '../format';
 import type { GroupStats, PairStats } from '../types';
 
 // Сводная таблица: стратегии (сумма по всем парам) или пары (сумма по стратегиям).
@@ -30,12 +30,13 @@ const bestLabel = (name: string) => (isPair ? shortName(name) : pairName(name));
           <th class="num">Годовых</th>
           <th class="num">В плюсе</th>
           <th class="num">Сделок</th>
+          <th class="num">Комиссии</th>
           <th>{{ isPair ? 'Лучшая стратегия' : 'Лучшая пара' }}</th>
           <th v-if="isPair" class="num">Мин. ордер</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-if="!rows.length"><td colspan="10" class="empty">Данных пока нет</td></tr>
+        <tr v-if="!rows.length"><td colspan="11" class="empty">Данных пока нет</td></tr>
         <tr v-for="(g, i) in rows" :key="g.name" :class="{ link: isPair }" :data-row="g.name" @click="isPair && emit('open', g.name)">
           <td class="rank">{{ i + 1 }}</td>
           <td class="nm">{{ label(g.name) }}</td>
@@ -45,6 +46,7 @@ const bestLabel = (name: string) => (isPair ? shortName(name) : pairName(name));
           <td class="num" :class="g.aprPct === null ? '' : g.aprPct > bank ? 'up' : 'down'">{{ apr(g.aprPct) }}</td>
           <td class="num">{{ g.inPlus }}/{{ g.bots }}</td>
           <td class="num">{{ g.trades }}</td>
+          <td class="num dim">{{ fees(g) }}</td>
           <td class="dim">{{ g.best ? `${bestLabel(g.best.name)} ${rub(g.best.pnlRub, true)}` : '—' }}</td>
           <td v-if="isPair" class="num dim">{{ (g as PairStats).minOrderUsdt === null ? '—' : `${(g as PairStats).minOrderUsdt} $` }}</td>
         </tr>

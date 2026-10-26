@@ -40,6 +40,10 @@ export interface GroupStats {
   beatsBank: number; // ботов, обгоняющих вклад
   inMarket: number;
   trades: number;
+  // Комиссии биржи в долларах и их доля от дохода до комиссий, %.
+  // null — до комиссий дохода не было: комиссии съели всё (и добавили минус).
+  feesUsd: number;
+  feesShareOfIncomePct: number | null;
   best: { name: string; pnlRub: number } | null;
   worst: { name: string; pnlRub: number } | null;
 }

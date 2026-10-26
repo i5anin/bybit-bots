@@ -157,3 +157,11 @@ describe('App: вкладки', () => {
     location.hash = '';
   });
 });
+
+describe('комиссии', () => {
+  it('показывает доли от дохода и «съели весь доход», если дохода не было', async () => {
+    const { feesText } = await import('../src/format');
+    expect(feesText({ feesUsd: 0.5, feesShareOfIncomePct: 40 })).toBe('0,50 $ · 40,0 % дохода');
+    expect(feesText({ feesUsd: 1.234, feesShareOfIncomePct: null })).toBe('1,23 $ · съели весь доход');
+  });
+});

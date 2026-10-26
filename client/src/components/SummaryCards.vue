@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { apr, fixed, hours, money, rub, shortName } from '../format';
+import { apr, feesShare, fixed, hours, money, rub, shortName } from '../format';
 import type { Stats } from '../types';
 
 const props = defineProps<{ stats: Stats }>();
@@ -44,6 +44,7 @@ const cards = computed<Card[]>(() => {
       value: s.orderPct ? `${s.orderPct} % · ${rub(s.orderRub)}` : 'мин. ордер',
       sub: `старт ${rub(s.startRub)} на бота${s.orderPct && !s.enforceMinOrder ? ' · без минимума биржи' : ''}`,
     },
+    { title: 'Комиссии', value: `${money(t.feesUsd, 2)} $`, sub: feesShare(t.feesShareOfIncomePct) },
     { title: 'Сделок', value: money(t.tradesTotal, 0), sub: `закрыто ${t.tradesClosed}${t.winRatePct === null ? '' : ` · удачных ${fixed(t.winRatePct, 1)} %`}` },
     { title: 'Наработка', value: hours(s.uptimeSecTotal), sub: `сессия ${s.sessionDays === null ? '—' : `${fixed(s.sessionDays, 1)} дн`} · запусков ${s.runs}` },
   ];

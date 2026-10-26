@@ -56,6 +56,10 @@ export function group(name: string, bots: readonly BotStats[], startRub: number,
   const sorted = [...bots].sort((a, b) => b.pnlRub - a.pnlRub);
   const top = sorted[0];
   const bottom = sorted[sorted.length - 1];
+  // Доход до комиссий = итог + комиссии (в рублях по курсу каждого бота).
+  const feesUsd = bots.reduce((s, b) => s + b.fees, 0);
+  const feesRub = bots.reduce((s, b) => s + (b.equity > 0 ? b.fees * b.equityRub / b.equity : 0), 0);
+  const incomeBeforeFeesRub = pnlRub + feesRub;
   return {
     name,
     isMeta: bots.length > 0 && bots.every(b => b.isMeta),
@@ -69,6 +73,8 @@ export function group(name: string, bots: readonly BotStats[], startRub: number,
     beatsBank: bots.filter(b => b.aprPct !== null && b.aprPct > bankRatePct).length,
     inMarket: bots.filter(b => b.position > 0).length,
     trades: bots.reduce((s, b) => s + b.trades, 0),
+    feesUsd: round(feesUsd, 4),
+    feesShareOfIncomePct: incomeBeforeFeesRub > 0 ? round(feesRub / incomeBeforeFeesRub * 100, 1) : null,
     best: top ? { name: label(top), pnlRub: top.pnlRub } : null,
     worst: bottom && bots.length > 1 ? { name: label(bottom), pnlRub: bottom.pnlRub } : null,
   };

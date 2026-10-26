@@ -69,3 +69,13 @@ export function pairName(symbol: string): string {
 export function shortName(name: string): string {
   return name.replace(/\s*\(.*\)\s*$/, '') || name;
 }
+
+// Доля комиссий от дохода до комиссий; null — дохода до комиссий не было.
+export function feesShare(pct: number | null): string {
+  return pct === null ? 'съели весь доход' : `${money(pct, 1)} % дохода`;
+}
+
+// Ячейка «Комиссии» сводной таблицы: доллары и доля от дохода.
+export function feesText(g: { feesUsd: number; feesShareOfIncomePct: number | null }): string {
+  return `${money(g.feesUsd, 2)} $ · ${feesShare(g.feesShareOfIncomePct)}`;
+}

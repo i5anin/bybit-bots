@@ -39,6 +39,8 @@ export function group(overrides: Partial<GroupStats> = {}): GroupStats {
     beatsBank: 1,
     inMarket: 1,
     trades: 30,
+    feesUsd: 0.02,
+    feesShareOfIncomePct: 25,
     best: { name: 'ZKUSDT', pnlRub: 6.25 },
     worst: { name: 'TIAUSDT', pnlRub: -1.75 },
     ...overrides,
