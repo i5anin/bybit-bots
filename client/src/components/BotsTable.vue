@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { apr, money, pairName, rub, shortName, trend } from '../format';
+import { apr, isHolder, money, pairName, rub, shortName, trend } from '../format';
 import type { BotStats } from '../types';
 import SparkLine from './SparkLine.vue';
 
@@ -49,7 +49,7 @@ const shown = computed(() => (showAll.value ? filtered.value : filtered.value.sl
       </thead>
       <tbody>
         <tr v-if="!shown.length"><td colspan="9" class="empty">{{ loading ? 'Загрузка…' : 'Ботов не найдено' }}</td></tr>
-        <tr v-for="(b, i) in shown" :key="b.key" :data-bot="b.key">
+        <tr v-for="(b, i) in shown" :key="b.key" :class="{ holder: isHolder(b.name) }" :data-bot="b.key">
           <td class="rank">{{ i + 1 }}</td>
           <td v-if="showPair"><a href="#" class="pair" @click.prevent="emit('open', b.symbol)">{{ pairName(b.symbol) }}</a></td>
           <td class="nm">

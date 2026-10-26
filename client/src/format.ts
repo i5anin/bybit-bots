@@ -79,3 +79,8 @@ export function feesShare(pct: number | null): string {
 export function feesText(g: { feesUsd: number; feesShareOfIncomePct: number | null }): string {
   return `${money(g.feesUsd, 2)} $ · ${feesShare(g.feesShareOfIncomePct)}`;
 }
+
+// Холдеры (DCA с усреднением) подсвечиваются в таблицах, чтобы их было видно среди остальных.
+export function isHolder(strategyName: string): boolean {
+  return strategyName.startsWith('DCA-холдер');
+}

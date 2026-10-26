@@ -165,3 +165,11 @@ describe('комиссии', () => {
     expect(feesText({ feesUsd: 1.234, feesShareOfIncomePct: null })).toBe('1,23 $ · съели весь доход');
   });
 });
+
+describe('холдеры', () => {
+  it('узнаёт холдера по имени стратегии', async () => {
+    const { isHolder } = await import('../src/format');
+    expect(isHolder('DCA-холдер быстрый (+0.6%→0.6%)')).toBe(true);
+    expect(isHolder('RSI (14, 30/70)')).toBe(false);
+  });
+});

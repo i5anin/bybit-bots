@@ -97,3 +97,6 @@ img.chart { display: block; width: 100%; max-width: 760px; height: auto; border-
 .tabs { display: flex; gap: 4px; margin: 16px 0 8px; border-bottom: 1px solid #ccc4; }
 .tabs button { background: none; border: 0; border-bottom: 2px solid transparent; padding: 8px 14px; font: inherit; color: inherit; opacity: .7; cursor: pointer; }
 .tabs button.active { border-bottom-color: currentColor; opacity: 1; font-weight: 600; }
+
+tr.holder td { background: #f5a62322; }
+tr.holder td.nm, tr.holder td:nth-child(2) { color: #e8901a; font-weight: 600; }

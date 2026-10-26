@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { apr, feesText as fees, pairName, price, rub, shortName, trend } from '../format';
+import { apr, feesText as fees, isHolder, pairName, price, rub, shortName, trend } from '../format';
 import type { GroupStats, PairStats } from '../types';
 
 // Сводная таблица: стратегии (сумма по всем парам) или пары (сумма по стратегиям).
@@ -37,7 +37,7 @@ const bestLabel = (name: string) => (isPair ? shortName(name) : pairName(name));
       </thead>
       <tbody>
         <tr v-if="!rows.length"><td colspan="11" class="empty">Данных пока нет</td></tr>
-        <tr v-for="(g, i) in rows" :key="g.name" :class="{ link: isPair }" :data-row="g.name" @click="isPair && emit('open', g.name)">
+        <tr v-for="(g, i) in rows" :key="g.name" :class="{ link: isPair, holder: !isPair && isHolder(g.name) }" :data-row="g.name" @click="isPair && emit('open', g.name)">
           <td class="rank">{{ i + 1 }}</td>
           <td class="nm">{{ label(g.name) }}</td>
           <td v-if="isPair" class="num">{{ (g as PairStats).price === null ? '—' : price((g as PairStats).price!) }}</td>
