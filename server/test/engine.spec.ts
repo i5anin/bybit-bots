@@ -60,25 +60,25 @@ describe('engine with many pairs', () => {
     expect(e.state()?.feed?.source).toBe('поток');
   });
 
-  it('runs 15 bots on every pair with their own accounts and skips a pair with stale data', async () => {
+  it('runs 16 bots on every pair with their own accounts and skips a pair with stale data', async () => {
     const { e, store, log } = await engine({ SYMBOLS: 'AUSDT,BUSDT,STALEUSDT', ORDER_PCT: '1', ENFORCE_MIN_ORDER: '0' });
     await e.init(['AUSDT', 'BUSDT', 'STALEUSDT'], { minOrderAmt: 5, minOrderQty: 0, qtyStep: 0.01 });
     await e.tick('поток');
     const state = (await store.load())!;
     expect(state.symbols).toEqual(['AUSDT', 'BUSDT', 'STALEUSDT']);
-    expect(Object.keys(state.bots)).toHaveLength(45);
-    expect(state.bots['BUSDT:Авто-выбор лучшей (14)']?.meta).toBe(true);
+    expect(Object.keys(state.bots)).toHaveLength(48);
+    expect(state.bots['BUSDT:Авто-выбор лучшей (15)']?.meta).toBe(true);
     expect(state.orderPct).toBe(1);
     expect(state.sessionStartedAt).toBeTruthy();
     expect(state.feed?.staleSkips).toBe(1);
 
     const equity = (await readFile(log.file('equity'), 'utf8')).trim().split('\n').slice(1);
     expect(new Set(equity.map(l => l.split(',')[1]))).toEqual(new Set(['AUSDT', 'BUSDT']));
-    expect(equity).toHaveLength(30);
+    expect(equity).toHaveLength(32);
 
     // Минутный опрос внутри той же свечи не пишет счёт заново.
     await e.tick('опрос');
-    expect((await readFile(log.file('equity'), 'utf8')).trim().split('\n')).toHaveLength(31);
+    expect((await readFile(log.file('equity'), 'utf8')).trim().split('\n')).toHaveLength(33);
   });
 
   it('keeps the same pairs and accounts after a restart', async () => {

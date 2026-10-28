@@ -99,7 +99,7 @@ describe('Martingale-lite', () => {
 });
 
 describe('strategy registry', () => {
-  it('keeps the fourteen active strategies in the order the saved state expects', () => {
+  it('keeps the fifteen active strategies in the order the saved state expects', () => {
     expect(ACTIVE_STRATEGIES.map(f => f().name)).toEqual([
       'SMA Crossover (10/30)',
       'EMA Crossover (9/21)',
@@ -115,6 +115,7 @@ describe('strategy registry', () => {
       'DCA-холдер быстрый (+0.6%→0.6%)',
       'DCA-холдер средний (+3%→0.6%)',
       'DCA-холдер терпеливый (+8%→1.5%)',
+      'DCA-холдер долгий (+20%→5%)',
     ]);
   });
 

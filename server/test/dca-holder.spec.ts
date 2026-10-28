@@ -21,6 +21,8 @@ describe('profitTargetPct', () => {
     expect(profitTargetPct(HOLDER_PROFILES.quick, 0)).toBe(0.6);
     expect(profitTargetPct(HOLDER_PROFILES.patient, 0)).toBe(8);
     expect(profitTargetPct(HOLDER_PROFILES.patient, 100 * 24 * HOUR)).toBe(1.5);
+    expect(profitTargetPct(HOLDER_PROFILES.longTerm, 0)).toBe(20);
+    expect(profitTargetPct(HOLDER_PROFILES.longTerm, 365 * 24 * HOUR)).toBe(5);
   });
 
   it('quick sells on a small rebound that patient keeps holding', () => {

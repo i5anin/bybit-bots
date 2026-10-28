@@ -32,6 +32,8 @@ export const HOLDER_PROFILES = {
   medium: { label: 'средний', startPct: 3, decayPctPerDay: 0.5, floorPct: 0.6 },
   // Долго ждёт существенный плюс: 8 %, за 26 дней соглашается на 1.5 %.
   patient: { label: 'терпеливый', startPct: 8, decayPctPerDay: 0.25, floorPct: 1.5 },
+  // Очень долгий холд: ждёт 20 %, за 150 дней соглашается на 5 %, ниже — никогда.
+  longTerm: { label: 'долгий', startPct: 20, decayPctPerDay: 0.1, floorPct: 5 },
 } as const satisfies Record<string, ProfitTarget>;
 
 interface DcaState {
@@ -142,3 +144,4 @@ export function dcaHolder(target: ProfitTarget = HOLDER_PROFILES.medium): Strate
 export const quickHolder = (): Strategy => dcaHolder(HOLDER_PROFILES.quick);
 export const mediumHolder = (): Strategy => dcaHolder(HOLDER_PROFILES.medium);
 export const patientHolder = (): Strategy => dcaHolder(HOLDER_PROFILES.patient);
+export const longTermHolder = (): Strategy => dcaHolder(HOLDER_PROFILES.longTerm);
