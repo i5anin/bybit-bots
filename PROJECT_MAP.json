@@ -1,0 +1,4418 @@
+{
+  "schemaVersion": 1,
+  "snapshot": "2026-10-30T14:47:11.360Z",
+  "project": "bybit-bots",
+  "root": ".",
+  "method": "static-local-index",
+  "limitations": [
+    "Нет динамических вызовов и сетевых интеграций",
+    "Сверять sha256 и evidence.line с текущими исходниками",
+    "Наличие зависимости не доказывает работоспособность"
+  ],
+  "nodes": [
+    {
+      "id": "project:bybit-bots",
+      "type": "project",
+      "name": "bybit-bots"
+    },
+    {
+      "id": "project:bybit-bots/file:Dockerfile",
+      "type": "file",
+      "path": "Dockerfile",
+      "sha256": "82c27d7d33487425daf368ffe325e941ff23ef8d3546e812e4f0a5d4e75f0b5d",
+      "bytes": 942
+    },
+    {
+      "id": "project:bybit-bots/file:README.md",
+      "type": "file",
+      "path": "README.md",
+      "sha256": "83af19c48f19789f375396e9d2c17f054f03c6027e33a1790e8fa49fde72402d",
+      "bytes": 14823
+    },
+    {
+      "id": "project:bybit-bots/file:builds/stats-top100.md",
+      "type": "file",
+      "path": "builds/stats-top100.md"
+    },
+    {
+      "id": "project:bybit-bots/file:builds/top100-volatility.md",
+      "type": "file",
+      "path": "builds/top100-volatility.md"
+    },
+    {
+      "id": "project:bybit-bots/file:client/package.json",
+      "type": "file",
+      "path": "client/package.json",
+      "sha256": "6dde1ab4b25c6bd7b154310f534e0a5dd160b041d07e33a5753281a313b34b1a",
+      "bytes": 553
+    },
+    {
+      "id": "project:bybit-bots/file:client/src/App.vue",
+      "type": "file",
+      "path": "client/src/App.vue",
+      "sha256": "7188ba790e7cc1d44651975787aa6a1283f098893a133230a9b3a0f0eeffb274",
+      "bytes": 4153
+    },
+    {
+      "id": "project:bybit-bots/file:client/src/components/BotsTable.vue",
+      "type": "file",
+      "path": "client/src/components/BotsTable.vue",
+      "sha256": "1ab66a4c79006c8b0b4f96149b2d71c78bc924433e698e5bdde147e19a559490",
+      "bytes": 3229
+    },
+    {
+      "id": "project:bybit-bots/file:client/src/components/GroupTable.vue",
+      "type": "file",
+      "path": "client/src/components/GroupTable.vue",
+      "sha256": "776921747f5de787254d20a90659ba8c96f506c77ece26db6048ea7ba7b6dde4",
+      "bytes": 2655
+    },
+    {
+      "id": "project:bybit-bots/file:client/src/components/PairView.vue",
+      "type": "file",
+      "path": "client/src/components/PairView.vue",
+      "sha256": "9ce847eeb0f79e29745c514a320f47ca1b5e2d3efb33365f7709ce970156b76d",
+      "bytes": 3088
+    },
+    {
+      "id": "project:bybit-bots/file:client/src/components/SparkLine.vue",
+      "type": "file",
+      "path": "client/src/components/SparkLine.vue",
+      "sha256": "98ce2edea209d0c0007059eef2c9a5eb4f5344952660ef1c7f0b60488a9d3361",
+      "bytes": 725
+    },
+    {
+      "id": "project:bybit-bots/file:client/src/components/StatusBar.vue",
+      "type": "file",
+      "path": "client/src/components/StatusBar.vue",
+      "sha256": "b006ffadad712a2716e5568339882e5c73d0ce097af6b27c2f7fda77b42ac837",
+      "bytes": 2091
+    },
+    {
+      "id": "project:bybit-bots/file:client/src/components/SummaryCards.vue",
+      "type": "file",
+      "path": "client/src/components/SummaryCards.vue",
+      "sha256": "f64d657721df82bb987e30a72839b88f1b55cbadb6eb6864d520211ff7da5143",
+      "bytes": 3009
+    },
+    {
+      "id": "project:bybit-bots/file:client/src/components/TradesTable.vue",
+      "type": "file",
+      "path": "client/src/components/TradesTable.vue",
+      "sha256": "487795b74a4adecf1e90bf08a64a758e181c9fb27f3e0808d3e495f7f75b391b",
+      "bytes": 1993
+    },
+    {
+      "id": "project:bybit-bots/file:client/src/composables/useStats.ts",
+      "type": "file",
+      "path": "client/src/composables/useStats.ts",
+      "sha256": "43779c8f086f824ef2d7005d5e306142ced4e684e2e43829b11cbd86bb6db059",
+      "bytes": 1323
+    },
+    {
+      "id": "project:bybit-bots/file:client/src/format.ts",
+      "type": "file",
+      "path": "client/src/format.ts",
+      "sha256": "af9d72e3e3762eaa91678c2355b59b9f5de51d0ca46abb8bcc40b481931bbb2f",
+      "bytes": 3482
+    },
+    {
+      "id": "project:bybit-bots/file:client/src/main.ts",
+      "type": "file",
+      "path": "client/src/main.ts",
+      "sha256": "5d2f4c0f5d289c2624f3569aea0b5a48e48cb0d22ef5f57a5ba47d64a0ec7969",
+      "bytes": 115
+    },
+    {
+      "id": "project:bybit-bots/file:client/src/types.ts",
+      "type": "file",
+      "path": "client/src/types.ts",
+      "sha256": "49d3e8cc74609214577a2e7de62f927062cb36467d87e43a1baed18fa65cba11",
+      "bytes": 2689
+    },
+    {
+      "id": "project:bybit-bots/file:client/test/components-extra.spec.ts",
+      "type": "file",
+      "path": "client/test/components-extra.spec.ts",
+      "sha256": "784504dc4c89c6dca49cf75a49ca92ffffd9554b4d4f2cfa0500ab431ddb0c67",
+      "bytes": 8587
+    },
+    {
+      "id": "project:bybit-bots/file:client/test/components.spec.ts",
+      "type": "file",
+      "path": "client/test/components.spec.ts",
+      "sha256": "c5caf64fb505a4a2f3de2da5022942623fb60b3eb205b735dc77192015e30968",
+      "bytes": 6820
+    },
+    {
+      "id": "project:bybit-bots/file:client/test/fixtures.ts",
+      "type": "file",
+      "path": "client/test/fixtures.ts",
+      "sha256": "1cb244012d7357a9abd55ca53fe15f2aa301385cbf074876dd02ca1b44af5935",
+      "bytes": 3193
+    },
+    {
+      "id": "project:bybit-bots/file:client/test/format.spec.ts",
+      "type": "file",
+      "path": "client/test/format.spec.ts",
+      "sha256": "469b6d1d75e5993f62e044c9a944ea5749a98eb9f5f075dc26195097dbe8e691",
+      "bytes": 1440
+    },
+    {
+      "id": "project:bybit-bots/file:client/vite.config.ts",
+      "type": "file",
+      "path": "client/vite.config.ts",
+      "sha256": "e295682c5f88370de5bdd902b0d344815757279b7b433ba01ca404fc887ec6a0",
+      "bytes": 483
+    },
+    {
+      "id": "project:bybit-bots/file:docker-compose.yml",
+      "type": "file",
+      "path": "docker-compose.yml",
+      "sha256": "0418f49e6f67112cd0afd954e0ab3a700986e9b4b04b0090bd4bec38465ca7e8",
+      "bytes": 1023
+    },
+    {
+      "id": "project:bybit-bots/file:docs/trading-journal.md",
+      "type": "file",
+      "path": "docs/trading-journal.md"
+    },
+    {
+      "id": "project:bybit-bots/file:package.json",
+      "type": "file",
+      "path": "package.json",
+      "sha256": "c859df8f0feeed904452cbf3fe69f6f4130be0a6016ee87d3d8b5ee427103070",
+      "bytes": 670
+    },
+    {
+      "id": "project:bybit-bots/file:scripts/build-tar.sh",
+      "type": "file",
+      "path": "scripts/build-tar.sh",
+      "sha256": "8a5da42b13778d7b7371b1c732b1d038942b2d0195d2b35974c183e1b026f4aa",
+      "bytes": 460
+    },
+    {
+      "id": "project:bybit-bots/file:scripts/deploy.sh",
+      "type": "file",
+      "path": "scripts/deploy.sh",
+      "sha256": "702665d5c6c46f66f8207a96a3c356eb927ee34d5eb3aa30d3c86f6d0bf47f6e",
+      "bytes": 1219
+    },
+    {
+      "id": "project:bybit-bots/file:scripts/new-session.sh",
+      "type": "file",
+      "path": "scripts/new-session.sh",
+      "sha256": "a7f89bc8de68092bcabe5c5869a608009260aa0f2735fe59d303879902776f27",
+      "bytes": 2267
+    },
+    {
+      "id": "project:bybit-bots/file:scripts/set-telegram.sh",
+      "type": "file",
+      "path": "scripts/set-telegram.sh",
+      "sha256": "a0b2b2fbf9b2c2f31cf0eaa8182e2ea21ae9f838045d018270bc6e9b7b2282ab",
+      "bytes": 3393
+    },
+    {
+      "id": "project:bybit-bots/file:server/package.json",
+      "type": "file",
+      "path": "server/package.json",
+      "sha256": "5a42c6945e5ec6b8c317ac3af267b019aed944b9f596d8a312f21ac9acaa0225",
+      "bytes": 862
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/app.module.ts",
+      "type": "file",
+      "path": "server/src/app.module.ts",
+      "sha256": "c79dff2b0aba9f3d511964bd873a821302dff5506b337970aa7254682af9dafb",
+      "bytes": 238
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/app.setup.ts",
+      "type": "file",
+      "path": "server/src/app.setup.ts",
+      "sha256": "489c4e9e3d1858d9c9aac8c89fdbf29afa953d0e091ec913cdd691b17585077a",
+      "bytes": 1309
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/backtest/backtest.ts",
+      "type": "file",
+      "path": "server/src/backtest/backtest.ts",
+      "sha256": "196df81db8a12e30210463ade3c3fbe1c1d06388e82024fbf769a714d2ae080e",
+      "bytes": 4922
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/backtest/cli.ts",
+      "type": "file",
+      "path": "server/src/backtest/cli.ts",
+      "sha256": "382cf0d9de9bb4f7943c74a8f09cad1f4436a86694d08e4649425ef5e790b45c",
+      "bytes": 6756
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/config/app-config.ts",
+      "type": "file",
+      "path": "server/src/config/app-config.ts",
+      "sha256": "091d30e40265d0b379410f5ac3c30e5d9164738411146d89017a1e801fe0bd99",
+      "bytes": 6585
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/main.ts",
+      "type": "file",
+      "path": "server/src/main.ts",
+      "sha256": "cb5d7e9af15ff02606a64601d1df3b68f3ead07b0744b57f1a68e9274ab8ae72",
+      "bytes": 1172
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/market/bybit-stream.ts",
+      "type": "file",
+      "path": "server/src/market/bybit-stream.ts",
+      "sha256": "c96c1296eb72ebe5cf0f89f1337fb47b51a442fc99c541719050ed25bf7c3b20",
+      "bytes": 4109
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/market/bybit.ts",
+      "type": "file",
+      "path": "server/src/market/bybit.ts",
+      "sha256": "b6134182467af18cef60e654066fa6442ca46ec2e255ef7e5dee987c0c68b13f",
+      "bytes": 6081
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/market/volatility.ts",
+      "type": "file",
+      "path": "server/src/market/volatility.ts",
+      "sha256": "8870a4c73ba7435f5d60cba4e78a58e0976bc23adf827d12f6b8142d566c8378",
+      "bytes": 1911
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/stats/build-stats.ts",
+      "type": "file",
+      "path": "server/src/stats/build-stats.ts",
+      "sha256": "941c30169be13541bf0796907f85d02349d6ed1b7ff4135d683665c196dcc282",
+      "bytes": 10273
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/stats/pair-chart.service.ts",
+      "type": "file",
+      "path": "server/src/stats/pair-chart.service.ts",
+      "sha256": "8d2e10e84e4ea34aab78c9d1b2fe39b986a4f7c4b971b86fe4462b1b5cd8ce8c",
+      "bytes": 2162
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/stats/rates.service.ts",
+      "type": "file",
+      "path": "server/src/stats/rates.service.ts",
+      "sha256": "d61d7d6d85c8ecdc81e9b6ec35b29a3699d59ad81c4699e6aac8e0fda84af468",
+      "bytes": 1359
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/stats/stats.controller.ts",
+      "type": "file",
+      "path": "server/src/stats/stats.controller.ts",
+      "sha256": "d9c3cc9a290b907322790af12f7b733d9552560768a51d23c1885d497317efdf",
+      "bytes": 2159
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/stats/stats.module.ts",
+      "type": "file",
+      "path": "server/src/stats/stats.module.ts",
+      "sha256": "ca12504933feea0c2e0d470113dbd47b22549fa3afd58a59eac5cb6515d7b8e5",
+      "bytes": 571
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/stats/stats.service.ts",
+      "type": "file",
+      "path": "server/src/stats/stats.service.ts",
+      "sha256": "521e96186c1e7ad032a1c60273aea9d03d1ea62df30a7860e9f9126d05fb48e5",
+      "bytes": 4285
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/stats/stats.types.ts",
+      "type": "file",
+      "path": "server/src/stats/stats.types.ts",
+      "sha256": "2aee69506de33fd0cf625e41e972017e765ba19df8df20ac7eef9ec9966fe632",
+      "bytes": 3571
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/storage/csv-tail.ts",
+      "type": "file",
+      "path": "server/src/storage/csv-tail.ts",
+      "sha256": "1fb2bfeed463eb634ed955555996b150e0a4f90be08af0cb00b5f4bf4205d326",
+      "bytes": 4034
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/storage/csv.ts",
+      "type": "file",
+      "path": "server/src/storage/csv.ts",
+      "sha256": "df52898e412df89f83c138fe1265d3fba976d34709c008a8c1d029030a65ae00",
+      "bytes": 1709
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/storage/state-store.ts",
+      "type": "file",
+      "path": "server/src/storage/state-store.ts",
+      "sha256": "f7f3e46c29538bf38a8ef9e378b60bdc459c542c6d2d978f45a443513fafada8",
+      "bytes": 1394
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/storage/time.ts",
+      "type": "file",
+      "path": "server/src/storage/time.ts",
+      "sha256": "c94c757c5f4cf6e332617319b5f7d55660dbb58608268e31ea1ec4f2f19db0b8",
+      "bytes": 658
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/storage/trade-log.ts",
+      "type": "file",
+      "path": "server/src/storage/trade-log.ts",
+      "sha256": "26f87dd9f1b917a7728fe91c17521846019ca3b133774d332642d09b050bb31c",
+      "bytes": 2929
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/telegram/chart.ts",
+      "type": "file",
+      "path": "server/src/telegram/chart.ts",
+      "sha256": "14b5486881228a2d65127560e4a0325e408e30ed0033b49be33726a8f0d6fb97",
+      "bytes": 9353
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/telegram/report.ts",
+      "type": "file",
+      "path": "server/src/telegram/report.ts",
+      "sha256": "51d3b14d2841db034b17ce357e84832034f1dea64195e08b54dbb3b29158442a",
+      "bytes": 21835
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/telegram/telegram-api.ts",
+      "type": "file",
+      "path": "server/src/telegram/telegram-api.ts",
+      "sha256": "2c556aec9a67f14ec13ec3846417c9b0903e696319ffa04a3dbef39275d21f82",
+      "bytes": 5450
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/telegram/telegram.service.ts",
+      "type": "file",
+      "path": "server/src/telegram/telegram.service.ts",
+      "sha256": "8f045045693697862033749588b24a66fbbec2aef9e12e31642268d672ca92ed",
+      "bytes": 22264
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/trading/bot.ts",
+      "type": "file",
+      "path": "server/src/trading/bot.ts",
+      "sha256": "2dbcc045b8a402be5a2822b4ee1f0129748da958f5daa9ff3169f7764a7de97d",
+      "bytes": 4521
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/trading/engine.service.ts",
+      "type": "file",
+      "path": "server/src/trading/engine.service.ts",
+      "sha256": "ed5c18782b80446568c897fa5f8bbbe82c80d2e09cb2fe82c49219a4e172ec23",
+      "bytes": 22761
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/trading/indicators.ts",
+      "type": "file",
+      "path": "server/src/trading/indicators.ts",
+      "sha256": "a8ca6baa72d04fd0dfaeebefa5bf647c8273456171a632b1f71092882186d0a6",
+      "bytes": 2036
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/trading/ledger.ts",
+      "type": "file",
+      "path": "server/src/trading/ledger.ts",
+      "sha256": "903ac7ba64d5cf9f4991fd586d8a9a0c020e97ec6951d8fdfb9de2064f9d827a",
+      "bytes": 6665
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/trading/meta-bot.ts",
+      "type": "file",
+      "path": "server/src/trading/meta-bot.ts",
+      "sha256": "1920de22736d7e50535ce2a7cd7c5e4e3ae24e5a051677496eeefb7081840918",
+      "bytes": 4950
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/trading/strategies/adaptive-regime.ts",
+      "type": "file",
+      "path": "server/src/trading/strategies/adaptive-regime.ts",
+      "sha256": "847f3d297138696c20230d816dcbb9c5763ed49bb17aad62959a886e5267965a",
+      "bytes": 4121
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/trading/strategies/crossovers.ts",
+      "type": "file",
+      "path": "server/src/trading/strategies/crossovers.ts",
+      "sha256": "8707f52875d4ce90aa167269d2c5fed34b08cec5760b15981a994478a9754a35",
+      "bytes": 1176
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/trading/strategies/dca-holder.ts",
+      "type": "file",
+      "path": "server/src/trading/strategies/dca-holder.ts",
+      "sha256": "5a081450c51a8b90d378e9b2cb576edc3c92d20fb7f77b0bfa9333f9900f3696",
+      "bytes": 7402
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/trading/strategies/filters.ts",
+      "type": "file",
+      "path": "server/src/trading/strategies/filters.ts",
+      "sha256": "59022588ac6b6d6b797dab73e4f5d16b008382f98c2b432b410134c3df5f1d80",
+      "bytes": 1247
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/trading/strategies/index.ts",
+      "type": "file",
+      "path": "server/src/trading/strategies/index.ts",
+      "sha256": "235fcc37be5789d7cd0937cb647e78fbc525754ec64baa5220b94087458f9a41",
+      "bytes": 1247
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/trading/strategies/oscillators.ts",
+      "type": "file",
+      "path": "server/src/trading/strategies/oscillators.ts",
+      "sha256": "a427ba3f1168d7ed3a3066782f383dc4576ffb062de8928ceacd59549884129c",
+      "bytes": 2799
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/trading/strategies/stateful.ts",
+      "type": "file",
+      "path": "server/src/trading/strategies/stateful.ts",
+      "sha256": "3023b1cc13128e5a11296373e62577a8df34acff184d8ece6e4c7e43b1a837ae",
+      "bytes": 3587
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/trading/strategies/trend.ts",
+      "type": "file",
+      "path": "server/src/trading/strategies/trend.ts",
+      "sha256": "8c6183f69e0e4151f4d3b424f0e1cb849bb5080bc0223f8c47ab5c92face7e78",
+      "bytes": 1484
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/trading/trading.module.ts",
+      "type": "file",
+      "path": "server/src/trading/trading.module.ts",
+      "sha256": "fe78dd6511330207d1722f78439338b477126fad9419e7be15ea68be378e4c55",
+      "bytes": 979
+    },
+    {
+      "id": "project:bybit-bots/file:server/src/trading/types.ts",
+      "type": "file",
+      "path": "server/src/trading/types.ts",
+      "sha256": "3dd0c5780bc41b9296c1159e83b4565cb411d09319b2cbbb1611fd5c650a861d",
+      "bytes": 5267
+    },
+    {
+      "id": "project:bybit-bots/file:server/test/app.e2e.spec.ts",
+      "type": "file",
+      "path": "server/test/app.e2e.spec.ts",
+      "sha256": "3099f7ecb1e8c684335bca30883f46d2e42aca04e8c73dd14f249a4bbb19ee98",
+      "bytes": 3951
+    },
+    {
+      "id": "project:bybit-bots/file:server/test/backtest.spec.ts",
+      "type": "file",
+      "path": "server/test/backtest.spec.ts",
+      "sha256": "b73970ae9d0c3842abb190abe95b251aae3350563ea40560ffe4ab4d90e47e67",
+      "bytes": 4262
+    },
+    {
+      "id": "project:bybit-bots/file:server/test/bots.spec.ts",
+      "type": "file",
+      "path": "server/test/bots.spec.ts",
+      "sha256": "02b22557a4d72ce2c263ae58bce7f6a205aff8efc674c72ae3a23762e0b11ab0",
+      "bytes": 6256
+    },
+    {
+      "id": "project:bybit-bots/file:server/test/bybit-client.spec.ts",
+      "type": "file",
+      "path": "server/test/bybit-client.spec.ts",
+      "sha256": "027033b8411208c2045721693ee249d4beef00f42bce36d719c616cec99a73e4",
+      "bytes": 7244
+    },
+    {
+      "id": "project:bybit-bots/file:server/test/dca-holder.spec.ts",
+      "type": "file",
+      "path": "server/test/dca-holder.spec.ts",
+      "sha256": "612c9fa23e51314bc488bff84c917f52f5d02b7c14ce1d0bd92e4c8efe3bc871",
+      "bytes": 4705
+    },
+    {
+      "id": "project:bybit-bots/file:server/test/engine-lifecycle.spec.ts",
+      "type": "file",
+      "path": "server/test/engine-lifecycle.spec.ts",
+      "sha256": "6bbb56ab6c6813679a2ee34daceeb81a5b52fdffe67218e447923327097508df",
+      "bytes": 10135
+    },
+    {
+      "id": "project:bybit-bots/file:server/test/engine.spec.ts",
+      "type": "file",
+      "path": "server/test/engine.spec.ts",
+      "sha256": "83fb36eb887e2cfaf437f433e148db8ea19f65b32ef21eed805c0300105644ba",
+      "bytes": 6091
+    },
+    {
+      "id": "project:bybit-bots/file:server/test/ledger.spec.ts",
+      "type": "file",
+      "path": "server/test/ledger.spec.ts",
+      "sha256": "690e80388fab3918c3331453d0edd7c5004cebc48da0cddc87d8a24e80692837",
+      "bytes": 4681
+    },
+    {
+      "id": "project:bybit-bots/file:server/test/market-storage.spec.ts",
+      "type": "file",
+      "path": "server/test/market-storage.spec.ts",
+      "sha256": "870cfa45a7d1cb04ba6c3d9cfd9bdb2312fd100dac7c4b5a08a27d0788db1317",
+      "bytes": 9909
+    },
+    {
+      "id": "project:bybit-bots/file:server/test/setup-cli-storage.spec.ts",
+      "type": "file",
+      "path": "server/test/setup-cli-storage.spec.ts",
+      "sha256": "cd3f8add678327ba855be3c5027685e513aae7b3ffb084a8a60adb7feac2ed68",
+      "bytes": 10675
+    },
+    {
+      "id": "project:bybit-bots/file:server/test/stats-service.spec.ts",
+      "type": "file",
+      "path": "server/test/stats-service.spec.ts",
+      "sha256": "5b849fdf65b5ca184d3f13a28a3971f26799bdb73d54022dd1533064f89edc3c",
+      "bytes": 9515
+    },
+    {
+      "id": "project:bybit-bots/file:server/test/stats.spec.ts",
+      "type": "file",
+      "path": "server/test/stats.spec.ts",
+      "sha256": "5b6014826479c8971d52c9ead8e51d550ca1da9f02f39e2c3a254676ccc4bcd3",
+      "bytes": 8315
+    },
+    {
+      "id": "project:bybit-bots/file:server/test/strategies.spec.ts",
+      "type": "file",
+      "path": "server/test/strategies.spec.ts",
+      "sha256": "402852442ec90229d1f171268b98d1c348f5aed47bac547af20170befe4d05e4",
+      "bytes": 5834
+    },
+    {
+      "id": "project:bybit-bots/file:server/test/stream.spec.ts",
+      "type": "file",
+      "path": "server/test/stream.spec.ts",
+      "sha256": "b6cbe5ac1e5186659c2ebec451ec0b9f0652b3ccb4aaca05c962c279467b8a58",
+      "bytes": 6820
+    },
+    {
+      "id": "project:bybit-bots/file:server/test/telegram-edge.spec.ts",
+      "type": "file",
+      "path": "server/test/telegram-edge.spec.ts",
+      "sha256": "38f718d72e71e527e61f0c9e46969a92213830ad9a325d3dcc0ed2a08b048a58",
+      "bytes": 19209
+    },
+    {
+      "id": "project:bybit-bots/file:server/test/telegram.spec.ts",
+      "type": "file",
+      "path": "server/test/telegram.spec.ts",
+      "sha256": "74a85cb4bb61765be90cbf2ad7b25922a9dae6df18293eac288809c2725a8dab",
+      "bytes": 23978
+    },
+    {
+      "id": "project:bybit-bots/file:server/vitest.config.ts",
+      "type": "file",
+      "path": "server/vitest.config.ts",
+      "sha256": "b5809723e1e2ecf2ecf4b5416e7f3b4e600d4255be6b04f0a69644d6810bb529",
+      "bytes": 514
+    },
+    {
+      "id": "package:npm:@types/node",
+      "type": "package",
+      "name": "@types/node",
+      "ecosystem": "npm"
+    },
+    {
+      "id": "package:npm:@vitejs/plugin-vue",
+      "type": "package",
+      "name": "@vitejs/plugin-vue",
+      "ecosystem": "npm"
+    },
+    {
+      "id": "package:npm:@vitest/coverage-v8",
+      "type": "package",
+      "name": "@vitest/coverage-v8",
+      "ecosystem": "npm"
+    },
+    {
+      "id": "package:npm:@vue/test-utils",
+      "type": "package",
+      "name": "@vue/test-utils",
+      "ecosystem": "npm"
+    },
+    {
+      "id": "package:npm:jsdom",
+      "type": "package",
+      "name": "jsdom",
+      "ecosystem": "npm"
+    },
+    {
+      "id": "package:npm:typescript",
+      "type": "package",
+      "name": "typescript",
+      "ecosystem": "npm"
+    },
+    {
+      "id": "package:npm:vite",
+      "type": "package",
+      "name": "vite",
+      "ecosystem": "npm"
+    },
+    {
+      "id": "package:npm:vitest",
+      "type": "package",
+      "name": "vitest",
+      "ecosystem": "npm"
+    },
+    {
+      "id": "package:npm:vue",
+      "type": "package",
+      "name": "vue",
+      "ecosystem": "npm"
+    },
+    {
+      "id": "package:npm:vue-tsc",
+      "type": "package",
+      "name": "vue-tsc",
+      "ecosystem": "npm"
+    },
+    {
+      "id": "package:npm:@nestjs/common",
+      "type": "package",
+      "name": "@nestjs/common",
+      "ecosystem": "npm"
+    },
+    {
+      "id": "package:npm:@nestjs/core",
+      "type": "package",
+      "name": "@nestjs/core",
+      "ecosystem": "npm"
+    },
+    {
+      "id": "package:npm:@nestjs/platform-express",
+      "type": "package",
+      "name": "@nestjs/platform-express",
+      "ecosystem": "npm"
+    },
+    {
+      "id": "package:npm:@resvg/resvg-js",
+      "type": "package",
+      "name": "@resvg/resvg-js",
+      "ecosystem": "npm"
+    },
+    {
+      "id": "package:npm:reflect-metadata",
+      "type": "package",
+      "name": "reflect-metadata",
+      "ecosystem": "npm"
+    },
+    {
+      "id": "package:npm:rxjs",
+      "type": "package",
+      "name": "rxjs",
+      "ecosystem": "npm"
+    },
+    {
+      "id": "package:npm:@nestjs/testing",
+      "type": "package",
+      "name": "@nestjs/testing",
+      "ecosystem": "npm"
+    },
+    {
+      "id": "package:npm:@types/express",
+      "type": "package",
+      "name": "@types/express",
+      "ecosystem": "npm"
+    },
+    {
+      "id": "package:npm:@types/supertest",
+      "type": "package",
+      "name": "@types/supertest",
+      "ecosystem": "npm"
+    },
+    {
+      "id": "package:npm:supertest",
+      "type": "package",
+      "name": "supertest",
+      "ecosystem": "npm"
+    },
+    {
+      "id": "package:npm:tsx",
+      "type": "package",
+      "name": "tsx",
+      "ecosystem": "npm"
+    }
+  ],
+  "edges": [
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:Dockerfile",
+      "relation": "contains",
+      "evidence": {
+        "path": "Dockerfile"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:README.md",
+      "relation": "contains",
+      "evidence": {
+        "path": "README.md"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:builds/stats-top100.md",
+      "relation": "contains",
+      "evidence": {
+        "path": "builds/stats-top100.md"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:builds/top100-volatility.md",
+      "relation": "contains",
+      "evidence": {
+        "path": "builds/top100-volatility.md"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:client/package.json",
+      "relation": "contains",
+      "evidence": {
+        "path": "client/package.json"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:client/src/App.vue",
+      "relation": "contains",
+      "evidence": {
+        "path": "client/src/App.vue"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:client/src/components/BotsTable.vue",
+      "relation": "contains",
+      "evidence": {
+        "path": "client/src/components/BotsTable.vue"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:client/src/components/GroupTable.vue",
+      "relation": "contains",
+      "evidence": {
+        "path": "client/src/components/GroupTable.vue"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:client/src/components/PairView.vue",
+      "relation": "contains",
+      "evidence": {
+        "path": "client/src/components/PairView.vue"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:client/src/components/SparkLine.vue",
+      "relation": "contains",
+      "evidence": {
+        "path": "client/src/components/SparkLine.vue"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:client/src/components/StatusBar.vue",
+      "relation": "contains",
+      "evidence": {
+        "path": "client/src/components/StatusBar.vue"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:client/src/components/SummaryCards.vue",
+      "relation": "contains",
+      "evidence": {
+        "path": "client/src/components/SummaryCards.vue"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:client/src/components/TradesTable.vue",
+      "relation": "contains",
+      "evidence": {
+        "path": "client/src/components/TradesTable.vue"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:client/src/composables/useStats.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "client/src/composables/useStats.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:client/src/format.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "client/src/format.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:client/src/main.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "client/src/main.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:client/src/types.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "client/src/types.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:client/test/components-extra.spec.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "client/test/components-extra.spec.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:client/test/components.spec.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "client/test/components.spec.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:client/test/fixtures.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "client/test/fixtures.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:client/test/format.spec.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "client/test/format.spec.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:client/vite.config.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "client/vite.config.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:docker-compose.yml",
+      "relation": "contains",
+      "evidence": {
+        "path": "docker-compose.yml"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:docs/trading-journal.md",
+      "relation": "contains",
+      "evidence": {
+        "path": "docs/trading-journal.md"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:package.json",
+      "relation": "contains",
+      "evidence": {
+        "path": "package.json"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:scripts/build-tar.sh",
+      "relation": "contains",
+      "evidence": {
+        "path": "scripts/build-tar.sh"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:scripts/deploy.sh",
+      "relation": "contains",
+      "evidence": {
+        "path": "scripts/deploy.sh"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:scripts/new-session.sh",
+      "relation": "contains",
+      "evidence": {
+        "path": "scripts/new-session.sh"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:scripts/set-telegram.sh",
+      "relation": "contains",
+      "evidence": {
+        "path": "scripts/set-telegram.sh"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/package.json",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/package.json"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/app.module.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/app.module.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/app.setup.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/app.setup.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/backtest/backtest.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/backtest/backtest.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/backtest/cli.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/backtest/cli.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/config/app-config.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/config/app-config.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/main.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/main.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/market/bybit-stream.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/market/bybit-stream.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/market/bybit.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/market/bybit.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/market/volatility.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/market/volatility.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/stats/build-stats.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/stats/build-stats.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/stats/pair-chart.service.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/stats/pair-chart.service.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/stats/rates.service.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/stats/rates.service.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/stats/stats.controller.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/stats/stats.controller.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/stats/stats.module.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/stats/stats.module.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/stats/stats.service.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/stats/stats.service.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/stats/stats.types.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/stats/stats.types.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/storage/csv-tail.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/storage/csv-tail.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/storage/csv.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/storage/csv.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/storage/state-store.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/storage/state-store.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/storage/time.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/storage/time.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/storage/trade-log.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/storage/trade-log.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/telegram/chart.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/telegram/chart.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/telegram/report.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/telegram/report.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/telegram/telegram-api.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/telegram/telegram-api.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/telegram/telegram.service.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/telegram/telegram.service.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/trading/bot.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/trading/bot.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/trading/engine.service.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/trading/engine.service.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/trading/indicators.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/trading/indicators.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/trading/ledger.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/trading/ledger.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/trading/meta-bot.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/trading/meta-bot.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/trading/strategies/adaptive-regime.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/trading/strategies/adaptive-regime.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/trading/strategies/crossovers.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/trading/strategies/crossovers.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/trading/strategies/dca-holder.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/trading/strategies/dca-holder.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/trading/strategies/filters.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/trading/strategies/filters.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/trading/strategies/index.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/trading/strategies/index.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/trading/strategies/oscillators.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/trading/strategies/oscillators.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/trading/strategies/stateful.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/trading/strategies/stateful.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/trading/strategies/trend.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/trading/strategies/trend.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/trading/trading.module.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/trading/trading.module.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/src/trading/types.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/test/app.e2e.spec.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/test/app.e2e.spec.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/test/backtest.spec.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/test/backtest.spec.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/test/bots.spec.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/test/bots.spec.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/test/bybit-client.spec.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/test/bybit-client.spec.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/test/dca-holder.spec.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/test/dca-holder.spec.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/test/engine-lifecycle.spec.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/test/engine-lifecycle.spec.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/test/engine.spec.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/test/engine.spec.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/test/ledger.spec.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/test/ledger.spec.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/test/market-storage.spec.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/test/market-storage.spec.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/test/setup-cli-storage.spec.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/test/setup-cli-storage.spec.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/test/stats-service.spec.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/test/stats-service.spec.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/test/stats.spec.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/test/stats.spec.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/test/strategies.spec.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/test/strategies.spec.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/test/stream.spec.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/test/stream.spec.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/test/telegram-edge.spec.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/test/telegram-edge.spec.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/test/telegram.spec.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/test/telegram.spec.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots",
+      "target": "project:bybit-bots/file:server/vitest.config.ts",
+      "relation": "contains",
+      "evidence": {
+        "path": "server/vitest.config.ts"
+      },
+      "method": "filesystem"
+    },
+    {
+      "source": "project:bybit-bots/file:client/src/App.vue",
+      "target": "project:bybit-bots/file:client/src/components/BotsTable.vue",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/src/App.vue",
+        "line": 3
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/src/App.vue",
+      "target": "project:bybit-bots/file:client/src/components/GroupTable.vue",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/src/App.vue",
+        "line": 4
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/src/App.vue",
+      "target": "project:bybit-bots/file:client/src/components/PairView.vue",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/src/App.vue",
+        "line": 5
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/src/App.vue",
+      "target": "project:bybit-bots/file:client/src/components/StatusBar.vue",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/src/App.vue",
+        "line": 6
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/src/App.vue",
+      "target": "project:bybit-bots/file:client/src/components/SummaryCards.vue",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/src/App.vue",
+        "line": 7
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/src/App.vue",
+      "target": "project:bybit-bots/file:client/src/components/TradesTable.vue",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/src/App.vue",
+        "line": 8
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/src/App.vue",
+      "target": "project:bybit-bots/file:client/src/composables/useStats.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/src/App.vue",
+        "line": 9
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/src/main.ts",
+      "target": "project:bybit-bots/file:client/src/App.vue",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/src/main.ts",
+        "line": 2
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/test/components-extra.spec.ts",
+      "target": "project:bybit-bots/file:client/src/App.vue",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/test/components-extra.spec.ts",
+        "line": 3
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/test/components-extra.spec.ts",
+      "target": "project:bybit-bots/file:client/src/components/PairView.vue",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/test/components-extra.spec.ts",
+        "line": 4
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/test/components-extra.spec.ts",
+      "target": "project:bybit-bots/file:client/src/components/SparkLine.vue",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/test/components-extra.spec.ts",
+        "line": 5
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/test/components-extra.spec.ts",
+      "target": "project:bybit-bots/file:client/src/components/StatusBar.vue",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/test/components-extra.spec.ts",
+        "line": 6
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/test/components-extra.spec.ts",
+      "target": "project:bybit-bots/file:client/src/components/SummaryCards.vue",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/test/components-extra.spec.ts",
+        "line": 7
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/test/components-extra.spec.ts",
+      "target": "project:bybit-bots/file:client/src/composables/useStats.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/test/components-extra.spec.ts",
+        "line": 8
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/test/components-extra.spec.ts",
+      "target": "project:bybit-bots/file:client/src/format.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/test/components-extra.spec.ts",
+        "line": 9
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/test/components-extra.spec.ts",
+      "target": "project:bybit-bots/file:client/test/fixtures.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/test/components-extra.spec.ts",
+        "line": 10
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/test/components-extra.spec.ts",
+      "target": "project:bybit-bots/file:client/src/format.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/test/components-extra.spec.ts",
+        "line": 163
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/test/components-extra.spec.ts",
+      "target": "project:bybit-bots/file:client/src/format.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/test/components-extra.spec.ts",
+        "line": 171
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/test/components.spec.ts",
+      "target": "project:bybit-bots/file:client/src/App.vue",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/test/components.spec.ts",
+        "line": 4
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/test/components.spec.ts",
+      "target": "project:bybit-bots/file:client/src/components/BotsTable.vue",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/test/components.spec.ts",
+        "line": 5
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/test/components.spec.ts",
+      "target": "project:bybit-bots/file:client/src/components/GroupTable.vue",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/test/components.spec.ts",
+        "line": 6
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/test/components.spec.ts",
+      "target": "project:bybit-bots/file:client/src/components/StatusBar.vue",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/test/components.spec.ts",
+        "line": 7
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/test/components.spec.ts",
+      "target": "project:bybit-bots/file:client/src/components/SummaryCards.vue",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/test/components.spec.ts",
+        "line": 8
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/test/components.spec.ts",
+      "target": "project:bybit-bots/file:client/src/components/TradesTable.vue",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/test/components.spec.ts",
+        "line": 9
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/test/components.spec.ts",
+      "target": "project:bybit-bots/file:client/src/composables/useStats.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/test/components.spec.ts",
+        "line": 10
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/test/components.spec.ts",
+      "target": "project:bybit-bots/file:client/test/fixtures.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/test/components.spec.ts",
+        "line": 11
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/test/fixtures.ts",
+      "target": "project:bybit-bots/file:client/src/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/test/fixtures.ts",
+        "line": 1
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/test/format.spec.ts",
+      "target": "project:bybit-bots/file:client/src/format.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/test/format.spec.ts",
+        "line": 2
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/app.module.ts",
+      "target": "project:bybit-bots/file:server/src/stats/stats.module.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/app.module.ts",
+        "line": 2
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/app.module.ts",
+      "target": "project:bybit-bots/file:server/src/trading/trading.module.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/app.module.ts",
+        "line": 3
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/app.setup.ts",
+      "target": "project:bybit-bots/file:server/src/config/app-config.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/app.setup.ts",
+        "line": 4
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/main.ts",
+      "target": "project:bybit-bots/file:server/src/app.module.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/main.ts",
+        "line": 6
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/main.ts",
+      "target": "project:bybit-bots/file:server/src/app.setup.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/main.ts",
+        "line": 7
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/main.ts",
+      "target": "project:bybit-bots/file:server/src/config/app-config.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/main.ts",
+        "line": 8
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/app.e2e.spec.ts",
+      "target": "project:bybit-bots/file:server/src/app.module.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/app.e2e.spec.ts",
+        "line": 8
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/app.e2e.spec.ts",
+      "target": "project:bybit-bots/file:server/src/config/app-config.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/app.e2e.spec.ts",
+        "line": 9
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/app.e2e.spec.ts",
+      "target": "project:bybit-bots/file:server/src/market/bybit.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/app.e2e.spec.ts",
+        "line": 10
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/app.e2e.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/engine.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/app.e2e.spec.ts",
+        "line": 11
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/app.e2e.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/app.e2e.spec.ts",
+        "line": 12
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/backtest.spec.ts",
+      "target": "project:bybit-bots/file:server/src/backtest/backtest.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/backtest.spec.ts",
+        "line": 2
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/backtest.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/bot.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/backtest.spec.ts",
+        "line": 3
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/backtest.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/strategies/filters.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/backtest.spec.ts",
+        "line": 4
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/backtest.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/strategies/index.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/backtest.spec.ts",
+        "line": 5
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/backtest.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/strategies/stateful.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/backtest.spec.ts",
+        "line": 6
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/backtest.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/backtest.spec.ts",
+        "line": 7
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/bots.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/bot.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/bots.spec.ts",
+        "line": 2
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/bots.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/meta-bot.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/bots.spec.ts",
+        "line": 3
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/bots.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/strategies/stateful.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/bots.spec.ts",
+        "line": 4
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/bots.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/bots.spec.ts",
+        "line": 5
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/bybit-client.spec.ts",
+      "target": "project:bybit-bots/file:server/src/market/bybit.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/bybit-client.spec.ts",
+        "line": 2
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/dca-holder.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/bot.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/dca-holder.spec.ts",
+        "line": 2
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/dca-holder.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/ledger.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/dca-holder.spec.ts",
+        "line": 3
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/dca-holder.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/strategies/dca-holder.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/dca-holder.spec.ts",
+        "line": 4
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/dca-holder.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/dca-holder.spec.ts",
+        "line": 5
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/engine-lifecycle.spec.ts",
+      "target": "project:bybit-bots/file:server/src/config/app-config.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/engine-lifecycle.spec.ts",
+        "line": 5
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/engine-lifecycle.spec.ts",
+      "target": "project:bybit-bots/file:server/src/market/bybit-stream.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/engine-lifecycle.spec.ts",
+        "line": 6
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/engine-lifecycle.spec.ts",
+      "target": "project:bybit-bots/file:server/src/storage/state-store.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/engine-lifecycle.spec.ts",
+        "line": 7
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/engine-lifecycle.spec.ts",
+      "target": "project:bybit-bots/file:server/src/storage/trade-log.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/engine-lifecycle.spec.ts",
+        "line": 8
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/engine-lifecycle.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/engine.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/engine-lifecycle.spec.ts",
+        "line": 9
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/engine-lifecycle.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/engine-lifecycle.spec.ts",
+        "line": 10
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/engine-lifecycle.spec.ts",
+      "target": "project:bybit-bots/file:server/src/market/bybit.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/engine-lifecycle.spec.ts",
+        "line": 14
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/engine.spec.ts",
+      "target": "project:bybit-bots/file:server/src/config/app-config.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/engine.spec.ts",
+        "line": 5
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/engine.spec.ts",
+      "target": "project:bybit-bots/file:server/src/storage/state-store.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/engine.spec.ts",
+        "line": 6
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/engine.spec.ts",
+      "target": "project:bybit-bots/file:server/src/storage/trade-log.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/engine.spec.ts",
+        "line": 7
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/engine.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/engine.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/engine.spec.ts",
+        "line": 8
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/engine.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/ledger.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/engine.spec.ts",
+        "line": 9
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/engine.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/engine.spec.ts",
+        "line": 10
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/ledger.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/ledger.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/ledger.spec.ts",
+        "line": 2
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/ledger.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/ledger.spec.ts",
+        "line": 3
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/market-storage.spec.ts",
+      "target": "project:bybit-bots/file:server/src/config/app-config.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/market-storage.spec.ts",
+        "line": 5
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/market-storage.spec.ts",
+      "target": "project:bybit-bots/file:server/src/market/bybit.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/market-storage.spec.ts",
+        "line": 6
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/market-storage.spec.ts",
+      "target": "project:bybit-bots/file:server/src/storage/csv-tail.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/market-storage.spec.ts",
+        "line": 7
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/market-storage.spec.ts",
+      "target": "project:bybit-bots/file:server/src/storage/csv.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/market-storage.spec.ts",
+        "line": 8
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/market-storage.spec.ts",
+      "target": "project:bybit-bots/file:server/src/storage/state-store.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/market-storage.spec.ts",
+        "line": 9
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/market-storage.spec.ts",
+      "target": "project:bybit-bots/file:server/src/storage/time.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/market-storage.spec.ts",
+        "line": 10
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/market-storage.spec.ts",
+      "target": "project:bybit-bots/file:server/src/storage/trade-log.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/market-storage.spec.ts",
+        "line": 11
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/setup-cli-storage.spec.ts",
+      "target": "project:bybit-bots/file:server/src/app.setup.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/setup-cli-storage.spec.ts",
+        "line": 7
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/setup-cli-storage.spec.ts",
+      "target": "project:bybit-bots/file:server/src/backtest/backtest.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/setup-cli-storage.spec.ts",
+        "line": 8
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/setup-cli-storage.spec.ts",
+      "target": "project:bybit-bots/file:server/src/backtest/cli.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/setup-cli-storage.spec.ts",
+        "line": 9
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/setup-cli-storage.spec.ts",
+      "target": "project:bybit-bots/file:server/src/config/app-config.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/setup-cli-storage.spec.ts",
+        "line": 10
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/setup-cli-storage.spec.ts",
+      "target": "project:bybit-bots/file:server/src/market/bybit.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/setup-cli-storage.spec.ts",
+        "line": 11
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/setup-cli-storage.spec.ts",
+      "target": "project:bybit-bots/file:server/src/storage/csv-tail.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/setup-cli-storage.spec.ts",
+        "line": 12
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/setup-cli-storage.spec.ts",
+      "target": "project:bybit-bots/file:server/src/storage/csv.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/setup-cli-storage.spec.ts",
+        "line": 13
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/setup-cli-storage.spec.ts",
+      "target": "project:bybit-bots/file:server/src/storage/state-store.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/setup-cli-storage.spec.ts",
+        "line": 14
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/setup-cli-storage.spec.ts",
+      "target": "project:bybit-bots/file:server/src/storage/trade-log.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/setup-cli-storage.spec.ts",
+        "line": 15
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/setup-cli-storage.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/strategies/adaptive-regime.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/setup-cli-storage.spec.ts",
+        "line": 16
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/setup-cli-storage.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/strategies/oscillators.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/setup-cli-storage.spec.ts",
+        "line": 17
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/setup-cli-storage.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/strategies/stateful.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/setup-cli-storage.spec.ts",
+        "line": 18
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/setup-cli-storage.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/engine.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/setup-cli-storage.spec.ts",
+        "line": 19
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/setup-cli-storage.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/trading.module.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/setup-cli-storage.spec.ts",
+        "line": 20
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/setup-cli-storage.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/setup-cli-storage.spec.ts",
+        "line": 21
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/stats-service.spec.ts",
+      "target": "project:bybit-bots/file:server/src/config/app-config.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/stats-service.spec.ts",
+        "line": 6
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/stats-service.spec.ts",
+      "target": "project:bybit-bots/file:server/src/market/bybit.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/stats-service.spec.ts",
+        "line": 7
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/stats-service.spec.ts",
+      "target": "project:bybit-bots/file:server/src/storage/state-store.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/stats-service.spec.ts",
+        "line": 8
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/stats-service.spec.ts",
+      "target": "project:bybit-bots/file:server/src/storage/trade-log.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/stats-service.spec.ts",
+        "line": 9
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/stats-service.spec.ts",
+      "target": "project:bybit-bots/file:server/src/stats/pair-chart.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/stats-service.spec.ts",
+        "line": 10
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/stats-service.spec.ts",
+      "target": "project:bybit-bots/file:server/src/stats/rates.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/stats-service.spec.ts",
+        "line": 11
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/stats-service.spec.ts",
+      "target": "project:bybit-bots/file:server/src/stats/stats.controller.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/stats-service.spec.ts",
+        "line": 12
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/stats-service.spec.ts",
+      "target": "project:bybit-bots/file:server/src/stats/stats.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/stats-service.spec.ts",
+        "line": 13
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/stats-service.spec.ts",
+      "target": "project:bybit-bots/file:server/src/stats/stats.types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/stats-service.spec.ts",
+        "line": 14
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/stats-service.spec.ts",
+      "target": "project:bybit-bots/file:server/src/telegram/telegram.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/stats-service.spec.ts",
+        "line": 15
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/stats-service.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/engine.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/stats-service.spec.ts",
+        "line": 16
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/stats-service.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/stats-service.spec.ts",
+        "line": 17
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/stats.spec.ts",
+      "target": "project:bybit-bots/file:server/src/stats/build-stats.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/stats.spec.ts",
+        "line": 2
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/stats.spec.ts",
+      "target": "project:bybit-bots/file:server/src/stats/rates.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/stats.spec.ts",
+        "line": 3
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/stats.spec.ts",
+      "target": "project:bybit-bots/file:server/src/stats/stats.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/stats.spec.ts",
+        "line": 4
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/stats.spec.ts",
+      "target": "project:bybit-bots/file:server/src/stats/stats.types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/stats.spec.ts",
+        "line": 5
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/stats.spec.ts",
+      "target": "project:bybit-bots/file:server/src/config/app-config.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/stats.spec.ts",
+        "line": 6
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/stats.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/stats.spec.ts",
+        "line": 7
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/stats.spec.ts",
+      "target": "project:bybit-bots/file:server/src/stats/build-stats.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/stats.spec.ts",
+        "line": 166
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/strategies.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/indicators.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/strategies.spec.ts",
+        "line": 2
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/strategies.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/strategies/adaptive-regime.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/strategies.spec.ts",
+        "line": 3
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/strategies.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/strategies/index.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/strategies.spec.ts",
+        "line": 4
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/strategies.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/strategies/oscillators.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/strategies.spec.ts",
+        "line": 5
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/strategies.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/strategies/stateful.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/strategies.spec.ts",
+        "line": 6
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/strategies.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/strategies/trend.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/strategies.spec.ts",
+        "line": 7
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/strategies.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/strategies.spec.ts",
+        "line": 8
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/stream.spec.ts",
+      "target": "project:bybit-bots/file:server/src/config/app-config.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/stream.spec.ts",
+        "line": 5
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/stream.spec.ts",
+      "target": "project:bybit-bots/file:server/src/market/bybit-stream.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/stream.spec.ts",
+        "line": 6
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/stream.spec.ts",
+      "target": "project:bybit-bots/file:server/src/storage/state-store.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/stream.spec.ts",
+        "line": 7
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/stream.spec.ts",
+      "target": "project:bybit-bots/file:server/src/storage/trade-log.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/stream.spec.ts",
+        "line": 8
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/stream.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/engine.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/stream.spec.ts",
+        "line": 9
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/stream.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/stream.spec.ts",
+        "line": 10
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/telegram-edge.spec.ts",
+      "target": "project:bybit-bots/file:server/src/config/app-config.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/telegram-edge.spec.ts",
+        "line": 5
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/telegram-edge.spec.ts",
+      "target": "project:bybit-bots/file:server/src/stats/build-stats.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/telegram-edge.spec.ts",
+        "line": 6
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/telegram-edge.spec.ts",
+      "target": "project:bybit-bots/file:server/src/stats/stats.types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/telegram-edge.spec.ts",
+        "line": 7
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/telegram-edge.spec.ts",
+      "target": "project:bybit-bots/file:server/src/telegram/chart.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/telegram-edge.spec.ts",
+        "line": 8
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/telegram-edge.spec.ts",
+      "target": "project:bybit-bots/file:server/src/telegram/report.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/telegram-edge.spec.ts",
+        "line": 11
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/telegram-edge.spec.ts",
+      "target": "project:bybit-bots/file:server/src/telegram/telegram-api.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/telegram-edge.spec.ts",
+        "line": 12
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/telegram-edge.spec.ts",
+      "target": "project:bybit-bots/file:server/src/telegram/telegram.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/telegram-edge.spec.ts",
+        "line": 13
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/telegram-edge.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/engine.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/telegram-edge.spec.ts",
+        "line": 14
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/telegram-edge.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/telegram-edge.spec.ts",
+        "line": 15
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/telegram.spec.ts",
+      "target": "project:bybit-bots/file:server/src/config/app-config.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/telegram.spec.ts",
+        "line": 5
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/telegram.spec.ts",
+      "target": "project:bybit-bots/file:server/src/market/volatility.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/telegram.spec.ts",
+        "line": 6
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/telegram.spec.ts",
+      "target": "project:bybit-bots/file:server/src/stats/build-stats.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/telegram.spec.ts",
+        "line": 7
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/telegram.spec.ts",
+      "target": "project:bybit-bots/file:server/src/stats/stats.types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/telegram.spec.ts",
+        "line": 8
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/telegram.spec.ts",
+      "target": "project:bybit-bots/file:server/src/telegram/chart.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/telegram.spec.ts",
+        "line": 9
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/telegram.spec.ts",
+      "target": "project:bybit-bots/file:server/src/telegram/report.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/telegram.spec.ts",
+        "line": 12
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/telegram.spec.ts",
+      "target": "project:bybit-bots/file:server/src/telegram/telegram.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/telegram.spec.ts",
+        "line": 13
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/telegram.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/engine.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/telegram.spec.ts",
+        "line": 14
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/test/telegram.spec.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/test/telegram.spec.ts",
+        "line": 15
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/src/components/BotsTable.vue",
+      "target": "project:bybit-bots/file:client/src/format.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/src/components/BotsTable.vue",
+        "line": 3
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/src/components/BotsTable.vue",
+      "target": "project:bybit-bots/file:client/src/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/src/components/BotsTable.vue",
+        "line": 4
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/src/components/BotsTable.vue",
+      "target": "project:bybit-bots/file:client/src/components/SparkLine.vue",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/src/components/BotsTable.vue",
+        "line": 5
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/src/components/GroupTable.vue",
+      "target": "project:bybit-bots/file:client/src/format.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/src/components/GroupTable.vue",
+        "line": 2
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/src/components/GroupTable.vue",
+      "target": "project:bybit-bots/file:client/src/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/src/components/GroupTable.vue",
+        "line": 3
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/src/components/PairView.vue",
+      "target": "project:bybit-bots/file:client/src/format.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/src/components/PairView.vue",
+        "line": 3
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/src/components/PairView.vue",
+      "target": "project:bybit-bots/file:client/src/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/src/components/PairView.vue",
+        "line": 4
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/src/components/PairView.vue",
+      "target": "project:bybit-bots/file:client/src/components/BotsTable.vue",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/src/components/PairView.vue",
+        "line": 5
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/src/components/PairView.vue",
+      "target": "project:bybit-bots/file:client/src/components/TradesTable.vue",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/src/components/PairView.vue",
+        "line": 6
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/src/components/SparkLine.vue",
+      "target": "project:bybit-bots/file:client/src/format.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/src/components/SparkLine.vue",
+        "line": 3
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/src/components/StatusBar.vue",
+      "target": "project:bybit-bots/file:client/src/format.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/src/components/StatusBar.vue",
+        "line": 3
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/src/components/StatusBar.vue",
+      "target": "project:bybit-bots/file:client/src/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/src/components/StatusBar.vue",
+        "line": 4
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/src/components/SummaryCards.vue",
+      "target": "project:bybit-bots/file:client/src/format.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/src/components/SummaryCards.vue",
+        "line": 3
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/src/components/SummaryCards.vue",
+      "target": "project:bybit-bots/file:client/src/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/src/components/SummaryCards.vue",
+        "line": 4
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/src/components/TradesTable.vue",
+      "target": "project:bybit-bots/file:client/src/format.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/src/components/TradesTable.vue",
+        "line": 3
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/src/components/TradesTable.vue",
+      "target": "project:bybit-bots/file:client/src/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/src/components/TradesTable.vue",
+        "line": 4
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/src/composables/useStats.ts",
+      "target": "project:bybit-bots/file:client/src/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "client/src/composables/useStats.ts",
+        "line": 2
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/backtest/backtest.ts",
+      "target": "project:bybit-bots/file:server/src/trading/bot.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/backtest/backtest.ts",
+        "line": 1
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/backtest/backtest.ts",
+      "target": "project:bybit-bots/file:server/src/trading/ledger.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/backtest/backtest.ts",
+        "line": 2
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/backtest/backtest.ts",
+      "target": "project:bybit-bots/file:server/src/trading/meta-bot.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/backtest/backtest.ts",
+        "line": 3
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/backtest/backtest.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/backtest/backtest.ts",
+        "line": 4
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/backtest/cli.ts",
+      "target": "project:bybit-bots/file:server/src/config/app-config.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/backtest/cli.ts",
+        "line": 9
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/backtest/cli.ts",
+      "target": "project:bybit-bots/file:server/src/market/bybit.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/backtest/cli.ts",
+        "line": 10
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/backtest/cli.ts",
+      "target": "project:bybit-bots/file:server/src/market/volatility.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/backtest/cli.ts",
+        "line": 11
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/backtest/cli.ts",
+      "target": "project:bybit-bots/file:server/src/trading/strategies/filters.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/backtest/cli.ts",
+        "line": 12
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/backtest/cli.ts",
+      "target": "project:bybit-bots/file:server/src/trading/strategies/index.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/backtest/cli.ts",
+        "line": 13
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/backtest/cli.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/backtest/cli.ts",
+        "line": 14
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/backtest/cli.ts",
+      "target": "project:bybit-bots/file:server/src/backtest/backtest.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/backtest/cli.ts",
+        "line": 15
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/market/bybit.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/market/bybit.ts",
+        "line": 1
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/market/bybit.ts",
+      "target": "project:bybit-bots/file:server/src/market/volatility.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/market/bybit.ts",
+        "line": 2
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/stats/build-stats.ts",
+      "target": "project:bybit-bots/file:server/src/storage/csv-tail.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/stats/build-stats.ts",
+        "line": 1
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/stats/build-stats.ts",
+      "target": "project:bybit-bots/file:server/src/trading/ledger.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/stats/build-stats.ts",
+        "line": 2
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/stats/build-stats.ts",
+      "target": "project:bybit-bots/file:server/src/trading/engine.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/stats/build-stats.ts",
+        "line": 3
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/stats/build-stats.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/stats/build-stats.ts",
+        "line": 4
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/stats/build-stats.ts",
+      "target": "project:bybit-bots/file:server/src/stats/stats.types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/stats/build-stats.ts",
+        "line": 5
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/stats/pair-chart.service.ts",
+      "target": "project:bybit-bots/file:server/src/config/app-config.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/stats/pair-chart.service.ts",
+        "line": 2
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/stats/pair-chart.service.ts",
+      "target": "project:bybit-bots/file:server/src/market/bybit.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/stats/pair-chart.service.ts",
+        "line": 3
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/stats/pair-chart.service.ts",
+      "target": "project:bybit-bots/file:server/src/telegram/chart.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/stats/pair-chart.service.ts",
+        "line": 4
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/stats/pair-chart.service.ts",
+      "target": "project:bybit-bots/file:server/src/stats/stats.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/stats/pair-chart.service.ts",
+        "line": 5
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/stats/rates.service.ts",
+      "target": "project:bybit-bots/file:server/src/config/app-config.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/stats/rates.service.ts",
+        "line": 2
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/stats/rates.service.ts",
+      "target": "project:bybit-bots/file:server/src/stats/build-stats.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/stats/rates.service.ts",
+        "line": 3
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/stats/stats.controller.ts",
+      "target": "project:bybit-bots/file:server/src/telegram/telegram.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/stats/stats.controller.ts",
+        "line": 3
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/stats/stats.controller.ts",
+      "target": "project:bybit-bots/file:server/src/stats/pair-chart.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/stats/stats.controller.ts",
+        "line": 4
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/stats/stats.controller.ts",
+      "target": "project:bybit-bots/file:server/src/stats/stats.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/stats/stats.controller.ts",
+        "line": 5
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/stats/stats.controller.ts",
+      "target": "project:bybit-bots/file:server/src/stats/stats.types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/stats/stats.controller.ts",
+        "line": 6
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/stats/stats.module.ts",
+      "target": "project:bybit-bots/file:server/src/telegram/telegram.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/stats/stats.module.ts",
+        "line": 2
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/stats/stats.module.ts",
+      "target": "project:bybit-bots/file:server/src/trading/trading.module.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/stats/stats.module.ts",
+        "line": 3
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/stats/stats.module.ts",
+      "target": "project:bybit-bots/file:server/src/stats/pair-chart.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/stats/stats.module.ts",
+        "line": 4
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/stats/stats.module.ts",
+      "target": "project:bybit-bots/file:server/src/stats/rates.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/stats/stats.module.ts",
+        "line": 5
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/stats/stats.module.ts",
+      "target": "project:bybit-bots/file:server/src/stats/stats.controller.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/stats/stats.module.ts",
+        "line": 6
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/stats/stats.module.ts",
+      "target": "project:bybit-bots/file:server/src/stats/stats.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/stats/stats.module.ts",
+        "line": 7
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/stats/stats.service.ts",
+      "target": "project:bybit-bots/file:server/src/config/app-config.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/stats/stats.service.ts",
+        "line": 2
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/stats/stats.service.ts",
+      "target": "project:bybit-bots/file:server/src/storage/csv-tail.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/stats/stats.service.ts",
+        "line": 3
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/stats/stats.service.ts",
+      "target": "project:bybit-bots/file:server/src/storage/csv.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/stats/stats.service.ts",
+        "line": 4
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/stats/stats.service.ts",
+      "target": "project:bybit-bots/file:server/src/storage/state-store.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/stats/stats.service.ts",
+        "line": 5
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/stats/stats.service.ts",
+      "target": "project:bybit-bots/file:server/src/storage/trade-log.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/stats/stats.service.ts",
+        "line": 6
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/stats/stats.service.ts",
+      "target": "project:bybit-bots/file:server/src/trading/engine.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/stats/stats.service.ts",
+        "line": 7
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/stats/stats.service.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/stats/stats.service.ts",
+        "line": 8
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/stats/stats.service.ts",
+      "target": "project:bybit-bots/file:server/src/stats/build-stats.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/stats/stats.service.ts",
+        "line": 9
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/stats/stats.service.ts",
+      "target": "project:bybit-bots/file:server/src/stats/rates.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/stats/stats.service.ts",
+        "line": 10
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/stats/stats.service.ts",
+      "target": "project:bybit-bots/file:server/src/stats/stats.types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/stats/stats.service.ts",
+        "line": 11
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/stats/stats.types.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/stats/stats.types.ts",
+        "line": 4
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/storage/csv-tail.ts",
+      "target": "project:bybit-bots/file:server/src/storage/csv.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/storage/csv-tail.ts",
+        "line": 5
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/storage/state-store.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/storage/state-store.ts",
+        "line": 3
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/storage/trade-log.ts",
+      "target": "project:bybit-bots/file:server/src/storage/csv.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/storage/trade-log.ts",
+        "line": 3
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/telegram/report.ts",
+      "target": "project:bybit-bots/file:server/src/market/volatility.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/telegram/report.ts",
+        "line": 1
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/telegram/report.ts",
+      "target": "project:bybit-bots/file:server/src/stats/stats.types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/telegram/report.ts",
+        "line": 2
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/telegram/report.ts",
+      "target": "project:bybit-bots/file:server/src/trading/engine.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/telegram/report.ts",
+        "line": 3
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/telegram/report.ts",
+      "target": "project:bybit-bots/file:server/src/telegram/chart.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/telegram/report.ts",
+        "line": 4
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/telegram/report.ts",
+      "target": "project:bybit-bots/file:server/src/telegram/telegram-api.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/telegram/report.ts",
+        "line": 5
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/telegram/telegram.service.ts",
+      "target": "project:bybit-bots/file:server/src/config/app-config.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/telegram/telegram.service.ts",
+        "line": 6
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/telegram/telegram.service.ts",
+      "target": "project:bybit-bots/file:server/src/market/bybit.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/telegram/telegram.service.ts",
+        "line": 7
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/telegram/telegram.service.ts",
+      "target": "project:bybit-bots/file:server/src/market/volatility.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/telegram/telegram.service.ts",
+        "line": 8
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/telegram/telegram.service.ts",
+      "target": "project:bybit-bots/file:server/src/stats/rates.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/telegram/telegram.service.ts",
+        "line": 9
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/telegram/telegram.service.ts",
+      "target": "project:bybit-bots/file:server/src/stats/stats.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/telegram/telegram.service.ts",
+        "line": 10
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/telegram/telegram.service.ts",
+      "target": "project:bybit-bots/file:server/src/trading/engine.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/telegram/telegram.service.ts",
+        "line": 11
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/telegram/telegram.service.ts",
+      "target": "project:bybit-bots/file:server/src/telegram/chart.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/telegram/telegram.service.ts",
+        "line": 12
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/telegram/telegram.service.ts",
+      "target": "project:bybit-bots/file:server/src/stats/pair-chart.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/telegram/telegram.service.ts",
+        "line": 13
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/telegram/telegram.service.ts",
+      "target": "project:bybit-bots/file:server/src/telegram/report.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/telegram/telegram.service.ts",
+        "line": 17
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/telegram/telegram.service.ts",
+      "target": "project:bybit-bots/file:server/src/telegram/telegram-api.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/telegram/telegram.service.ts",
+        "line": 18
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/bot.ts",
+      "target": "project:bybit-bots/file:server/src/trading/ledger.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/bot.ts",
+        "line": 1
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/bot.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/bot.ts",
+        "line": 4
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/engine.service.ts",
+      "target": "project:bybit-bots/file:server/src/config/app-config.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/engine.service.ts",
+        "line": 2
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/engine.service.ts",
+      "target": "project:bybit-bots/file:server/src/market/bybit.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/engine.service.ts",
+        "line": 3
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/engine.service.ts",
+      "target": "project:bybit-bots/file:server/src/market/bybit-stream.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/engine.service.ts",
+        "line": 4
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/engine.service.ts",
+      "target": "project:bybit-bots/file:server/src/market/volatility.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/engine.service.ts",
+        "line": 5
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/engine.service.ts",
+      "target": "project:bybit-bots/file:server/src/storage/state-store.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/engine.service.ts",
+        "line": 6
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/engine.service.ts",
+      "target": "project:bybit-bots/file:server/src/storage/time.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/engine.service.ts",
+        "line": 7
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/engine.service.ts",
+      "target": "project:bybit-bots/file:server/src/storage/trade-log.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/engine.service.ts",
+        "line": 8
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/engine.service.ts",
+      "target": "project:bybit-bots/file:server/src/trading/bot.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/engine.service.ts",
+        "line": 9
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/engine.service.ts",
+      "target": "project:bybit-bots/file:server/src/trading/meta-bot.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/engine.service.ts",
+        "line": 10
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/engine.service.ts",
+      "target": "project:bybit-bots/file:server/src/trading/strategies/index.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/engine.service.ts",
+        "line": 11
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/engine.service.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/engine.service.ts",
+        "line": 12
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/ledger.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/ledger.ts",
+        "line": 3
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/meta-bot.ts",
+      "target": "project:bybit-bots/file:server/src/trading/ledger.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/meta-bot.ts",
+        "line": 1
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/meta-bot.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/meta-bot.ts",
+        "line": 2
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/trading.module.ts",
+      "target": "project:bybit-bots/file:server/src/config/app-config.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/trading.module.ts",
+        "line": 2
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/trading.module.ts",
+      "target": "project:bybit-bots/file:server/src/market/bybit.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/trading.module.ts",
+        "line": 3
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/trading.module.ts",
+      "target": "project:bybit-bots/file:server/src/storage/state-store.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/trading.module.ts",
+        "line": 4
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/trading.module.ts",
+      "target": "project:bybit-bots/file:server/src/storage/trade-log.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/trading.module.ts",
+        "line": 5
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/trading.module.ts",
+      "target": "project:bybit-bots/file:server/src/trading/engine.service.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/trading.module.ts",
+        "line": 6
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/strategies/adaptive-regime.ts",
+      "target": "project:bybit-bots/file:server/src/trading/indicators.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/strategies/adaptive-regime.ts",
+        "line": 1
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/strategies/adaptive-regime.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/strategies/adaptive-regime.ts",
+        "line": 2
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/strategies/crossovers.ts",
+      "target": "project:bybit-bots/file:server/src/trading/indicators.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/strategies/crossovers.ts",
+        "line": 1
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/strategies/crossovers.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/strategies/crossovers.ts",
+        "line": 2
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/strategies/dca-holder.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/strategies/dca-holder.ts",
+        "line": 1
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/strategies/filters.ts",
+      "target": "project:bybit-bots/file:server/src/trading/indicators.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/strategies/filters.ts",
+        "line": 1
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/strategies/filters.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/strategies/filters.ts",
+        "line": 2
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/strategies/index.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/strategies/index.ts",
+        "line": 1
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/strategies/index.ts",
+      "target": "project:bybit-bots/file:server/src/trading/strategies/dca-holder.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/strategies/index.ts",
+        "line": 2
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/strategies/index.ts",
+      "target": "project:bybit-bots/file:server/src/trading/strategies/adaptive-regime.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/strategies/index.ts",
+        "line": 3
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/strategies/index.ts",
+      "target": "project:bybit-bots/file:server/src/trading/strategies/crossovers.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/strategies/index.ts",
+        "line": 4
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/strategies/index.ts",
+      "target": "project:bybit-bots/file:server/src/trading/strategies/oscillators.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/strategies/index.ts",
+        "line": 5
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/strategies/index.ts",
+      "target": "project:bybit-bots/file:server/src/trading/strategies/stateful.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/strategies/index.ts",
+        "line": 6
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/strategies/index.ts",
+      "target": "project:bybit-bots/file:server/src/trading/strategies/trend.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/strategies/index.ts",
+        "line": 7
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/strategies/oscillators.ts",
+      "target": "project:bybit-bots/file:server/src/trading/indicators.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/strategies/oscillators.ts",
+        "line": 1
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/strategies/oscillators.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/strategies/oscillators.ts",
+        "line": 2
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/strategies/stateful.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/strategies/stateful.ts",
+        "line": 1
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/strategies/trend.ts",
+      "target": "project:bybit-bots/file:server/src/trading/indicators.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/strategies/trend.ts",
+        "line": 1
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:server/src/trading/strategies/trend.ts",
+      "target": "project:bybit-bots/file:server/src/trading/types.ts",
+      "relation": "imports_local",
+      "evidence": {
+        "path": "server/src/trading/strategies/trend.ts",
+        "line": 2
+      },
+      "method": "lexical-existing-file"
+    },
+    {
+      "source": "project:bybit-bots/file:client/package.json",
+      "target": "package:npm:@types/node",
+      "relation": "declares_dependency",
+      "kind": "devDependencies",
+      "evidence": {
+        "path": "client/package.json",
+        "line": 13
+      },
+      "method": "manifest"
+    },
+    {
+      "source": "project:bybit-bots/file:client/package.json",
+      "target": "package:npm:@vitejs/plugin-vue",
+      "relation": "declares_dependency",
+      "kind": "devDependencies",
+      "evidence": {
+        "path": "client/package.json",
+        "line": 14
+      },
+      "method": "manifest"
+    },
+    {
+      "source": "project:bybit-bots/file:client/package.json",
+      "target": "package:npm:@vitest/coverage-v8",
+      "relation": "declares_dependency",
+      "kind": "devDependencies",
+      "evidence": {
+        "path": "client/package.json",
+        "line": 15
+      },
+      "method": "manifest"
+    },
+    {
+      "source": "project:bybit-bots/file:client/package.json",
+      "target": "package:npm:@vue/test-utils",
+      "relation": "declares_dependency",
+      "kind": "devDependencies",
+      "evidence": {
+        "path": "client/package.json",
+        "line": 16
+      },
+      "method": "manifest"
+    },
+    {
+      "source": "project:bybit-bots/file:client/package.json",
+      "target": "package:npm:jsdom",
+      "relation": "declares_dependency",
+      "kind": "devDependencies",
+      "evidence": {
+        "path": "client/package.json",
+        "line": 17
+      },
+      "method": "manifest"
+    },
+    {
+      "source": "project:bybit-bots/file:client/package.json",
+      "target": "package:npm:typescript",
+      "relation": "declares_dependency",
+      "kind": "devDependencies",
+      "evidence": {
+        "path": "client/package.json",
+        "line": 18
+      },
+      "method": "manifest"
+    },
+    {
+      "source": "project:bybit-bots/file:client/package.json",
+      "target": "package:npm:vite",
+      "relation": "declares_dependency",
+      "kind": "devDependencies",
+      "evidence": {
+        "path": "client/package.json",
+        "line": 7
+      },
+      "method": "manifest"
+    },
+    {
+      "source": "project:bybit-bots/file:client/package.json",
+      "target": "package:npm:vitest",
+      "relation": "declares_dependency",
+      "kind": "devDependencies",
+      "evidence": {
+        "path": "client/package.json",
+        "line": 20
+      },
+      "method": "manifest"
+    },
+    {
+      "source": "project:bybit-bots/file:client/package.json",
+      "target": "package:npm:vue",
+      "relation": "declares_dependency",
+      "kind": "devDependencies",
+      "evidence": {
+        "path": "client/package.json",
+        "line": 21
+      },
+      "method": "manifest"
+    },
+    {
+      "source": "project:bybit-bots/file:client/package.json",
+      "target": "package:npm:vue-tsc",
+      "relation": "declares_dependency",
+      "kind": "devDependencies",
+      "evidence": {
+        "path": "client/package.json",
+        "line": 22
+      },
+      "method": "manifest"
+    },
+    {
+      "source": "project:bybit-bots/file:server/package.json",
+      "target": "package:npm:@nestjs/common",
+      "relation": "declares_dependency",
+      "kind": "dependencies",
+      "evidence": {
+        "path": "server/package.json",
+        "line": 26
+      },
+      "method": "manifest"
+    },
+    {
+      "source": "project:bybit-bots/file:server/package.json",
+      "target": "package:npm:@nestjs/core",
+      "relation": "declares_dependency",
+      "kind": "dependencies",
+      "evidence": {
+        "path": "server/package.json",
+        "line": 27
+      },
+      "method": "manifest"
+    },
+    {
+      "source": "project:bybit-bots/file:server/package.json",
+      "target": "package:npm:@nestjs/platform-express",
+      "relation": "declares_dependency",
+      "kind": "dependencies",
+      "evidence": {
+        "path": "server/package.json",
+        "line": 28
+      },
+      "method": "manifest"
+    },
+    {
+      "source": "project:bybit-bots/file:server/package.json",
+      "target": "package:npm:@resvg/resvg-js",
+      "relation": "declares_dependency",
+      "kind": "dependencies",
+      "evidence": {
+        "path": "server/package.json",
+        "line": 29
+      },
+      "method": "manifest"
+    },
+    {
+      "source": "project:bybit-bots/file:server/package.json",
+      "target": "package:npm:reflect-metadata",
+      "relation": "declares_dependency",
+      "kind": "dependencies",
+      "evidence": {
+        "path": "server/package.json",
+        "line": 30
+      },
+      "method": "manifest"
+    },
+    {
+      "source": "project:bybit-bots/file:server/package.json",
+      "target": "package:npm:rxjs",
+      "relation": "declares_dependency",
+      "kind": "dependencies",
+      "evidence": {
+        "path": "server/package.json",
+        "line": 31
+      },
+      "method": "manifest"
+    },
+    {
+      "source": "project:bybit-bots/file:server/package.json",
+      "target": "package:npm:@nestjs/testing",
+      "relation": "declares_dependency",
+      "kind": "devDependencies",
+      "evidence": {
+        "path": "server/package.json",
+        "line": 15
+      },
+      "method": "manifest"
+    },
+    {
+      "source": "project:bybit-bots/file:server/package.json",
+      "target": "package:npm:@types/express",
+      "relation": "declares_dependency",
+      "kind": "devDependencies",
+      "evidence": {
+        "path": "server/package.json",
+        "line": 16
+      },
+      "method": "manifest"
+    },
+    {
+      "source": "project:bybit-bots/file:server/package.json",
+      "target": "package:npm:@types/node",
+      "relation": "declares_dependency",
+      "kind": "devDependencies",
+      "evidence": {
+        "path": "server/package.json",
+        "line": 17
+      },
+      "method": "manifest"
+    },
+    {
+      "source": "project:bybit-bots/file:server/package.json",
+      "target": "package:npm:@types/supertest",
+      "relation": "declares_dependency",
+      "kind": "devDependencies",
+      "evidence": {
+        "path": "server/package.json",
+        "line": 18
+      },
+      "method": "manifest"
+    },
+    {
+      "source": "project:bybit-bots/file:server/package.json",
+      "target": "package:npm:@vitest/coverage-v8",
+      "relation": "declares_dependency",
+      "kind": "devDependencies",
+      "evidence": {
+        "path": "server/package.json",
+        "line": 19
+      },
+      "method": "manifest"
+    },
+    {
+      "source": "project:bybit-bots/file:server/package.json",
+      "target": "package:npm:supertest",
+      "relation": "declares_dependency",
+      "kind": "devDependencies",
+      "evidence": {
+        "path": "server/package.json",
+        "line": 20
+      },
+      "method": "manifest"
+    },
+    {
+      "source": "project:bybit-bots/file:server/package.json",
+      "target": "package:npm:tsx",
+      "relation": "declares_dependency",
+      "kind": "devDependencies",
+      "evidence": {
+        "path": "server/package.json",
+        "line": 21
+      },
+      "method": "manifest"
+    },
+    {
+      "source": "project:bybit-bots/file:server/package.json",
+      "target": "package:npm:typescript",
+      "relation": "declares_dependency",
+      "kind": "devDependencies",
+      "evidence": {
+        "path": "server/package.json",
+        "line": 22
+      },
+      "method": "manifest"
+    },
+    {
+      "source": "project:bybit-bots/file:server/package.json",
+      "target": "package:npm:vitest",
+      "relation": "declares_dependency",
+      "kind": "devDependencies",
+      "evidence": {
+        "path": "server/package.json",
+        "line": 23
+      },
+      "method": "manifest"
+    }
+  ]
+}
